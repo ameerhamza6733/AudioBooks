@@ -123,29 +123,25 @@ object Util {
     }
 
 
-    fun milliSecondsToTimer(milliseconds: Long): String {
-        var finalTimerString = ""
-        var secondsString = ""
+    fun formatSeconds(timeInSeconds: Long): String {
+        val hours = timeInSeconds / 3600
+        val secondsLeft = timeInSeconds - hours * 3600
+        val minutes = secondsLeft / 60
+        val seconds = secondsLeft - minutes * 60
 
-        // Convert total duration into time
-        val hours = (milliseconds / (1000 * 60 * 60)).toInt()
-        val minutes = (milliseconds % (1000 * 60 * 60)).toInt() / (1000 * 60)
-        val seconds = (milliseconds % (1000 * 60 * 60) % (1000 * 60) / 1000).toInt()
-        // Add hours if there
-        if (hours > 0) {
-            finalTimerString = hours.toString() + ":"
-        }
+        var formattedTime = ""
+        if (hours < 10)
+            formattedTime += "0"
+        formattedTime += hours.toString() + ":"
 
-        // Prepending 0 to seconds if it is one digit
-        if (seconds < 10) {
-            secondsString = "0" + seconds
-        } else {
-            secondsString = "" + seconds
-        }
+        if (minutes < 10)
+            formattedTime += "0"
+        formattedTime += minutes.toString() + ":"
 
-        finalTimerString = finalTimerString + minutes + ":" + secondsString
+        if (seconds < 10)
+            formattedTime += "0"
+        formattedTime += seconds
 
-        // return timer string
-        return finalTimerString
+        return formattedTime
     }
 }

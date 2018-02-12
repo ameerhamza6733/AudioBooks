@@ -16,6 +16,7 @@ import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import com.ameerhamza6733.businessaudiobook.R;
+import com.ameerhamza6733.businessaudiobook.Util;
 import com.ameerhamza6733.businessaudiobook.activitys.MainActivity;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
@@ -127,7 +128,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
          mNotificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 
         NotificationRemoteView = new RemoteViews(getPackageName(), R.layout.notification);
-        NotificationRemoteView.setOnClickPendingIntent( R.id.title,getButtonClosePendingIntent());
+        NotificationRemoteView.setOnClickPendingIntent( R.id.close,getButtonClosePendingIntent());
         NotificationRemoteView.setTextViewText(R.id.title, "Custom notification");
         NotificationRemoteView.setTextViewText(R.id.passs,"pass");
         notification.contentView = NotificationRemoteView;
@@ -177,7 +178,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
             handler = new Handler();
             runnable = () -> {
                 if (mNotificationManager != null) {
-                    NotificationRemoteView.setTextViewText(R.id.audio_track_time,String.valueOf(((player.getDuration() - player.getContentPosition())) / 1000)+" / "+String.valueOf((player.getDuration() / 1000)));
+                    NotificationRemoteView.setTextViewText(R.id.audio_track_time,String.valueOf(Util.INSTANCE.formatSeconds((player.getContentPosition()) / 1000))+" / "+String.valueOf(Util.INSTANCE.formatSeconds((player.getDuration() / 1000))));
                     mNotificationManager.notify(ONGOING_NOTIFICATION_ID, notification);
                 }
 //                    Log.e(TAG, "Current: " + (player.getContentPosition() / 1000) + "s.");
