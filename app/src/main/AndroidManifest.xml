@@ -20,9 +20,12 @@
             </intent-filter>
         </activity>
         <activity android:name=".activitys.DetailActivity" />
-        <activity android:name=".mediaPlayer.playerActivty"></activity>
+        <activity android:name=".mediaPlayer.playerActivty"/>
        <service android:name=".mediaPlayer.PlayerForegroundService"/>
-        <receiver android:name=".mediaPlayer.PlayerForegroundService$myNotificationCloseButtonHandler"/>
+        <receiver android:name=".mediaPlayer.NotificationHelper$myNotificationCloseButtonHandler"/>
+        <receiver android:name=".mediaPlayer.NotificationHelper$NotificationFastForwardButtonHandler"/>
+        <receiver android:name=".mediaPlayer.NotificationHelper$NotificationFastRewindButtonHandler"/>
+        <receiver android:name=".mediaPlayer.NotificationHelper$NotificationPlayButtonHandler"/>
     </application>
 
 </manifest>

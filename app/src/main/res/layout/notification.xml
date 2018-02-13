@@ -26,11 +26,11 @@
 
             <TextView
                 android:id="@+id/close"
-                android:layout_gravity="center"
+                android:paddingLeft="16dp"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight=".5"
-                android:drawableTop="@drawable/ic_close_black_24dp" />
+                android:drawableStart="@drawable/ic_close_black_24dp" />
         </LinearLayout>
 
         <LinearLayout
@@ -49,7 +49,7 @@
                 android:textColor="@color/colorPrimaryText" />
 
             <TextView
-                android:id="@+id/passs"
+                android:id="@+id/fast_rewind"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -57,6 +57,7 @@
                 android:gravity="center" />
 
             <TextView
+                android:id="@+id/play"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -64,6 +65,7 @@
                 android:gravity="center" />
 
             <TextView
+                android:id="@+id/fast_forword"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

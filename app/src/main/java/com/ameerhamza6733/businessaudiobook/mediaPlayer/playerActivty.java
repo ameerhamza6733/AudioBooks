@@ -13,12 +13,10 @@ import com.ameerhamza6733.businessaudiobook.R;
 
 import static com.ameerhamza6733.businessaudiobook.mediaPlayer.PlayerForegroundService.EXTRA_URI;
 
-public class playerActivty extends AppCompatActivity implements ServiceConnection {
+public class playerActivty extends AppCompatActivity {
 
     public static final String EXTRA_PLAYER_URI = "EXTRA_PLAYER_URI";
-    private static final String TAG = "playerActivtyTAG";
 
-    private PlayerForegroundService playerForegroundService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,21 +27,12 @@ public class playerActivty extends AppCompatActivity implements ServiceConnectio
             startIntent.putExtra(EXTRA_URI,getIntent().getStringExtra(EXTRA_PLAYER_URI));
             startIntent.setAction(PlayerForegroundService.START_FOREGROUND_ACTION);
             startService(startIntent);
+            finish();
 
         }
 
 
     }
 
-    @Override
-    public void onServiceConnected(ComponentName name, IBinder binder) {
-        PlayerForegroundService.MyBinder b = (PlayerForegroundService.MyBinder) binder;
-        playerForegroundService = b.getService();
-        Toast.makeText(playerActivty.this, "Connected service name: "+PlayerForegroundService.class.getSimpleName(), Toast.LENGTH_SHORT).show();
-    }
 
-    @Override
-    public void onServiceDisconnected(ComponentName name) {
-        playerForegroundService = null;
-    }
 }

@@ -9,6 +9,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.ameerhamza6733.businessaudiobook.adupters.CustomAdapter;
 import com.ameerhamza6733.businessaudiobook.R;
@@ -36,6 +38,7 @@ public class RecyclerViewFragment extends Fragment {
     protected RecyclerView mRecyclerView;
     protected CustomAdapter mAdapter;
     protected RecyclerView.LayoutManager mLayoutManager;
+    protected ProgressBar progressBar;
 
 
     @Override
@@ -44,7 +47,7 @@ public class RecyclerViewFragment extends Fragment {
 
         // Initialize dataset, this data would usually come from a local content provider or
         // remote server.
-        initDataset();
+
     }
 
     @Override
@@ -54,6 +57,7 @@ public class RecyclerViewFragment extends Fragment {
         rootView.setTag(TAG);
 
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
+        progressBar= rootView.findViewById(R.id.progressBar);
 
         // LinearLayoutManager is used here, this will layout the elements in a similar fashion
         // to the way ListView would layout elements. The RecyclerView.LayoutManager defines how
@@ -68,10 +72,7 @@ public class RecyclerViewFragment extends Fragment {
                     .getSerializable(KEY_LAYOUT_MANAGER);
         }
         setRecyclerViewLayoutManager(mCurrentLayoutManagerType);
-
-
-
-
+        initDataset();
 
         return rootView;
     }
@@ -120,12 +121,17 @@ public class RecyclerViewFragment extends Fragment {
      * from a local content provider or remote server.
      */
     private void initDataset() {
+        progressBar.setVisibility(View.VISIBLE);
         MainActivityViewModel model = ViewModelProviders.of(this).get(MainActivityViewModel.class);
         model.loadData(Volley.newRequestQueue(getActivity())).observe(this, updatedAudioBookList -> {
             // update UI
             if (updatedAudioBookList != null) {
+                progressBar.setVisibility(View.GONE);
                 mAdapter = new CustomAdapter(updatedAudioBookList);
                 mRecyclerView.setAdapter(mAdapter);
+            }else {
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(getActivity(),"Try again: ",Toast.LENGTH_LONG).show();
             }
         });
     }

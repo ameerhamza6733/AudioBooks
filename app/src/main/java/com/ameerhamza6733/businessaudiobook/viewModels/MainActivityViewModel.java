@@ -55,6 +55,7 @@ public class MainActivityViewModel extends ViewModel {
             }
             Log.d(MainActivity.TAG, "volley response");
         }, (error) -> {
+            error.printStackTrace();
             mutableLiveData.setValue(null);
             Log.d(MainActivity.TAG, "volley error" + error.getMessage());
         });

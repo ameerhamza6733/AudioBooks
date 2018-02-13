@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.ameerhamza6733.businessaudiobook.R;
 import com.ameerhamza6733.businessaudiobook.Util;
@@ -32,6 +33,7 @@ public class BookMetaDataRecylerView extends Fragment {
 
     private String identifier;
     private RecyclerView mRecyclerView;
+    private ProgressBar progressBar;
 
     public BookMetaDataRecylerView() {
         // Required empty public constructor
@@ -52,15 +54,6 @@ public class BookMetaDataRecylerView extends Fragment {
         return fragment;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-             identifier= getArguments().getString(ARG_IDENTIFIER);
-             intiDataSet();
-        }
-    }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -68,8 +61,13 @@ public class BookMetaDataRecylerView extends Fragment {
         rootView.setTag(TAG);
 
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
+        progressBar = rootView.findViewById(R.id.progressBar);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
+        if (getArguments() != null) {
+            identifier= getArguments().getString(ARG_IDENTIFIER);
+            intiDataSet();
+        }
 
         return rootView;
     }
@@ -77,11 +75,13 @@ public class BookMetaDataRecylerView extends Fragment {
 
     private BookEachMataDataAdupter mataDataAdupter;
     private void intiDataSet(){
+        progressBar.setVisibility(View.VISIBLE);
        MetaDataViewModel model = ViewModelProviders.of(this).get(MetaDataViewModel.class);
        if (getActivity()!=null && identifier!=null)
        model.loadData(Volley.newRequestQueue(getActivity()), Util.INSTANCE.toMetaDataURI(identifier),identifier).observe(this, audioFileList -> {
            // update UI
            if (audioFileList != null) {
+               progressBar.setVisibility(View.GONE);
                if (mataDataAdupter==null){
                    mataDataAdupter = new BookEachMataDataAdupter(audioFileList);
                    mRecyclerView.setAdapter(mataDataAdupter);
