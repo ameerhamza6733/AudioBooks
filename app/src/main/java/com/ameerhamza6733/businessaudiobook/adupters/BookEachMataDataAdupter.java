@@ -57,6 +57,7 @@ public class BookEachMataDataAdupter extends RecyclerView.Adapter<BookEachMataDa
             itemView.setOnClickListener(view -> {
                 Log.d(TAG, "chapter name: " + chapterList.get(getAdapterPosition()).getName());
                 Intent intent = new Intent(view.getContext(),playerActivty.class);
+                intent.putExtra(playerActivty.EXTRA_TITLE,chapterList.get(getAdapterPosition()).getName());
                 intent.putExtra(playerActivty.EXTRA_PLAYER_URI,chapterList.get(getAdapterPosition()).getURL());
                 view.getContext().startActivity(intent);
             });

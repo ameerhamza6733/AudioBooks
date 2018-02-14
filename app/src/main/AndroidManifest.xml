@@ -25,7 +25,8 @@
         <receiver android:name=".mediaPlayer.NotificationHelper$myNotificationCloseButtonHandler"/>
         <receiver android:name=".mediaPlayer.NotificationHelper$NotificationFastForwardButtonHandler"/>
         <receiver android:name=".mediaPlayer.NotificationHelper$NotificationFastRewindButtonHandler"/>
-        <receiver android:name=".mediaPlayer.NotificationHelper$NotificationPlayButtonHandler"/>
+        <receiver android:name=".mediaPlayer.NotificationHelper$NotificationPlayOrPauseButtonHandler"/>
+
     </application>
 
 </manifest>

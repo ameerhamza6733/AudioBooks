@@ -6,7 +6,6 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
@@ -42,14 +41,20 @@ import static com.ameerhamza6733.businessaudiobook.activitys.DetailActivity.TAG;
 public class PlayerForegroundService extends Service implements Player.EventListener {
 
     public static String MAIN_ACTION = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.main";
-    public static final String EXTRA_URI = "com.ameerhamza6733.businessaudiobook.mediaPlayer.PlayerForegroundService";
+    public static final String EXTRA_URI = "com.ameerhamza6733.businessaudiobook.mediaPlayer.PlayerForegroundService.uri";
+    public static final String EXTRA_TITLE = "com.ameerhamza6733.businessaudiobook.mediaPlayer.PlayerForegroundService.title";
+
+    protected final static String FAST_FORWARD_ACTION = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.forward";
+    protected final static String FAST_REWIND_ACTION = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.rewind";
     protected final static String START_FOREGROUND_ACTION = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.startforeground";
-    protected final static String STOP_FOREGROUND_ACTION = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.stopforeground";
-    protected final static String FAST_FORWARD_ACTION="com.ameerhamza6733.businessaudiobook.mediaPlayer.action.forward";
+    protected final static String STOP_ACTION = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.stop";
+    protected final static String PLAY_PAUSE_ACTION = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.playOrpause";
     protected static final int ONGOING_NOTIFICATION_ID = 101;
 
     private String uri;
+    private Boolean isPlaying;
     private SimpleExoPlayer player;
+    private String title;
 
 
     @Override
@@ -62,20 +67,41 @@ public class PlayerForegroundService extends Service implements Player.EventList
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent.getAction().equals(PlayerForegroundService.START_FOREGROUND_ACTION)) {
             uri = intent.getStringExtra(EXTRA_URI);
+            title = intent.getStringExtra(PlayerForegroundService.EXTRA_TITLE);
             Toast.makeText(this, "Start Service", Toast.LENGTH_SHORT).show();
             Notification notification = getNotification();
             startForeground(ONGOING_NOTIFICATION_ID, notification);
             initMediaPlayer(uri);
-        } else if (intent.getAction().equals(PlayerForegroundService.STOP_FOREGROUND_ACTION)) {
+        } else if (intent.getAction().equals(PlayerForegroundService.STOP_ACTION)) {
             if (handler != null)
                 handler.removeCallbacks(runnable);
             stopForeground(true);
             stopSelf();
-        }else if (intent.getAction().equals(FAST_FORWARD_ACTION)){
-            Toast.makeText(this,"fast forwarding ",Toast.LENGTH_LONG).show();
-            if (player!=null){
-               new PlayerControl(player).seekTo(5000);
+        } else if (intent.getAction().equals(FAST_FORWARD_ACTION)) {
+            if (player != null)
+                player.seekTo(player.getCurrentPosition() + 5000);
+
+        } else if (intent.getAction().equals(PLAY_PAUSE_ACTION)) {
+            if (player != null) {
+                if (handler != null) {
+                    handler.removeCallbacks(runnable);
+                }
+                if (player.getPlayWhenReady()) {
+                    NotificationRemoteView.setTextViewCompoundDrawables(R.id.pause, 0, R.drawable.ic_play_arrow_black_24dp, 0, 0);
+                    player.setPlayWhenReady(false);
+
+                } else {
+
+                    NotificationRemoteView.setTextViewCompoundDrawables(R.id.pause, 0, R.drawable.ic_pause_black_24dp, 0, 0);
+                    player.setPlayWhenReady(true);
+
+                }
+                mNotificationManager.notify(ONGOING_NOTIFICATION_ID, notification);
             }
+
+        } else if (intent.getAction().equals(FAST_REWIND_ACTION)) {
+            Log.e(TAG, "FAST_REWIND_ACTION");
+            player.seekTo(player.getCurrentPosition() - 5000);
         }
         return START_STICKY;
     }
@@ -116,17 +142,20 @@ public class PlayerForegroundService extends Service implements Player.EventList
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
         if (playbackState == Player.STATE_READY) {
+            isPlaying = true;
             handler = new Handler();
             runnable = () -> {
                 if (mNotificationManager != null) {
+
                     NotificationRemoteView.setTextViewText(R.id.audio_track_time, String.valueOf(Util.INSTANCE.formatSeconds((player.getContentPosition()) / 1000)) + " / " + String.valueOf(Util.INSTANCE.formatSeconds((player.getDuration() / 1000))));
                     mNotificationManager.notify(ONGOING_NOTIFICATION_ID, notification);
                 }
-//                    Log.e(TAG, "Current: " + (player.getContentPosition() / 1000) + "s.");
-//                    Log.e(TAG, "Left: " + ((player.getDuration() - player.getContentPosition()) / 1000) + "s.");
                 handler.postDelayed(runnable, 1000);
             };
             handler.postDelayed(runnable, 0);
+        }
+        if (playbackState == Player.STATE_BUFFERING) {
+            Log.e(TAG, "STATE_BUFFERING...");
         }
 
     }
@@ -202,7 +231,10 @@ public class PlayerForegroundService extends Service implements Player.EventList
         NotificationRemoteView.setOnClickPendingIntent(R.id.close, NotificationHelper.getButtonClosePendingIntent(this));
         NotificationRemoteView.setOnClickPendingIntent(R.id.fast_forword, NotificationHelper.getButtonFastForwadPendingIntent(this));
         NotificationRemoteView.setOnClickPendingIntent(R.id.fast_rewind, NotificationHelper.getButtonFastRewindPendingIntent(this));
-        NotificationRemoteView.setTextViewText(R.id.title, "Custom notification");
+        NotificationRemoteView.setOnClickPendingIntent(R.id.pause, NotificationHelper.getButtonPlayOrPausePendingIntent(this));
+
+
+        NotificationRemoteView.setTextViewText(R.id.title, title);
         NotificationRemoteView.setTextViewText(R.id.audio_track_time, "");
         notification.contentView = NotificationRemoteView;
 

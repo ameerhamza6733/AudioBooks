@@ -16,6 +16,7 @@ import static com.ameerhamza6733.businessaudiobook.mediaPlayer.PlayerForegroundS
 public class playerActivty extends AppCompatActivity {
 
     public static final String EXTRA_PLAYER_URI = "EXTRA_PLAYER_URI";
+    public static final String EXTRA_TITLE = "EXTRA_TITLE";
 
 
     @Override
@@ -25,6 +26,7 @@ public class playerActivty extends AppCompatActivity {
         if (getIntent()!=null){
             Intent startIntent = new Intent(playerActivty.this, PlayerForegroundService.class);
             startIntent.putExtra(EXTRA_URI,getIntent().getStringExtra(EXTRA_PLAYER_URI));
+            startIntent.putExtra(PlayerForegroundService.EXTRA_TITLE,getIntent().getStringExtra(playerActivty.EXTRA_TITLE));
             startIntent.setAction(PlayerForegroundService.START_FOREGROUND_ACTION);
             startService(startIntent);
             finish();
