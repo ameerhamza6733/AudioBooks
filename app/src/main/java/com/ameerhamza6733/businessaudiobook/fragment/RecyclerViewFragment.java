@@ -1,17 +1,30 @@
 package com.ameerhamza6733.businessaudiobook.fragment;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.ameerhamza6733.businessaudiobook.BookSearchDialogFragment;
+import com.ameerhamza6733.businessaudiobook.Util;
+import com.ameerhamza6733.businessaudiobook.activitys.MainActivity;
 import com.ameerhamza6733.businessaudiobook.adupters.CustomAdapter;
 import com.ameerhamza6733.businessaudiobook.R;
 import com.ameerhamza6733.businessaudiobook.viewModels.MainActivityViewModel;
@@ -21,10 +34,16 @@ import com.android.volley.toolbox.Volley;
  * Created by AmeerHamza on 2/8/2018.
  */
 
-public class RecyclerViewFragment extends Fragment {
+public class RecyclerViewFragment extends Fragment  implements MainActivity.onReciveQuery  {
 
     private static final String TAG = "RecyclerViewFragment";
     private static final String KEY_LAYOUT_MANAGER = "layoutManager";
+
+    @Override
+    public void onQueryRecived(String query) {
+        Log.d(TAG,"query: "+query);
+        initDataset(Util.INSTANCE.quraryBuilder(query));
+    }
 
 
     private enum LayoutManagerType {
@@ -39,14 +58,13 @@ public class RecyclerViewFragment extends Fragment {
     protected CustomAdapter mAdapter;
     protected RecyclerView.LayoutManager mLayoutManager;
     protected ProgressBar progressBar;
+    protected FloatingActionButton floatingActionButton;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Initialize dataset, this data would usually come from a local content provider or
-        // remote server.
+        setHasOptionsMenu(true);
 
     }
 
@@ -57,7 +75,8 @@ public class RecyclerViewFragment extends Fragment {
         rootView.setTag(TAG);
 
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
-        progressBar= rootView.findViewById(R.id.progressBar);
+        floatingActionButton= rootView.findViewById(R.id.fab);
+        progressBar = rootView.findViewById(R.id.progressBar);
 
         // LinearLayoutManager is used here, this will layout the elements in a similar fashion
         // to the way ListView would layout elements. The RecyclerView.LayoutManager defines how
@@ -72,7 +91,11 @@ public class RecyclerViewFragment extends Fragment {
                     .getSerializable(KEY_LAYOUT_MANAGER);
         }
         setRecyclerViewLayoutManager(mCurrentLayoutManagerType);
-        initDataset();
+        floatingActionButton.setOnClickListener(v -> {
+            DialogFragment bookSearchDialogFragment=BookSearchDialogFragment.newInstance();
+            bookSearchDialogFragment.show(getFragmentManager(),"bookSearchDialogFragment");
+        });
+        initDataset(Util.INSTANCE.quraryBuilder("quran"));
 
         return rootView;
     }
@@ -116,23 +139,48 @@ public class RecyclerViewFragment extends Fragment {
         super.onSaveInstanceState(savedInstanceState);
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_search, menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // handle item selection
+        switch (item.getItemId()) {
+            case R.id.action_search:
+                Log.d(TAG,"search iteam clicked");
+                DialogFragment bookSearchDialogFragment=BookSearchDialogFragment.newInstance();
+                bookSearchDialogFragment.show(getFragmentManager(),"bookSearchDialogFragment");
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+
+
     /**
      * Generates Strings for RecyclerView's adapter. This data would usually come
      * from a local content provider or remote server.
      */
-    private void initDataset() {
+    private void initDataset(String url) {
         progressBar.setVisibility(View.VISIBLE);
+
         MainActivityViewModel model = ViewModelProviders.of(this).get(MainActivityViewModel.class);
-        model.loadData(Volley.newRequestQueue(getActivity())).observe(this, updatedAudioBookList -> {
+        model.loadData(Volley.newRequestQueue(getActivity()), url).observe(this, updatedAudioBookList -> {
             // update UI
             if (updatedAudioBookList != null) {
                 progressBar.setVisibility(View.GONE);
                 mAdapter = new CustomAdapter(updatedAudioBookList);
                 mRecyclerView.setAdapter(mAdapter);
-            }else {
+            } else {
                 progressBar.setVisibility(View.GONE);
-                Toast.makeText(getActivity(),"Try again: ",Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "Try again: ", Toast.LENGTH_LONG).show();
             }
         });
     }
+
+
 }

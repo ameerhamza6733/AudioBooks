@@ -20,6 +20,10 @@ object Util {
         return JSONObject(s)
     }
 
+   public fun quraryBuilder(queary : String) : String{
+        return "https://archive.org/advancedsearch.php?q=title%3A%22"+queary+"%22+AND+mediatype%3Aaudio&fl[]=avg_rating&fl[]=publisher&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=num_reviews&fl[]=title&sort[]=&sort[]=&sort[]=&rows=50&page=1&output=json&callback=callback&save=yes"
+    }
+
     fun isTitleTitle(jsonObject: JSONObject, title: String): Boolean {
         try {
             return jsonObject.getString("title").replace("[^A-Za-z0-9]".toRegex(), " ").toLowerCase().contains(title)

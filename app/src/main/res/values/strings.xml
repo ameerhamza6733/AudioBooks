@@ -3,4 +3,7 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="hint_add_shopping_list">Search Book</string>
+    <string name="positive_button_create">Search</string>
 </resources>

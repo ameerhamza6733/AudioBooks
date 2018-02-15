@@ -7,4 +7,6 @@
     <color name="colorSecondaryText">#757575</color>
     <color name="coloreIcon">#FFFFFF</color>
     <color name="colorDevider">#BDBDBD</color>
+    <color name="grey">#EDEEEF</color>
+    <color name="black">#616161</color>
 </resources>

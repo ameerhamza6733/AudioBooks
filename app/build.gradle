@@ -45,6 +45,7 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:27.0.2'
     compile 'com.google.android.exoplayer:exoplayer:2.6.0'
 
+    implementation 'com.android.support:design:27.0.2'
 }
 repositories {
     mavenCentral()

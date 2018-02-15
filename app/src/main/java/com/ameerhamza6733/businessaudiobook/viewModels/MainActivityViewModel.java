@@ -26,10 +26,12 @@ public class MainActivityViewModel extends ViewModel {
 
     private MutableLiveData<List<AudioBook>> mutableLiveData;
     private List<AudioBook> jsonObjectList;
-    public LiveData<List<AudioBook>> loadData(RequestQueue requestQueue){
-        if (mutableLiveData==null){
+    private String url;
+    public LiveData<List<AudioBook>> loadData(RequestQueue requestQueue,String url){
+        if (mutableLiveData==null || !this.url.equalsIgnoreCase(url)){
             mutableLiveData=   new MutableLiveData<List<AudioBook>>();
             jsonObjectList= new ArrayList<>();
+            this.url=url;
             intiVolley(requestQueue);
 
         }
@@ -39,9 +41,9 @@ public class MainActivityViewModel extends ViewModel {
 
     private void intiVolley(RequestQueue requestQueue) {
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, Util.INSTANCE.getCONN_URL(), response -> {
+        StringRequest stringRequest = new StringRequest(Request.Method.GET,url, response -> {
             try {
-
+                Log.d("RecyclerViewFragment","url: "+url);
                 jsonObject = Util.INSTANCE.toJson(response.substring(response.indexOf("{"), response.lastIndexOf("}") + 1));
                 JSONArray jsonArray = jsonObject.getJSONObject("response").getJSONArray("docs");
                 for (int i = 0; i < jsonArray.length(); i++) {
