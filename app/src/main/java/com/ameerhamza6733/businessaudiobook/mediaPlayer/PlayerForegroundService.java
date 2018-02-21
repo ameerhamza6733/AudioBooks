@@ -43,6 +43,8 @@ public class PlayerForegroundService extends Service implements Player.EventList
     public static String MAIN_ACTION = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.main";
     public static final String EXTRA_URI = "com.ameerhamza6733.businessaudiobook.mediaPlayer.PlayerForegroundService.uri";
     public static final String EXTRA_TITLE = "com.ameerhamza6733.businessaudiobook.mediaPlayer.PlayerForegroundService.title";
+    public static final String EXTRA_SEEK_TO="EXTRA_SEEK_TO";
+
 
     protected final static String FAST_FORWARD_ACTION = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.forward";
     protected final static String FAST_REWIND_ACTION = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.rewind";
@@ -55,6 +57,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
     private Boolean isPlaying;
     private SimpleExoPlayer player;
     private String title;
+    private long seekto=0;
 
 
     @Override
@@ -67,6 +70,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent.getAction().equals(PlayerForegroundService.START_FOREGROUND_ACTION)) {
             uri = intent.getStringExtra(EXTRA_URI);
+            seekto=intent.getLongExtra(PlayerForegroundService.EXTRA_SEEK_TO,0);
             title = intent.getStringExtra(PlayerForegroundService.EXTRA_TITLE);
             Toast.makeText(this, "Start Service", Toast.LENGTH_SHORT).show();
             Notification notification = getNotification();
@@ -210,6 +214,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
                 mainHandler,
                 null);
         player.prepare(mediaSource);
+        player.seekTo(seekto);
         player.setPlayWhenReady(true);
         player.setPlayWhenReady(true);
 
@@ -239,7 +244,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
         notification.contentView = NotificationRemoteView;
 
         Intent notificationIntent = new Intent(this, MainActivity.class);
-        notification.contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+        notification.contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
 
         if (mNotificationManager != null) {

@@ -13,7 +13,9 @@ import kotlin.collections.ArrayList
 
 object Util {
 
-    val CONN_URL = "https://archive.org/advancedsearch.php?q=subject%3A%22librivox%22+AND+mediatype%3Aaudio&fl[]=avg_rating&fl[]=publisher&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=num_reviews&fl[]=title&sort[]=&sort[]=&sort[]=&rows=50&page=1&output=json&callback=callback&save=yes"
+    val POETRY_URL = "https://archive.org/advancedsearch.php?q=collection%3A%22audio_bookspoetry%22+AND+mediatype%3Aaudio&fl[]=avg_rating&fl[]=publisher&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=num_reviews&fl[]=title&sort[]=-downloads&sort[]=&sort[]=&rows=50&page=1&output=json&callback=callback&save=yes"
+    val dahszil_URL = "https://archive.org/advancedsearch.php?q=collection%3A%22audio_bookspoetry%22+AND+mediatype%3Aaudio&fl[]=avg_rating&fl[]=publisher&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=num_reviews&fl[]=title&sort[]=-downloads&sort[]=&sort[]=&rows=50&page=1&output=json&callback=callback&save=yes"
+
     val CONN_META_DATA_URL="https://archive.org/metadata/moby_dick_librivox"
     @Throws(JSONException::class)
     fun toJson(s: String): JSONObject {

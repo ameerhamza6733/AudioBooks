@@ -20,7 +20,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".activitys.DetailActivity" />
-        <activity android:name=".mediaPlayer.playerActivty"/>
+        <activity android:name=".mediaPlayer.playerActivty"
+            android:screenOrientation="landscape"/>
        <service android:name=".mediaPlayer.PlayerForegroundService"/>
         <receiver android:name=".mediaPlayer.NotificationHelper$myNotificationCloseButtonHandler"/>
         <receiver android:name=".mediaPlayer.NotificationHelper$NotificationFastForwardButtonHandler"/>

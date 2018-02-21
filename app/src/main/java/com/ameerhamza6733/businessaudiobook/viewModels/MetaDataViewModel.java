@@ -58,6 +58,17 @@ public class MetaDataViewModel extends ViewModel {
                         audioFileList.add(mataData);
                     }
                 }
+                //try alternative source
+                if (audioFileList.size()==0){
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject docs = jsonArray.getJSONObject(i);
+                        if (docs.getString("source").equalsIgnoreCase("derivative") && Util.INSTANCE.isSuppotedFormate( docs.getString("name"))) {
+                            Log.d(TAG, "name: " + docs.getString("name"));
+                            MataData mataData= new MataData(docs.getString("name"),Long.parseLong(docs.getString("size")),Util.INSTANCE.toDownloadAbleFileUri(docs.getString("name"),identifier));
+                            audioFileList.add(mataData);
+                        }
+                    }
+                }
                mutableLiveData.setValue(audioFileList);
             } catch (Exception e) {
                 e.printStackTrace();
