@@ -35,14 +35,10 @@ public class RecyclerViewFragment extends Fragment  implements MainActivity.onRe
 
     private static final String TAG = "RecyclerViewFragment";
     private static final String KEY_LAYOUT_MANAGER = "layoutManager";
-    private CustomAdapter mAdapterDahzil;
 
     @Override
     public void onQueryRecived(String query) {
         Log.d(TAG,"query: "+query);
-        mCurrentLayoutManagerType = LayoutManagerType.GRID_LAYOUT_MANAGER;
-        setRecyclerViewLayoutManager(mCurrentLayoutManagerType);
-        mRecyclerViewPoetry.removeAllViews();
         initDatasetForPoetry(Util.INSTANCE.quraryBuilder(query));
 
     }
@@ -57,7 +53,7 @@ public class RecyclerViewFragment extends Fragment  implements MainActivity.onRe
 
 
     protected RecyclerView mRecyclerViewPoetry;
-    protected RecyclerView recyclerViewDahzil;
+
 
 
     protected RecyclerView.LayoutManager mLayoutManager;
@@ -79,7 +75,6 @@ public class RecyclerViewFragment extends Fragment  implements MainActivity.onRe
         rootView.setTag(TAG);
 
         mRecyclerViewPoetry = (RecyclerView) rootView.findViewById(R.id.recyclerView_poetry);
-        recyclerViewDahzil = (RecyclerView) rootView.findViewById(R.id.recyclerView_dahszil);
 
 
         floatingActionButton= rootView.findViewById(R.id.fab);
@@ -90,7 +85,7 @@ public class RecyclerViewFragment extends Fragment  implements MainActivity.onRe
         // elements are laid out.
         mLayoutManager = new LinearLayoutManager(getActivity(),LinearLayoutManager.HORIZONTAL,false);
 
-        mCurrentLayoutManagerType = LayoutManagerType.LINEAR_LAYOUT_MANAGER;
+        mCurrentLayoutManagerType = LayoutManagerType.GRID_LAYOUT_MANAGER;
 
         if (savedInstanceState != null) {
             // Restore saved layout manager type.
@@ -122,10 +117,6 @@ public class RecyclerViewFragment extends Fragment  implements MainActivity.onRe
             scrollPosition = ((LinearLayoutManager) mRecyclerViewPoetry.getLayoutManager())
                     .findFirstCompletelyVisibleItemPosition();
 
-        }if (recyclerViewDahzil.getLayoutManager() != null) {
-            scrollPostionDahzial = ((LinearLayoutManager) recyclerViewDahzil.getLayoutManager())
-                    .findFirstCompletelyVisibleItemPosition();
-
         }
 
         switch (layoutManagerType) {
@@ -144,8 +135,6 @@ public class RecyclerViewFragment extends Fragment  implements MainActivity.onRe
 
         mRecyclerViewPoetry.setLayoutManager(mLayoutManager);
         mRecyclerViewPoetry.scrollToPosition(scrollPosition);
-      recyclerViewDahzil.setLayoutManager(new LinearLayoutManager(getActivity(),LinearLayoutManager.HORIZONTAL,false));
-
 
     }
 
@@ -195,31 +184,30 @@ public class RecyclerViewFragment extends Fragment  implements MainActivity.onRe
                 progressBar.setVisibility(View.GONE);
                CustomAdapter mAdapter = new CustomAdapter(updatedAudioBookList);
                 mRecyclerViewPoetry.setAdapter(mAdapter);
-                initDatasetForDahzil(Util.INSTANCE.getDahszil_URL());
             } else {
                 progressBar.setVisibility(View.GONE);
                 Toast.makeText(getActivity(), "Try again: ", Toast.LENGTH_LONG).show();
             }
         });
     }
-    private void initDatasetForDahzil (String url) {
-        progressBar.setVisibility(View.VISIBLE);
-
-        MainActivityViewModel model = ViewModelProviders.of(this).get(MainActivityViewModel.class);
-        model.loadData(Volley.newRequestQueue(getActivity()), url).observe(this, updatedAudioBookList -> {
-            // update UI
-            if (updatedAudioBookList != null) {
-                Log.d(TAG,"initDatasetForDahzil");
-                progressBar.setVisibility(View.GONE);
-                mAdapterDahzil = new CustomAdapter(updatedAudioBookList);
-                recyclerViewDahzil.setAdapter(mAdapterDahzil);
-
-            } else {
-                progressBar.setVisibility(View.GONE);
-                Toast.makeText(getActivity(), "Try again: ", Toast.LENGTH_LONG).show();
-            }
-        });
-    }
+//    private void initDatasetForDahzil (String url) {
+//        progressBar.setVisibility(View.VISIBLE);
+//
+//        MainActivityViewModel model = ViewModelProviders.of(this).get(MainActivityViewModel.class);
+//        model.loadData(Volley.newRequestQueue(getActivity()), url).observe(this, updatedAudioBookList -> {
+//            // update UI
+//            if (updatedAudioBookList != null) {
+//                Log.d(TAG,"initDatasetForDahzil");
+//                progressBar.setVisibility(View.GONE);
+//                mAdapterDahzil = new CustomAdapter(updatedAudioBookList);
+//                recyclerViewDahzil.setAdapter(mAdapterDahzil);
+//
+//            } else {
+//                progressBar.setVisibility(View.GONE);
+//                Toast.makeText(getActivity(), "Try again: ", Toast.LENGTH_LONG).show();
+//            }
+//        });
+//    }
 
 
 }
