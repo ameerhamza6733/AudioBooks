@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +14,6 @@ import android.widget.ProgressBar;
 import com.ameerhamza6733.businessaudiobook.R;
 import com.ameerhamza6733.businessaudiobook.Util;
 import com.ameerhamza6733.businessaudiobook.adupters.BookEachMataDataAdupter;
-import com.ameerhamza6733.businessaudiobook.models.MataData;
 import com.ameerhamza6733.businessaudiobook.viewModels.MetaDataViewModel;
 import com.android.volley.toolbox.Volley;
 
@@ -60,7 +58,7 @@ public class BookMetaDataRecylerView extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_audio_file_recyler_view, container, false);
         rootView.setTag(TAG);
 
-        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView_poetry);
         progressBar = rootView.findViewById(R.id.progressBar);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 

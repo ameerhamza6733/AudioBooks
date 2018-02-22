@@ -25,12 +25,12 @@ import java.util.List;
 public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
     private static final String TAG = "CustomAdapter";
 
-    protected static List<AudioBook> mDataSet;
+    protected  List<AudioBook> mDataSet;
 
     /**
      * Provide a reference to the type of views that you are using (custom ViewHolder)
      */
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public  class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView textViewTitle;
         private final TextView textViewAuthor;
         private final TextView textViewRatingCount;
@@ -96,6 +96,9 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
      */
     public CustomAdapter(List<AudioBook> dataSet) {
         mDataSet = dataSet;
+    }
+
+    public CustomAdapter() {
     }
 
     // Create new views (invoked by the layout manager)
