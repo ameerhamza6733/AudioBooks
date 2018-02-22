@@ -4,7 +4,10 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.IBinder;
@@ -14,7 +17,6 @@ import android.widget.Toast;
 
 import com.ameerhamza6733.businessaudiobook.R;
 import com.ameerhamza6733.businessaudiobook.Util;
-import com.ameerhamza6733.businessaudiobook.activitys.MainActivity;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -52,18 +54,30 @@ public class PlayerForegroundService extends Service implements Player.EventList
     protected final static String STOP_ACTION = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.stop";
     protected final static String PLAY_PAUSE_ACTION = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.playOrpause";
     protected static final int ONGOING_NOTIFICATION_ID = 101;
+    protected final static String START_ACTIVITY_BROAD_CAST ="START_ACTIVITY_BROAD_CAST";
 
-    private String uri;
+
+    protected String uri;
     private Boolean isPlaying;
     private SimpleExoPlayer player;
     private String title;
     private long seekto=0;
+    private StartPlayerActivtyBrodcastReciver activtyBrodcastReciver;
 
 
     @Override
     public void onCreate() {
         super.onCreate();
+        activtyBrodcastReciver = new StartPlayerActivtyBrodcastReciver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addCategory(Intent.CATEGORY_DEFAULT);
+        // set the custom action
+        intentFilter.addAction(START_ACTIVITY_BROAD_CAST);
+
+        registerReceiver(activtyBrodcastReciver, intentFilter);
     }
+
+
 
 
     @Override
@@ -114,6 +128,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
     public void onDestroy() {
         if (player != null)
             player.release();
+        unregisterReceiver(activtyBrodcastReciver);
         super.onDestroy();
 
     }
@@ -238,18 +253,44 @@ public class PlayerForegroundService extends Service implements Player.EventList
         NotificationRemoteView.setOnClickPendingIntent(R.id.fast_rewind, NotificationHelper.getButtonFastRewindPendingIntent(this));
         NotificationRemoteView.setOnClickPendingIntent(R.id.pause, NotificationHelper.getButtonPlayOrPausePendingIntent(this));
 
-
         NotificationRemoteView.setTextViewText(R.id.title, title);
         NotificationRemoteView.setTextViewText(R.id.audio_track_time, "");
         notification.contentView = NotificationRemoteView;
-
-        Intent notificationIntent = new Intent(this, MainActivity.class);
-        notification.contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-
+        //this will start player activity with resume media play back
+        Intent i = new Intent(START_ACTIVITY_BROAD_CAST);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, i, 0);
+        notification.contentIntent = pendingIntent;
 
         if (mNotificationManager != null) {
             mNotificationManager.notify(ONGOING_NOTIFICATION_ID, notification);
         }
         return notification;
+    }
+
+
+    //this will start activity with resume media player  if user click on notification
+    public  class StartPlayerActivtyBrodcastReciver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            switch(action) {
+                case START_ACTIVITY_BROAD_CAST:
+                    Log.d(TAG,"trying to start activty from service ");
+                    Intent intent1 = new Intent(context,playerActivty.class);
+
+                    intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent1.putExtra(playerActivty.EXTRA_PLAYER_URI,uri);
+                    intent1.putExtra(playerActivty.EXTRA_TITLE,title);
+                    intent1.putExtra(playerActivty.EXTRA_SEEK_TO,player.getContentPosition());
+                    startActivity(intent1);
+
+                    //stop this service
+                    Intent startIntent = new Intent(context, PlayerForegroundService.class);
+                    startIntent.setAction(PlayerForegroundService.STOP_ACTION);
+                    context.startService(startIntent);
+
+                    break;
+            }
+        }
     }
 }

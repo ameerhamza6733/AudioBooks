@@ -52,6 +52,7 @@ public class RecyclerViewFragment extends Fragment  implements MainActivity.onRe
 
 
     protected RecyclerView mRecyclerView;
+
     protected CustomAdapter mAdapter;
     protected RecyclerView.LayoutManager mLayoutManager;
     protected ProgressBar progressBar;
@@ -72,6 +73,7 @@ public class RecyclerViewFragment extends Fragment  implements MainActivity.onRe
         rootView.setTag(TAG);
 
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
+
         floatingActionButton= rootView.findViewById(R.id.fab);
         progressBar = rootView.findViewById(R.id.progressBar);
 
@@ -109,6 +111,7 @@ public class RecyclerViewFragment extends Fragment  implements MainActivity.onRe
         if (mRecyclerView.getLayoutManager() != null) {
             scrollPosition = ((LinearLayoutManager) mRecyclerView.getLayoutManager())
                     .findFirstCompletelyVisibleItemPosition();
+
         }
 
         switch (layoutManagerType) {
@@ -127,6 +130,8 @@ public class RecyclerViewFragment extends Fragment  implements MainActivity.onRe
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(),LinearLayoutManager.HORIZONTAL,false));
         mRecyclerView.scrollToPosition(scrollPosition);
+
+
     }
 
     @Override
@@ -172,6 +177,7 @@ public class RecyclerViewFragment extends Fragment  implements MainActivity.onRe
                 progressBar.setVisibility(View.GONE);
                 mAdapter = new CustomAdapter(updatedAudioBookList);
                 mRecyclerView.setAdapter(mAdapter);
+
             } else {
                 progressBar.setVisibility(View.GONE);
                 Toast.makeText(getActivity(), "Try again: ", Toast.LENGTH_LONG).show();

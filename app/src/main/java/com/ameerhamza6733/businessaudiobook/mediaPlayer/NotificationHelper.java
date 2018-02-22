@@ -4,6 +4,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -85,6 +86,9 @@ public class NotificationHelper {
 
 
     }
+
+
+
 
     //create "close" button intent
     public static PendingIntent getButtonClosePendingIntent(Context context) {

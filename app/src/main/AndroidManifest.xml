@@ -27,6 +27,7 @@
         <receiver android:name=".mediaPlayer.NotificationHelper$NotificationFastForwardButtonHandler"/>
         <receiver android:name=".mediaPlayer.NotificationHelper$NotificationFastRewindButtonHandler"/>
         <receiver android:name=".mediaPlayer.NotificationHelper$NotificationPlayOrPauseButtonHandler"/>
+        <receiver android:name=".mediaPlayer.PlayerForegroundService$StartPlayerActivtyBrodcastReciver"/>
 
     </application>
 

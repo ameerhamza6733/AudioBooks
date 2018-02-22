@@ -10,157 +10,159 @@
         android:padding="8dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
-        <!--<LinearLayout-->
-            <!--android:orientation="vertical"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content">-->
-<!--<ImageView-->
-    <!--android:src="@drawable/tom_sawyer_librivox"-->
-    <!--android:layout_width="75dp"-->
-    <!--android:layout_height="150dp" />-->
-            <!--<TextView-->
-            <!--android:id="@+id/title"-->
-            <!--android:maxLines="2"-->
-            <!--android:layout_width="150dp"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:paddingBottom="16dp"-->
-            <!--android:paddingLeft="16dp"-->
-            <!--android:paddingTop="24dp"-->
-            <!--android:text="The Adventures of Tom Sawyer "-->
-            <!--android:textColor="@color/colorPrimaryText"-->
-            <!--android:textSize="14sp" />-->
-            <!--<LinearLayout-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:orientation="horizontal"-->
-            <!--android:padding="8dp"-->
-            <!--android:weightSum="3">-->
-
-            <!--<TextView-->
-            <!--android:textColor="@color/colorSecondaryText"-->
-            <!--android:id="@+id/type"-->
-            <!--android:layout_width="0dp"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_weight="1"-->
-            <!--android:drawableTop="@drawable/ic_music_note_black_24dp"-->
-            <!--android:gravity="center"-->
-            <!--android:text="Type" />-->
-
-            <!--<TextView-->
-            <!--android:textColor="@color/colorSecondaryText"-->
-            <!--android:id="@+id/views"-->
-            <!--android:layout_width="0dp"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_weight="1"-->
-            <!--android:drawableTop="@drawable/ic_visibility_black_24dp"-->
-            <!--android:gravity="center"-->
-            <!--android:text="150000" />-->
-
-            <!--<TextView-->
-            <!--android:textColor="@color/colorSecondaryText"-->
-            <!--android:id="@+id/rating"-->
-            <!--android:layout_width="0dp"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_weight="1"-->
-            <!--android:drawableTop="@drawable/ic_star_black_24dp"-->
-            <!--android:gravity="center"-->
-            <!--android:text="1500" />-->
-
-            <!--</LinearLayout>-->
-            <!--<TextView-->
-                <!--android:maxLines="1"-->
-            <!--android:textColor="@color/colorSecondaryText"-->
-            <!--android:id="@+id/authorName"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:paddingLeft="16dp"-->
-            <!--android:paddingBottom="8dp"-->
-            <!--android:paddingTop="8dp"-->
-            <!--android:paddingEnd="8dp"-->
-            <!--android:text="by Hamza" />-->
-        <!--</LinearLayout>-->
-
         <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+<ImageView
+    android:id="@+id/imageView"
+    android:scaleType="centerCrop"
+    android:src="@drawable/tom_sawyer_librivox"
+    android:layout_width="150dp"
+    android:layout_height="150dp" />
+            <TextView
+            android:id="@+id/title"
+            android:maxLines="1"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:paddingBottom="16dp"
+            android:paddingLeft="16dp"
+            android:paddingTop="16dp"
+            android:text="The Adventures of Tom Sawyer "
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="14sp" />
+            <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:weightSum="3">
 
-            <ImageView
-                android:id="@+id/imageView"
-                android:layout_width="150dp"
-                android:layout_height="200dp"
-                android:scaleType="centerCrop"
+            <TextView
+            android:textColor="@color/colorSecondaryText"
+            android:id="@+id/type"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/ic_music_note_black_24dp"
+            android:gravity="center"
+            android:text="Type" />
 
-                app:srcCompat="@drawable/tom_sawyer_librivox" />
+            <TextView
+            android:textColor="@color/colorSecondaryText"
+            android:id="@+id/views"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/ic_visibility_black_24dp"
+            android:gravity="center"
+            android:text="150000" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+            <TextView
+            android:textColor="@color/colorSecondaryText"
+            android:id="@+id/rating"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/ic_star_black_24dp"
+            android:gravity="center"
+            android:text="1500" />
 
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/title"
-                    android:maxLines="2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="16dp"
-                    android:paddingLeft="16dp"
-                    android:paddingTop="24dp"
-                    android:text="The Adventures of Tom Sawyer "
-                    android:textColor="@color/colorPrimaryText"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:textColor="@color/colorSecondaryText"
-                    android:id="@+id/authorName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="16dp"
-                    android:paddingBottom="8dp"
-                    android:paddingTop="8dp"
-                    android:paddingEnd="8dp"
-                    android:text="by Hamza" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="8dp"
-                    android:weightSum="3">
-
-                    <TextView
-                        android:textColor="@color/colorSecondaryText"
-                        android:id="@+id/type"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:drawableTop="@drawable/ic_music_note_black_24dp"
-                        android:gravity="center"
-                        android:text="Type" />
-
-                    <TextView
-                        android:textColor="@color/colorSecondaryText"
-                        android:id="@+id/views"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:drawableTop="@drawable/ic_visibility_black_24dp"
-                        android:gravity="center"
-                        android:text="150000" />
-
-                    <TextView
-                        android:textColor="@color/colorSecondaryText"
-                        android:id="@+id/rating"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:drawableTop="@drawable/ic_star_black_24dp"
-                        android:gravity="center"
-                        android:text="1500" />
-                </LinearLayout>
             </LinearLayout>
+            <TextView
+                android:visibility="gone"
+            android:textColor="@color/colorSecondaryText"
+            android:id="@+id/authorName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="16dp"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="8dp"
+             />
         </LinearLayout>
+
+        <!--<LinearLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:orientation="horizontal">-->
+
+            <!--<ImageView-->
+                <!--android:id="@+id/imageView"-->
+                <!--android:layout_width="150dp"-->
+                <!--android:layout_height="200dp"-->
+                <!--android:scaleType="centerCrop"-->
+
+                <!--app:srcCompat="@drawable/tom_sawyer_librivox" />-->
+
+            <!--<LinearLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent"-->
+
+                <!--android:orientation="vertical">-->
+
+                <!--<TextView-->
+                    <!--android:id="@+id/title"-->
+                    <!--android:maxLines="2"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:paddingBottom="16dp"-->
+                    <!--android:paddingLeft="16dp"-->
+                    <!--android:paddingTop="24dp"-->
+                    <!--android:text="The Adventures of Tom Sawyer "-->
+                    <!--android:textColor="@color/colorPrimaryText"-->
+                    <!--android:textSize="14sp" />-->
+
+                <!--<TextView-->
+                    <!--android:textColor="@color/colorSecondaryText"-->
+                    <!--android:id="@+id/authorName"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:paddingLeft="16dp"-->
+                    <!--android:paddingBottom="8dp"-->
+                    <!--android:paddingTop="8dp"-->
+                    <!--android:paddingEnd="8dp"-->
+                    <!--android:text="by Hamza" />-->
+
+                <!--<LinearLayout-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:orientation="horizontal"-->
+                    <!--android:padding="8dp"-->
+                    <!--android:weightSum="3">-->
+
+                    <!--<TextView-->
+                        <!--android:textColor="@color/colorSecondaryText"-->
+                        <!--android:id="@+id/type"-->
+                        <!--android:layout_width="0dp"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_weight="1"-->
+                        <!--android:drawableTop="@drawable/ic_music_note_black_24dp"-->
+                        <!--android:gravity="center"-->
+                        <!--android:text="Type" />-->
+
+                    <!--<TextView-->
+                        <!--android:textColor="@color/colorSecondaryText"-->
+                        <!--android:id="@+id/views"-->
+                        <!--android:layout_width="0dp"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_weight="1"-->
+                        <!--android:drawableTop="@drawable/ic_visibility_black_24dp"-->
+                        <!--android:gravity="center"-->
+                        <!--android:text="150000" />-->
+
+                    <!--<TextView-->
+                        <!--android:textColor="@color/colorSecondaryText"-->
+                        <!--android:id="@+id/rating"-->
+                        <!--android:layout_width="0dp"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_weight="1"-->
+                        <!--android:drawableTop="@drawable/ic_star_black_24dp"-->
+                        <!--android:gravity="center"-->
+                        <!--android:text="1500" />-->
+                <!--</LinearLayout>-->
+            <!--</LinearLayout>-->
+        <!--</LinearLayout>-->
 
     </android.support.v7.widget.CardView>
 </LinearLayout>

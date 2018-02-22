@@ -118,7 +118,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
         viewHolder.getTextViewTitle().setText(mDataSet.get(position).getTitle());
         viewHolder.getTextViewRatingCount().setText(mDataSet.get(position).getAvg_rating());
         viewHolder.getTextViewMediaType().setText(mDataSet.get(position).getMediatype());
-        viewHolder.getTextViewAuthor().setText("by: "+mDataSet.get(position).getPublisher());
+        //viewHolder.getTextViewAuthor().setText("by: "+mDataSet.get(position).getPublisher());
         viewHolder.getTextViewViewCount().setText(mDataSet.get(position).getDownloads());
         Picasso.with(viewHolder.getContext()).load(Util.INSTANCE.toImageURI(mDataSet.get(position).getIdentifier())).into(viewHolder.getImageView());
     }
