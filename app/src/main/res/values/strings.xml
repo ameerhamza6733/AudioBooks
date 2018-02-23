@@ -7,4 +7,10 @@
 
     <string name="hint_add_shopping_list">Search Book</string>
     <string name="positive_button_create">Search</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
 </resources>

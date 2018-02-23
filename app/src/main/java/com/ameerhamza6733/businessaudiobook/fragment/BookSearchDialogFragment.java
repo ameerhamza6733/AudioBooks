@@ -1,8 +1,7 @@
-package com.ameerhamza6733.businessaudiobook;
+package com.ameerhamza6733.businessaudiobook.fragment;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -14,6 +13,8 @@ import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.ameerhamza6733.businessaudiobook.R;
 
 /**
  * Created by AmeerHamza on 2/15/2018.

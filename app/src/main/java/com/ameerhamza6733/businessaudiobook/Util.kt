@@ -13,8 +13,13 @@ import kotlin.collections.ArrayList
 
 object Util {
 
-    val CONN_URL = "https://archive.org/advancedsearch.php?q=subject%3A%22librivox%22+AND+mediatype%3Aaudio&fl[]=avg_rating&fl[]=publisher&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=num_reviews&fl[]=title&sort[]=&sort[]=&sort[]=&rows=50&page=1&output=json&callback=callback&save=yes"
+    val LIBRIVOX_URL = "https://archive.org/advancedsearch.php?q=subject%3A%22librivox%22+AND+mediatype%3Aaudio&fl[]=avg_rating&fl[]=publisher&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=num_reviews&fl[]=title&sort[]=&sort[]=&sort[]=&rows=1000&page=1&output=json&callback=callback&save=yes"
+    val literature_URL = "https://archive.org/advancedsearch.php?q=subject%3A%22literature%22+AND+mediatype%3Aaudio&fl[]=avg_rating&fl[]=publisher&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=num_reviews&fl[]=title&sort[]=&sort[]=&sort[]=&rows=1000&page=1&output=json&callback=callback&save=yes"
+    val poetry_URL = "https://archive.org/advancedsearch.php?q=subject%3A%22poetry%22+AND+mediatype%3Aaudio&fl[]=avg_rating&fl[]=publisher&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=num_reviews&fl[]=title&sort[]=&sort[]=&sort[]=&rows=50&page=1&output=json&callback=callback&save=yes"
+    val fiction_URL = "https://archive.org/advancedsearch.php?q=subject%3A%22fiction%22+AND+mediatype%3Aaudio&fl[]=avg_rating&fl[]=publisher&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=num_reviews&fl[]=title&sort[]=&sort[]=&sort[]=&rows=50&page=1&output=json&callback=callback&save=yes"
+
     val dahszil_URL = "https://archive.org/advancedsearch.php?q=collection%3A%22audio_bookspoetry%22+AND+mediatype%3Aaudio&fl[]=avg_rating&fl[]=publisher&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=num_reviews&fl[]=title&sort[]=-downloads&sort[]=&sort[]=&rows=50&page=1&output=json&callback=callback&save=yes"
+    val gaboora_URL = "https://archive.org/advancedsearch.php?q=collection%3A%22audio_bookspoetry%22+AND+mediatype%3Aaudio&fl[]=avg_rating&fl[]=publisher&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=num_reviews&fl[]=title&sort[]=-downloads&sort[]=&sort[]=&rows=50&page=1&output=json&callback=callback&save=yes"
 
     val CONN_META_DATA_URL="https://archive.org/metadata/moby_dick_librivox"
     @Throws(JSONException::class)
@@ -81,7 +86,7 @@ object Util {
 
     fun ExtractPublisher(jsonObject: JSONObject):String{
         return try {
-            Log.d("ExtractPublisher","json:  "+jsonObject.toString());
+           // Log.d("ExtractPublisher","json:  "+jsonObject.toString());
             jsonObject.getString("publisher")
         } catch (e: Exception) {
             "N/A"

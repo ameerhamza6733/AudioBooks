@@ -3,7 +3,7 @@
     package="com.ameerhamza6733.businessaudiobook">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:allowBackup="true"
@@ -12,23 +12,30 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activitys.MainActivity">
+        <activity android:name=".activitys.DetailActivity" />
+        <activity
+            android:name=".mediaPlayer.playerActivty"
+            android:screenOrientation="landscape" />
+
+        <service android:name=".mediaPlayer.PlayerForegroundService" />
+
+        <receiver android:name=".mediaPlayer.NotificationHelper$myNotificationCloseButtonHandler" />
+        <receiver android:name=".mediaPlayer.NotificationHelper$NotificationFastForwardButtonHandler" />
+        <receiver android:name=".mediaPlayer.NotificationHelper$NotificationFastRewindButtonHandler" />
+        <receiver android:name=".mediaPlayer.NotificationHelper$NotificationPlayOrPauseButtonHandler" />
+        <receiver android:name=".mediaPlayer.PlayerForegroundService$StartPlayerActivtyBrodcastReciver" />
+
+        <activity
+            android:name=".activitys.MainActivity"
+            android:label="@string/title_activity_main"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activitys.DetailActivity" />
-        <activity android:name=".mediaPlayer.playerActivty"
-            android:screenOrientation="landscape"/>
-       <service android:name=".mediaPlayer.PlayerForegroundService"/>
-        <receiver android:name=".mediaPlayer.NotificationHelper$myNotificationCloseButtonHandler"/>
-        <receiver android:name=".mediaPlayer.NotificationHelper$NotificationFastForwardButtonHandler"/>
-        <receiver android:name=".mediaPlayer.NotificationHelper$NotificationFastRewindButtonHandler"/>
-        <receiver android:name=".mediaPlayer.NotificationHelper$NotificationPlayOrPauseButtonHandler"/>
-        <receiver android:name=".mediaPlayer.PlayerForegroundService$StartPlayerActivtyBrodcastReciver"/>
-
+        <activity android:name=".activitys.feedbackActivity"></activity>
     </application>
 
 </manifest>

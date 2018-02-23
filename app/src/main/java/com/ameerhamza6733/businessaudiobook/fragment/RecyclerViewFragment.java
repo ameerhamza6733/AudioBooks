@@ -19,7 +19,6 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.ameerhamza6733.businessaudiobook.BookSearchDialogFragment;
 import com.ameerhamza6733.businessaudiobook.Util;
 import com.ameerhamza6733.businessaudiobook.activitys.MainActivity;
 import com.ameerhamza6733.businessaudiobook.adupters.CustomAdapter;
@@ -37,9 +36,9 @@ public class RecyclerViewFragment extends Fragment  implements MainActivity.onRe
     private static final String KEY_LAYOUT_MANAGER = "layoutManager";
 
     @Override
-    public void onQueryRecived(String query) {
+    public void onNewBookCatugury(String query) {
         Log.d(TAG,"query: "+query);
-        initDatasetForPoetry(Util.INSTANCE.quraryBuilder(query));
+        initDatasetForPoetry(query);
 
     }
 
@@ -97,7 +96,7 @@ public class RecyclerViewFragment extends Fragment  implements MainActivity.onRe
             DialogFragment bookSearchDialogFragment=BookSearchDialogFragment.newInstance();
             bookSearchDialogFragment.show(getFragmentManager(),"bookSearchDialogFragment");
         });
-        initDatasetForPoetry(Util.INSTANCE.getCONN_URL());
+        initDatasetForPoetry(Util.INSTANCE.getLIBRIVOX_URL());
 
 
         return rootView;

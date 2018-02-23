@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+
+    <group android:checkableBehavior="all">
+        <item
+            android:id="@+id/nav_librivox"
+            android:title="librivox" />
+
+        <item
+            android:id="@+id/nav_literature"
+            android:title="literature" />
+        <item
+            android:id="@+id/poetry"
+            android:title="poetry" />
+        <item
+            android:id="@+id/nav_fiction"
+            android:title="fiction" />
+    </group>
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_send_feedback"
+            android:title="Send Us Feedback" />
+
+
+    </group>
+</menu>
