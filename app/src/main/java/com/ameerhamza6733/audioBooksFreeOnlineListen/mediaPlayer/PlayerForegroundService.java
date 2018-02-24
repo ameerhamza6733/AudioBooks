@@ -57,10 +57,10 @@ public class PlayerForegroundService extends Service implements Player.EventList
     protected final static String START_ACTIVITY_BROAD_CAST ="START_ACTIVITY_BROAD_CAST";
 
 
-    protected String uri;
+    protected  static String uri;
     private Boolean isPlaying;
-    private SimpleExoPlayer player;
-    private String title;
+    private static SimpleExoPlayer player;
+    private static String title;
     private long seekto=0;
     private StartPlayerActivtyBrodcastReciver activtyBrodcastReciver;
 
@@ -269,7 +269,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
 
 
     //this will start activity with resume media player  if user click on notification
-    public  class StartPlayerActivtyBrodcastReciver extends BroadcastReceiver {
+    public static    class StartPlayerActivtyBrodcastReciver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
@@ -282,7 +282,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
                     intent1.putExtra(playerActivty.EXTRA_PLAYER_URI,uri);
                     intent1.putExtra(playerActivty.EXTRA_TITLE,title);
                     intent1.putExtra(playerActivty.EXTRA_SEEK_TO,player.getContentPosition());
-                    startActivity(intent1);
+                   context. startActivity(intent1);
 
                     //stop this service
                     Intent startIntent = new Intent(context, PlayerForegroundService.class);
