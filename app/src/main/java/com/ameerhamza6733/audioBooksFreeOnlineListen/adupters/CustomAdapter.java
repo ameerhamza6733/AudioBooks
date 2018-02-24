@@ -1,4 +1,4 @@
-package com.ameerhamza6733.businessaudiobook.adupters;
+package com.ameerhamza6733.audioBooksFreeOnlineListen.adupters;
 
 /**
  * Created by AmeerHamza on 2/8/2018.
@@ -14,10 +14,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.ameerhamza6733.businessaudiobook.models.AudioBook;
-import com.ameerhamza6733.businessaudiobook.activitys.DetailActivity;
-import com.ameerhamza6733.businessaudiobook.R;
-import com.ameerhamza6733.businessaudiobook.Util;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.models.AudioBook;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.DetailActivity;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.Util;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;

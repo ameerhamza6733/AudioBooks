@@ -1,9 +1,9 @@
-package com.ameerhamza6733.businessaudiobook.activitys;
+package com.ameerhamza6733.audioBooksFreeOnlineListen.activitys;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.ameerhamza6733.businessaudiobook.R;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
 
 import com.webianks.easy_feedback.EasyFeedback;
 

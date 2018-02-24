@@ -1,18 +1,12 @@
-package com.ameerhamza6733.businessaudiobook.mediaPlayer;
+package com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer;
 
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.net.Uri;
-import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
 
-import com.ameerhamza6733.businessaudiobook.R;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
@@ -31,7 +25,7 @@ import com.google.android.exoplayer2.upstream.TransferListener;
 import com.google.android.exoplayer2.util.Util;
 
 
-import static com.ameerhamza6733.businessaudiobook.mediaPlayer.PlayerForegroundService.EXTRA_URI;
+import static com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService.EXTRA_URI;
 
 public class playerActivty extends AppCompatActivity {
 

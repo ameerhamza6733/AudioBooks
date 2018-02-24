@@ -1,4 +1,4 @@
-package com.ameerhamza6733.businessaudiobook.mediaPlayer;
+package com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -15,8 +15,8 @@ import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
-import com.ameerhamza6733.businessaudiobook.R;
-import com.ameerhamza6733.businessaudiobook.Util;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.Util;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -34,7 +34,7 @@ import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 
-import static com.ameerhamza6733.businessaudiobook.activitys.DetailActivity.TAG;
+import static com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.DetailActivity.TAG;
 
 /**
  * Created by AmeerHamza on 2/11/2018.

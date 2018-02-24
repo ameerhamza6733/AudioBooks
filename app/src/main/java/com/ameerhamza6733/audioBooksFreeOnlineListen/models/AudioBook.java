@@ -1,4 +1,4 @@
-package com.ameerhamza6733.businessaudiobook.models;
+package com.ameerhamza6733.audioBooksFreeOnlineListen.models;
 
 /**
  * Created by AmeerHamza on 2/8/2018.

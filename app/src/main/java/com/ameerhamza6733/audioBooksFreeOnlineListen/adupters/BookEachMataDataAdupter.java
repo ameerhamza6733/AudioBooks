@@ -1,4 +1,4 @@
-package com.ameerhamza6733.businessaudiobook.adupters;
+package com.ameerhamza6733.audioBooksFreeOnlineListen.adupters;
 
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
@@ -8,10 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.ameerhamza6733.businessaudiobook.Util;
-import com.ameerhamza6733.businessaudiobook.mediaPlayer.playerActivty;
-import com.ameerhamza6733.businessaudiobook.models.MataData;
-import com.ameerhamza6733.businessaudiobook.R;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.Util;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.playerActivty;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.models.MataData;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
 
 import java.util.List;
 

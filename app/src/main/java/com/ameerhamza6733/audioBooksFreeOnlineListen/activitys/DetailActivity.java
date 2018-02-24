@@ -1,13 +1,12 @@
-package com.ameerhamza6733.businessaudiobook.activitys;
+package com.ameerhamza6733.audioBooksFreeOnlineListen.activitys;
 
 import android.content.Intent;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.ameerhamza6733.businessaudiobook.R;
-import com.ameerhamza6733.businessaudiobook.fragment.BookMetaDataRecylerView;
-import com.ameerhamza6733.businessaudiobook.fragment.RecyclerViewFragment;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.BookMetaDataRecylerView;
 
 public class DetailActivity extends AppCompatActivity {
     public static final String EXTRA_IDENTEFIER_NAME="EXTRA_IDENTEFIER_NAME";

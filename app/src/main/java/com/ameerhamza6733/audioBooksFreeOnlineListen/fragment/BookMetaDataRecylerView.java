@@ -1,4 +1,4 @@
-package com.ameerhamza6733.businessaudiobook.fragment;
+package com.ameerhamza6733.audioBooksFreeOnlineListen.fragment;
 
 
 import android.arch.lifecycle.ViewModelProviders;
@@ -11,10 +11,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
-import com.ameerhamza6733.businessaudiobook.R;
-import com.ameerhamza6733.businessaudiobook.Util;
-import com.ameerhamza6733.businessaudiobook.adupters.BookEachMataDataAdupter;
-import com.ameerhamza6733.businessaudiobook.viewModels.MetaDataViewModel;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.Util;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.BookEachMataDataAdupter;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.viewModels.MetaDataViewModel;
 import com.android.volley.toolbox.Volley;
 
 /**

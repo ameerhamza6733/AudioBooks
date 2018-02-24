@@ -4,6 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.ameerhamza6733.businessaudiobook.activitys.feedbackActivity">
+    tools:context="com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.feedbackActivity">
 
 </android.support.constraint.ConstraintLayout>

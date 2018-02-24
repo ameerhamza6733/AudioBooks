@@ -18,12 +18,53 @@
         <item
             android:id="@+id/nav_fiction"
             android:title="fiction" />
+        <item
+            android:id="@+id/nav_Community_Audio"
+            android:title="Community Audio" />
+        <item
+            android:id="@+id/nav_philosophy"
+            android:title="philosophy" />
+        <item
+            android:id="@+id/nav_children"
+            android:title="children" />
+        <item
+            android:id="@+id/nav_plato"
+            android:title="plato" />
+        <item
+            android:id="@+id/nav_romance"
+            android:title="romance" />
+        <item
+            android:id="@+id/nav_history"
+            android:title="history" />
+        <item
+            android:id="@+id/nav_nature"
+            android:title="nature" />
+        <item
+            android:id="@+id/nav_humor"
+            android:title="humor" />
+        <item
+            android:id="@+id/nav_mystery"
+            android:title="mystery" />
+        <item
+            android:id="@+id/nav_poem"
+            android:title="poem" />
+        <item
+            android:id="@+id/nav_animals"
+            android:title="animals" />
+        <item
+            android:id="@+id/nav_novel"
+            android:title="novel" />
+
+
     </group>
     <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_send_feedback"
-            android:title="Send Us Feedback" />
+        <item android:title="Extra">
+            <menu>
+                <item
+                    android:id="@+id/nav_send_feedback"
+                    android:title="Send Us Feedback" />
 
-
+            </menu>
+        </item>
     </group>
 </menu>

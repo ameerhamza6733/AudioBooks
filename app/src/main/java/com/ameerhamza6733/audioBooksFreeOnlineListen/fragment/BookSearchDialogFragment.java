@@ -1,4 +1,4 @@
-package com.ameerhamza6733.businessaudiobook.fragment;
+package com.ameerhamza6733.audioBooksFreeOnlineListen.fragment;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -14,7 +14,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.ameerhamza6733.businessaudiobook.R;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
 
 /**
  * Created by AmeerHamza on 2/15/2018.

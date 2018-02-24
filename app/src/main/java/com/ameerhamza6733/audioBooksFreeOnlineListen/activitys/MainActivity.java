@@ -1,10 +1,11 @@
-package com.ameerhamza6733.businessaudiobook.activitys;
+package com.ameerhamza6733.audioBooksFreeOnlineListen.activitys;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -14,12 +15,11 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
-import com.ameerhamza6733.businessaudiobook.R;
-import com.ameerhamza6733.businessaudiobook.Util;
-import com.ameerhamza6733.businessaudiobook.fragment.BookSearchDialogFragment;
-import com.ameerhamza6733.businessaudiobook.fragment.RecyclerViewFragment;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.Util;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.BookSearchDialogFragment;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.RecyclerViewFragment;
 
 
 public class MainActivity extends AppCompatActivity
@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -78,7 +79,26 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_rate_me) {
+            Uri uri = Uri.parse("market://details?id=" + this.getPackageName());
+            Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
+            // To count with Play market backstack, After pressing back button,
+            // to taken back to our application, we need to add following flags to intent.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
+                        Intent.FLAG_ACTIVITY_NEW_DOCUMENT |
+                        Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+            }else {
+                goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
+                        Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET |
+                        Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+            }
+            try {
+                startActivity(goToMarket);
+            } catch (ActivityNotFoundException e) {
+                startActivity(new Intent(Intent.ACTION_VIEW,
+                        Uri.parse("http://play.google.com/store/apps/details?id=" + this.getPackageName())));
+            }
             return true;
         }
 
@@ -100,8 +120,32 @@ public class MainActivity extends AppCompatActivity
             reciveQuery.onNewBookCatugury(Util.INSTANCE.getLIBRIVOX_URL());
         } else if (id == R.id.nav_fiction) {
             reciveQuery.onNewBookCatugury(Util.INSTANCE.getFiction_URL());
-        }else if (id == R.id.nav_literature){
+        } else if (id == R.id.nav_literature) {
             reciveQuery.onNewBookCatugury(Util.INSTANCE.getLiterature_URL());
+        } else if (id == R.id.nav_Community_Audio) {
+            reciveQuery.onNewBookCatugury(Util.INSTANCE.getCommunity_Audio_URL());
+        } else if (id == R.id.nav_philosophy) {
+            reciveQuery.onNewBookCatugury(Util.INSTANCE.getPhilosophy_URL());
+        } else if (id == R.id.nav_children) {
+            reciveQuery.onNewBookCatugury(Util.INSTANCE.getChildren_URL());
+        } else if (id == R.id.nav_plato) {
+            reciveQuery.onNewBookCatugury(Util.INSTANCE.getPlato_URL());
+        } else if (id == R.id.nav_romance) {
+            reciveQuery.onNewBookCatugury(Util.INSTANCE.getRomance_URL());
+        } else if (id == R.id.nav_history) {
+            reciveQuery.onNewBookCatugury(Util.INSTANCE.getHistory_URL());
+        } else if (id == R.id.nav_nature) {
+            reciveQuery.onNewBookCatugury(Util.INSTANCE.getNature_URL());
+        } else if (id == R.id.nav_humor) {
+            reciveQuery.onNewBookCatugury(Util.INSTANCE.getHumor_URL());
+        } else if (id == R.id.nav_mystery) {
+            reciveQuery.onNewBookCatugury(Util.INSTANCE.getMystery_URL());
+        } else if (id == R.id.nav_poem) {
+            reciveQuery.onNewBookCatugury(Util.INSTANCE.getPoem_URL());
+        } else if (id == R.id.nav_animals) {
+            reciveQuery.onNewBookCatugury(Util.INSTANCE.getAnimals_URL());
+        } else if (id == R.id.nav_novel) {
+            reciveQuery.onNewBookCatugury(Util.INSTANCE.getNovel_URL());
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
