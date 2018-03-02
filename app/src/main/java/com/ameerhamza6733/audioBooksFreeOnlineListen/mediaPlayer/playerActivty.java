@@ -31,7 +31,7 @@ public class playerActivty extends AppCompatActivity {
 
     public static final String EXTRA_PLAYER_URI = "EXTRA_PLAYER_URI";
     public static final String EXTRA_TITLE = "EXTRA_TITLE";
-    public static final String EXTRA_SEEK_TO="EXTRA_SEEK_TO";
+    public static final String EXTRA_SEEK_TO = "EXTRA_SEEK_TO";
     private String TAG = "playerActivty";
 
     private SimpleExoPlayerView simpleExoPlayerView;
@@ -48,19 +48,21 @@ public class playerActivty extends AppCompatActivity {
     private long playBack;
 
 
-
-
     private ImageView ivHideControllerButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player_activty);
-
+        //stop service if already runing
+        Intent startIntent = new Intent(playerActivty.this, PlayerForegroundService.class);
+        startIntent.putExtra(EXTRA_URI, url);
+        startIntent.setAction(PlayerForegroundService.STOP_ACTION);
+        startService(startIntent);
         if (getIntent() != null) {
             url = getIntent().getStringExtra(playerActivty.EXTRA_PLAYER_URI);
-            audioTitle=getIntent().getStringExtra(playerActivty.EXTRA_TITLE);
-            playBack=getIntent().getLongExtra(playerActivty.EXTRA_SEEK_TO,0);
+            audioTitle = getIntent().getStringExtra(playerActivty.EXTRA_TITLE);
+            playBack = getIntent().getLongExtra(playerActivty.EXTRA_SEEK_TO, 0);
         }
         try {
             getSupportActionBar().hide();
