@@ -1,10 +1,17 @@
 package com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer;
 
+import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.net.Uri;
+import android.speech.RecognizerIntent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -25,6 +32,9 @@ import com.google.android.exoplayer2.upstream.TransferListener;
 import com.google.android.exoplayer2.util.Util;
 
 
+import java.util.List;
+import java.util.Locale;
+
 import static com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService.EXTRA_URI;
 
 public class playerActivty extends AppCompatActivity {
@@ -33,7 +43,7 @@ public class playerActivty extends AppCompatActivity {
     public static final String EXTRA_TITLE = "EXTRA_TITLE";
     public static final String EXTRA_SEEK_TO = "EXTRA_SEEK_TO";
     private String TAG = "playerActivty";
-
+    private final int REQ_CODE_SPEECH_INPUT = 100;
     private SimpleExoPlayerView simpleExoPlayerView;
     private SimpleExoPlayer player;
 
@@ -59,11 +69,29 @@ public class playerActivty extends AppCompatActivity {
         startIntent.putExtra(EXTRA_URI, url);
         startIntent.setAction(PlayerForegroundService.STOP_ACTION);
         startService(startIntent);
+        AudioManager m_audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        m_audioManager.setSpeakerphoneOn(true);
         if (getIntent() != null) {
             url = getIntent().getStringExtra(playerActivty.EXTRA_PLAYER_URI);
             audioTitle = getIntent().getStringExtra(playerActivty.EXTRA_TITLE);
             playBack = getIntent().getLongExtra(playerActivty.EXTRA_SEEK_TO, 0);
         }
+        findViewById(R.id.startSpeach).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                        RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+                intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
+                        "startr");
+                try {
+                    startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
+                } catch (ActivityNotFoundException a) {
+
+                }
+            }
+        });
         try {
             getSupportActionBar().hide();
 
@@ -157,5 +185,24 @@ public class playerActivty extends AppCompatActivity {
         if (Util.SDK_INT > 23) {
             releasePlayer();
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case REQ_CODE_SPEECH_INPUT: {
+                if (resultCode == RESULT_OK && null != data) {
+                  List<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                  for (String s : result){
+                      Log.d(TAG,"res"+s);
+                  }
+                }
+                break;
+            }
+        }
+
+//        add();
+//        display();
     }
 }

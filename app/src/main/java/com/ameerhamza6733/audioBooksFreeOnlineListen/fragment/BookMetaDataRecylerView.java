@@ -4,6 +4,7 @@ package com.ameerhamza6733.audioBooksFreeOnlineListen.fragment;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -61,7 +62,7 @@ public class BookMetaDataRecylerView extends Fragment {
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView_poetry);
         progressBar = rootView.findViewById(R.id.progressBar);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         if (getArguments() != null) {
             identifier= getArguments().getString(ARG_IDENTIFIER);
             intiDataSet();

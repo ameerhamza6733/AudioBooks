@@ -55,6 +55,7 @@ public class MetaDataViewModel extends ViewModel {
                     if (docs.getString("source").equalsIgnoreCase("original") && Util.INSTANCE.isSuppotedFormate( docs.getString("name"))) {
                        // Log.d(TAG, "name: " + docs.getString("name"));
                         MataData mataData= new MataData(docs.getString("name"),Long.parseLong(docs.getString("size")),Util.INSTANCE.toDownloadAbleFileUri(docs.getString("name"),identifier));
+
                         audioFileList.add(mataData);
                     }
                 }
