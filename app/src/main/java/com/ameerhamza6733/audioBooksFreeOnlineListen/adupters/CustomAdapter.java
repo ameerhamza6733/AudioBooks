@@ -6,6 +6,7 @@ package com.ameerhamza6733.audioBooksFreeOnlineListen.adupters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,7 +19,10 @@ import com.ameerhamza6733.audioBooksFreeOnlineListen.models.AudioBook;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.DetailActivity;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.Util;
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
+
 
 import java.util.List;
 
@@ -114,7 +118,6 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
-        Log.d(TAG, "Element " + position + " set.");
 
         // Get element from your dataset at this position and replace the contents of the view
         // with that element
@@ -123,7 +126,17 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
         viewHolder.getTextViewMediaType().setText(mDataSet.get(position).getMediatype());
         viewHolder.getTextViewAuthor().setText("source: librivox");
         viewHolder.getTextViewViewCount().setText(mDataSet.get(position).getDownloads());
-        Picasso.with(viewHolder.getContext()).load(Util.INSTANCE.toImageURI(mDataSet.get(position).getIdentifier())).into(viewHolder.getImageView());
+        Glide.with(viewHolder.getContext())
+                .asBitmap()
+                .load(Util.INSTANCE.toImageURI(mDataSet.get(position).getIdentifier()))
+                .into(new SimpleTarget<Bitmap>(150,150) {
+                    @Override
+                    public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
+
+                        viewHolder.getImageView().setImageBitmap(resource);
+                    }
+                });
+
     }
 
     // Return the size of your dataset (invoked by the layout manager)

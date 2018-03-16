@@ -16,6 +16,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -56,18 +57,18 @@ public class MainActivityViewModel extends ViewModel {
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject docs = jsonArray.getJSONObject(i);
                             if (docs.getString("identifier").toLowerCase().contains("librivox")) {
-                                audioBookList.add(new AudioBook(Util.INSTANCE.ExtractRating(docs), Util.INSTANCE.ExtractDescription(docs), Util.INSTANCE.ExtractNoOfDownloads(docs)
-                                        , docs.getString("identifier"), Util.INSTANCE.ExtractNoReviews(docs), docs.getString("title"), Util.INSTANCE.ExtractPublisher(docs), Util.INSTANCE.ExtractMediaType(docs)));
+                                audioBookList.add(new AudioBook(Util.INSTANCE.ExtractRating(docs), Util.INSTANCE.ExtractDescription(docs), Util.INSTANCE.ExtractNoOfDownloads(docs), docs.getString("identifier"), Util.INSTANCE.ExtractNoReviews(docs), docs.getString("title"), Util.INSTANCE.ExtractPublisher(docs), Util.INSTANCE.ExtractMediaType(docs)));
 
                             }
                         }
+                        Collections.shuffle(audioBookList);
 
                     } catch (Exception e) {
                         e.printStackTrace();
                         return null;
                     }
                     return audioBookList;
-                }).subscribeOn(Schedulers.io())
+                }).subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe((result) -> {
                             if (result != null) {

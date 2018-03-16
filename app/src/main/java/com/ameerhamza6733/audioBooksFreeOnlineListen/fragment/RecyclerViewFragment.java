@@ -19,10 +19,10 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.Util;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.MainActivity;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.CustomAdapter;
-import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.viewModels.MainActivityViewModel;
 import com.android.volley.toolbox.Volley;
 
@@ -30,35 +30,22 @@ import com.android.volley.toolbox.Volley;
  * Created by AmeerHamza on 2/8/2018.
  */
 
-public class RecyclerViewFragment extends Fragment  implements MainActivity.onReciveQuery  {
+public class RecyclerViewFragment extends Fragment implements MainActivity.onReciveQuery {
 
     private static final String TAG = "RecyclerViewFragment";
     private static final String KEY_LAYOUT_MANAGER = "layoutManager";
-
-    @Override
-    public void onNewBookCatugury(String query) {
-        Log.d(TAG,"query: "+query);
-        initDatasetForPoetry(query);
-
-    }
-
-
-    private enum LayoutManagerType {
-        GRID_LAYOUT_MANAGER,
-        LINEAR_LAYOUT_MANAGER
-    }
-
     protected LayoutManagerType mCurrentLayoutManagerType;
-
-
     protected RecyclerView mRecyclerViewPoetry;
-
-
-
     protected RecyclerView.LayoutManager mLayoutManager;
     protected ProgressBar progressBar;
     protected FloatingActionButton floatingActionButton;
 
+    @Override
+    public void onNewBookCatugury(String query) {
+        Log.d(TAG, "query: " + query);
+        initDatasetForPoetry(query);
+
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,13 +63,13 @@ public class RecyclerViewFragment extends Fragment  implements MainActivity.onRe
         mRecyclerViewPoetry = (RecyclerView) rootView.findViewById(R.id.recyclerView_poetry);
 
 
-        floatingActionButton= rootView.findViewById(R.id.fab);
+        floatingActionButton = rootView.findViewById(R.id.fab);
         progressBar = rootView.findViewById(R.id.progressBar);
 
         // LinearLayoutManager is used here, this will layout the elements in a similar fashion
         // to the way ListView would layout elements. The RecyclerView.LayoutManager defines how
         // elements are laid out.
-        mLayoutManager = new LinearLayoutManager(getActivity(),LinearLayoutManager.HORIZONTAL,false);
+        mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
 
         mCurrentLayoutManagerType = LayoutManagerType.GRID_LAYOUT_MANAGER;
 
@@ -93,8 +80,8 @@ public class RecyclerViewFragment extends Fragment  implements MainActivity.onRe
         }
         setRecyclerViewLayoutManager(mCurrentLayoutManagerType);
         floatingActionButton.setOnClickListener(v -> {
-            DialogFragment bookSearchDialogFragment=BookSearchDialogFragment.newInstance();
-            bookSearchDialogFragment.show(getFragmentManager(),"bookSearchDialogFragment");
+            DialogFragment bookSearchDialogFragment = BookSearchDialogFragment.newInstance();
+            bookSearchDialogFragment.show(getFragmentManager(), "bookSearchDialogFragment");
         });
         initDatasetForPoetry(Util.INSTANCE.getLIBRIVOX_URL());
 
@@ -109,7 +96,7 @@ public class RecyclerViewFragment extends Fragment  implements MainActivity.onRe
      */
     public void setRecyclerViewLayoutManager(LayoutManagerType layoutManagerType) {
         int scrollPosition = 0;
-        int scrollPostionDahzial=0;
+        int scrollPostionDahzial = 0;
 
         // If a layout manager has already been set, get current scroll position.
         if (mRecyclerViewPoetry.getLayoutManager() != null) {
@@ -124,11 +111,11 @@ public class RecyclerViewFragment extends Fragment  implements MainActivity.onRe
                 mCurrentLayoutManagerType = LayoutManagerType.GRID_LAYOUT_MANAGER;
                 break;
             case LINEAR_LAYOUT_MANAGER:
-                mLayoutManager = new LinearLayoutManager(getActivity(),LinearLayoutManager.HORIZONTAL,false);
+                mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
                 mCurrentLayoutManagerType = LayoutManagerType.LINEAR_LAYOUT_MANAGER;
                 break;
             default:
-                mLayoutManager = new LinearLayoutManager(getActivity(),LinearLayoutManager.HORIZONTAL,false);
+                mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
                 mCurrentLayoutManagerType = LayoutManagerType.LINEAR_LAYOUT_MANAGER;
         }
 
@@ -149,24 +136,19 @@ public class RecyclerViewFragment extends Fragment  implements MainActivity.onRe
         inflater.inflate(R.menu.menu_search, menu);
     }
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // handle item selection
         switch (item.getItemId()) {
             case R.id.action_search:
-                Log.d(TAG,"search iteam clicked");
-                DialogFragment bookSearchDialogFragment=BookSearchDialogFragment.newInstance();
-                bookSearchDialogFragment.show(getFragmentManager(),"bookSearchDialogFragment");
+                Log.d(TAG, "search iteam clicked");
+                DialogFragment bookSearchDialogFragment = BookSearchDialogFragment.newInstance();
+                bookSearchDialogFragment.show(getFragmentManager(), "bookSearchDialogFragment");
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
-
-
-
-
 
     /**
      * Generates Strings for RecyclerView's adapter. This data would usually come
@@ -179,15 +161,25 @@ public class RecyclerViewFragment extends Fragment  implements MainActivity.onRe
         model.loadData(Volley.newRequestQueue(getActivity()), url).observe(this, updatedAudioBookList -> {
             // update UI
             if (updatedAudioBookList != null) {
-                Log.d(TAG,"initDatasetForPoetry");
                 progressBar.setVisibility(View.GONE);
-               CustomAdapter mAdapter = new CustomAdapter(updatedAudioBookList);
-                mRecyclerViewPoetry.setAdapter(mAdapter);
+                if (updatedAudioBookList.size() == 0) {
+                    Toast.makeText(getActivity(),"No results matched your criteria.",Toast.LENGTH_LONG).show();
+                } else {
+                    CustomAdapter mAdapter = new CustomAdapter(updatedAudioBookList);
+                    mRecyclerViewPoetry.setAdapter(mAdapter);
+                }
+
             } else {
                 progressBar.setVisibility(View.GONE);
                 Toast.makeText(getActivity(), "Try again: ", Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+
+    private enum LayoutManagerType {
+        GRID_LAYOUT_MANAGER,
+        LINEAR_LAYOUT_MANAGER
     }
 //    private void initDatasetForDahzil (String url) {
 //        progressBar.setVisibility(View.VISIBLE);

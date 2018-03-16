@@ -19,8 +19,8 @@
                 android:id="@+id/imageView"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/tom_sawyer_librivox" />
+
+                />
 
             <TextView
                 android:id="@+id/title"
