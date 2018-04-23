@@ -47,6 +47,7 @@ dependencies {
     compile 'com.google.android.exoplayer:exoplayer:2.6.0'
     compile 'com.webianks.library:easy-feedback:1.0.2'
     implementation 'com.android.support:design:27.0.2'
+    implementation 'com.google.code.gson:gson:2.8.2'
 }
 repositories {
     mavenCentral()

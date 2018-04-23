@@ -1,10 +1,15 @@
 package com.ameerhamza6733.audioBooksFreeOnlineListen.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.Serializable;
+
 /**
  * Created by AmeerHamza on 2/8/2018.
  */
 
-public class AudioBook {
+public class AudioBook implements Serializable{
     private String avg_rating;
     private String description;
     private String downloads;
@@ -12,9 +17,10 @@ public class AudioBook {
     private String num_reviews;
     private String title;
     private String publisher;
+    private String creator;
     private String mediatype;
 
-    public AudioBook(String avg_rating, String description, String downloads, String identifier, String num_reviews, String title,String publisher,String mediatype) {
+    public AudioBook(String avg_rating, String description, String downloads, String identifier, String num_reviews, String title,String publisher,String mediatype,String creator) {
         this.avg_rating = avg_rating;
         this.description = description;
         this.downloads = downloads;
@@ -23,7 +29,22 @@ public class AudioBook {
         this.title = title;
         this.publisher=publisher;
         this.mediatype=mediatype;
+        this.creator=creator;
     }
+
+    protected AudioBook(Parcel in) {
+        avg_rating = in.readString();
+        description = in.readString();
+        downloads = in.readString();
+        identifier = in.readString();
+        num_reviews = in.readString();
+        title = in.readString();
+        publisher = in.readString();
+        creator = in.readString();
+        mediatype = in.readString();
+    }
+
+
 
     public String getAvg_rating() {
         return avg_rating;
@@ -56,4 +77,10 @@ public class AudioBook {
     public String getMediatype() {
         return mediatype;
     }
+
+    public String getCreator() {
+        return creator;
+    }
+
+
 }

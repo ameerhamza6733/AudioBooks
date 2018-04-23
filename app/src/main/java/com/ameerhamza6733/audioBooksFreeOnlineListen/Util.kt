@@ -11,7 +11,7 @@ import kotlin.collections.ArrayList
 
 object Util {
 
-    val LIBRIVOX_URL = "https://archive.org/advancedsearch.php?q=subject%3A%22librivox%22+AND+mediatype%3Aaudio&fl[]=avg_rating&fl[]=publisher&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=num_reviews&fl[]=title&sort[]=&sort[]=&sort[]=&rows=500&page=1&output=json&callback=callback&save=yes"
+    val LIBRIVOX_URL = "https://archive.org/advancedsearch.php?q=subject%3A%22librivox%22+AND+mediatype%3Aaudio&fl[]=avg_rating&fl[]=publisher&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=num_reviews&fl[]=creator&fl[]=title&sort[]=&sort[]=&sort[]=&rows=500&page=1&output=json&callback=callback&save=yes"
     val literature_URL = "https://archive.org/advancedsearch.php?q=subject%3A%22literature%22+AND+mediatype%3Aaudio&fl[]=avg_rating&fl[]=publisher&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=num_reviews&fl[]=title&sort[]=&sort[]=&sort[]=&rows=100&page=1&output=json&callback=callback&save=yes"
     val poetry_URL = "https://archive.org/advancedsearch.php?q=subject%3A%22poetry%22+AND+mediatype%3Aaudio&fl[]=avg_rating&fl[]=publisher&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=num_reviews&fl[]=title&sort[]=&sort[]=&sort[]=&rows=100&page=1&output=json&callback=callback&save=yes"
     val fiction_URL = "https://archive.org/advancedsearch.php?q=subject%3A%22fiction%22+AND+mediatype%3Aaudio&fl[]=avg_rating&fl[]=publisher&fl[]=description&fl[]=downloads&fl[]=identifier&fl[]=mediatype&fl[]=num_reviews&fl[]=title&sort[]=&sort[]=&sort[]=&rows=100&page=1&output=json&callback=callback&save=yes"
@@ -62,34 +62,34 @@ object Util {
     }
 
     fun ExtractRating(jsonObj: JSONObject): String {
-        try {
-            return jsonObj.getString("avg_rating");
+        return try {
+            jsonObj.getString("avg_rating");
         } catch (e: Exception) {
-            return "N/A"
+            "N/A"
         }
     }
 
     fun ExtractNoOfDownloads(jsonObject: JSONObject): String {
-        try {
-            return jsonObject.getString("downloads")
+        return try {
+            jsonObject.getString("downloads")
         } catch (e: Exception) {
-            return "N/A"
+            "N/A"
         }
     }
 
     fun ExtractDescription(jsonObject: JSONObject): String {
-        try {
-            return jsonObject.getString("description")
+        return try {
+            jsonObject.getString("description")
         } catch (e: Exception) {
-            return "N/A"
+            "N/A"
         }
     }
 
     fun ExtractNoReviews(jsonObject: JSONObject): String {
-        try {
-            return jsonObject.getString("num_reviews")
+        return try {
+            jsonObject.getString("num_reviews")
         } catch (e: Exception) {
-            return "N/A"
+            "N/A"
         }
     }
 
@@ -108,6 +108,14 @@ object Util {
         } catch (e: Exception) {
             "N/A"
         }
+    }
+    fun EtracCreator(jsonObject: JSONObject) : String{
+       return try {
+           "by: "+ jsonObject.getString("creator")
+        }catch (e:Exception){
+           "N/A"
+       }
+
     }
 
     fun cleanData(JsonList: List<JSONObject>): List<JSONObject> {
@@ -131,6 +139,7 @@ object Util {
     fun toImageURI(identifier: String):String{
         return "https://archive.org/services/img/"+identifier
     }
+
 
     fun isSuppotedFormate(fileName: String):Boolean{
        var isSuppoted  = false;

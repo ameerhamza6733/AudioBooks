@@ -40,7 +40,7 @@ import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 
-import static com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.DetailActivity.TAG;
+
 
 /**
  * Created by AmeerHamza on 2/11/2018.
@@ -48,19 +48,22 @@ import static com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.DetailActi
 
 public class PlayerForegroundService extends Service implements Player.EventListener {
 
+    private static final String TAG = "PlayerForegroundService";
     public static String MAIN_ACTION = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.main";
     public static final String EXTRA_URI = "com.ameerhamza6733.businessaudiobook.mediaPlayer.PlayerForegroundService.uri";
     public static final String EXTRA_TITLE = "com.ameerhamza6733.businessaudiobook.mediaPlayer.PlayerForegroundService.title";
     public static final String EXTRA_SEEK_TO = "EXTRA_SEEK_TO";
 
 
-    protected final static String FAST_FORWARD_ACTION = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.forward";
-    protected final static String FAST_REWIND_ACTION = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.rewind";
-    protected final static String START_FOREGROUND_ACTION = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.startforeground";
-    protected final static String STOP_ACTION = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.stop";
-    protected final static String PLAY_PAUSE_ACTION = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.playOrpause";
-    protected static final int ONGOING_NOTIFICATION_ID = 101;
-    protected final static String START_ACTIVITY_BROAD_CAST = "START_ACTIVITY_BROAD_CAST";
+    public final static String FAST_FORWARD_ACTION = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.forward";
+    public final static String FAST_REWIND_ACTION = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.rewind";
+    public final static String START_FOREGROUND_ACTION = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.startforeground";
+    public final static String STOP_ACTION = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.stop";
+    public final static String PLAY_PAUSE_ACTION = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.playOrpause";
+   public final static String EXTRA_FAST_FORWARD_MILI_SECONDS ="com.ameerhamza6733.businessaudiobook.mediaPlayer.EXTRA_FAST_FORWARD_MILI_SECONDS";
+  public final static String EXTRA_REWIND_MILI_SECOND ="com.ameerhamza6733.businessaudiobook.mediaPlayer.EXTRA_REWIND_MILI_SECOND";
+    public static final int ONGOING_NOTIFICATION_ID = 101;
+    public final static String START_ACTIVITY_BROAD_CAST = "START_ACTIVITY_BROAD_CAST";
 
 
     protected static String uri;
@@ -100,8 +103,9 @@ public class PlayerForegroundService extends Service implements Player.EventList
             stopForeground(true);
             stopSelf();
         } else if (intent.getAction().equals(FAST_FORWARD_ACTION)) {
+          int second=  intent.getIntExtra(EXTRA_FAST_FORWARD_MILI_SECONDS,0);
             if (player != null)
-                player.seekTo(player.getCurrentPosition() + 5000);
+                player.seekTo(player.getCurrentPosition() + second);
 
         } else if (intent.getAction().equals(PLAY_PAUSE_ACTION)) {
             if (player != null) {
@@ -123,7 +127,8 @@ public class PlayerForegroundService extends Service implements Player.EventList
 
         } else if (intent.getAction().equals(FAST_REWIND_ACTION)) {
             Log.e(TAG, "FAST_REWIND_ACTION");
-            player.seekTo(player.getCurrentPosition() - 5000);
+            int second =  intent.getIntExtra(EXTRA_REWIND_MILI_SECOND,0);
+            player.seekTo(player.getCurrentPosition() - second);
         }
         return START_STICKY;
     }

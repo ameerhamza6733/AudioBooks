@@ -6,7 +6,7 @@ import android.arch.lifecycle.ViewModel;
 import android.util.Log;
 
 import com.ameerhamza6733.audioBooksFreeOnlineListen.Util;
-import com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.DetailActivity;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.DetailTabActivity;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.MataData;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -28,7 +28,7 @@ public class MetaDataViewModel extends ViewModel {
     private MutableLiveData<List<MataData>> mutableLiveData;
 
     private String META_DATA_CONNECTION_URL;
-    private String TAG = DetailActivity.TAG;
+    private String TAG = "MetaDataViewModel";
     private String identifier;
 
     public LiveData<List<MataData>> loadData(RequestQueue requestQueue, String url,String iidentifier) {

@@ -27,59 +27,67 @@
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
-                android:paddingBottom="16dp"
+                android:paddingBottom="8dp"
                 android:paddingLeft="16dp"
                 android:paddingTop="16dp"
                 android:text="The Adventures of Tom Sawyer "
                 android:textColor="@color/colorPrimaryText"
                 android:textSize="14sp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="8dp"
-                android:weightSum="3">
-
-                <TextView
-                    android:id="@+id/type"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:drawableTop="@drawable/ic_music_note_black_24dp"
-                    android:gravity="center"
-                    android:text="Type"
-                    android:textColor="@color/colorSecondaryText" />
-
-                <TextView
-                    android:id="@+id/views"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:drawableTop="@drawable/ic_visibility_black_24dp"
-                    android:gravity="center"
-                    android:text="150000"
-                    android:textColor="@color/colorSecondaryText" />
-
-                <TextView
-                    android:id="@+id/rating"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:drawableTop="@drawable/ic_star_black_24dp"
-                    android:gravity="center"
-                    android:text="1500"
-                    android:textColor="@color/colorSecondaryText" />
-
-            </LinearLayout>
-
             <TextView
-
-                android:paddingStart="8dp"
+                android:id="@+id/creator"
+                android:text="John McCrae"
+                android:maxLines="1"
+                android:paddingLeft="16dp"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:paddingBottom="16dp"
                 android:id="@+id/source"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="12sp" />
+                android:text="John McCrae"
+                android:maxLines="1"
+                android:paddingLeft="16dp"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"/>
+            <!--<LinearLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:orientation="horizontal"-->
+                <!--android:padding="8dp"-->
+                <!--android:weightSum="3">-->
+
+                <!--<TextView-->
+                    <!--android:id="@+id/type"-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_weight="1"-->
+                    <!--android:drawableTop="@drawable/ic_music_note_black_24dp"-->
+                    <!--android:gravity="center"-->
+                    <!--android:text="Type"-->
+                    <!--android:textColor="@color/colorSecondaryText" />-->
+
+                <!--<TextView-->
+                    <!--android:id="@+id/views"-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_weight="1"-->
+                    <!--android:drawableTop="@drawable/ic_visibility_black_24dp"-->
+                    <!--android:gravity="center"-->
+                    <!--android:text="150000"-->
+                    <!--android:textColor="@color/colorSecondaryText" />-->
+
+                <!--<TextView-->
+                    <!--android:id="@+id/rating"-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_weight="1"-->
+                    <!--android:drawableTop="@drawable/ic_star_black_24dp"-->
+                    <!--android:gravity="center"-->
+                    <!--android:text="1500"-->
+                    <!--android:textColor="@color/colorSecondaryText" />-->
+
+            <!--</LinearLayout>-->
+
+
         </LinearLayout>
 
         <!--<LinearLayout-->

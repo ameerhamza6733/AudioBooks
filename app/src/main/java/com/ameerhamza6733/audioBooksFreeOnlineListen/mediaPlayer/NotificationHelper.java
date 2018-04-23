@@ -55,6 +55,7 @@ public class NotificationHelper {
         public void onReceive(Context context, Intent intent) {
             Intent startIntent = new Intent(context, PlayerForegroundService.class);
             startIntent.setAction(PlayerForegroundService.FAST_FORWARD_ACTION);
+            startIntent.putExtra(PlayerForegroundService.EXTRA_FAST_FORWARD_MILI_SECONDS,5000);
             context.startService(startIntent);
         }
     }
@@ -67,6 +68,7 @@ public class NotificationHelper {
         public void onReceive(Context context, Intent intent) {
             Intent startIntent = new Intent(context, PlayerForegroundService.class);
             startIntent.setAction(PlayerForegroundService.FAST_REWIND_ACTION);
+            startIntent.putExtra(PlayerForegroundService.EXTRA_REWIND_MILI_SECOND,5000);
             context.startService(startIntent);
         }
     }

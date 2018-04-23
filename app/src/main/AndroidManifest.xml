@@ -14,11 +14,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.DetailActivity"
+            android:name="com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.DetailTabActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.playerActivty"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="portrait" />
 
         <service android:name="com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService" />
 
