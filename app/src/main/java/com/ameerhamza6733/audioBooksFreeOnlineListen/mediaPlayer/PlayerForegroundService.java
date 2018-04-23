@@ -90,12 +90,14 @@ public class PlayerForegroundService extends Service implements Player.EventList
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent.getAction().equals(PlayerForegroundService.START_FOREGROUND_ACTION)) {
+
             uri = intent.getStringExtra(EXTRA_URI);
             seekto = intent.getLongExtra(PlayerForegroundService.EXTRA_SEEK_TO, 0);
             title = intent.getStringExtra(PlayerForegroundService.EXTRA_TITLE);
             Toast.makeText(this, "Start Service", Toast.LENGTH_SHORT).show();
             Notification notification = getNotification();
             startForeground(ONGOING_NOTIFICATION_ID, notification);
+
             initMediaPlayer(uri);
         } else if (intent.getAction().equals(PlayerForegroundService.STOP_ACTION)) {
             if (handler != null)

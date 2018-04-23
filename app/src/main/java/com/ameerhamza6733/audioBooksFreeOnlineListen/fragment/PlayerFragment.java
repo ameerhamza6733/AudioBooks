@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -33,6 +34,9 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
 
 import java.util.List;
 
@@ -53,10 +57,13 @@ public class PlayerFragment extends Fragment {
     private TextView tVFarword;
     private ImageView imageView;
     private ProgressBar progressBar;
-
     private RelativeLayout rvBackground;
     private MataData mataData;
     private View rootView;
+
+    Handler handler = new Handler();
+    private AdView mAdView;
+
 
     @Nullable
     @Override
@@ -66,7 +73,18 @@ public class PlayerFragment extends Fragment {
         mySpinner = (Spinner) rootView.findViewById(R.id.spinner1);
         bindViews(rootView);
         intiDataSet();
+        loadAd();
         return rootView;
+    }
+
+    private void loadAd() {
+
+        mAdView = rootView.findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+       
+
+
     }
 
     private void intiDataSet() {
@@ -80,7 +98,7 @@ public class PlayerFragment extends Fragment {
                     progressBar.setVisibility(View.GONE);
                 } else {
                     progressBar.setVisibility(View.GONE);
-                    Toast.makeText(getActivity(),"Error:",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "Error:", Toast.LENGTH_LONG).show();
                 }
 
 
@@ -100,9 +118,13 @@ public class PlayerFragment extends Fragment {
             public void onItemSelected(AdapterView<?> adapterView, View view,
                                        int position, long id) {
 
-                rootView.findViewById(R.id.play).setOnClickListener(v -> startPlayerService(adapter.getItem(position), PlayerForegroundService.START_FOREGROUND_ACTION, null, 0));
-
-
+                rootView.findViewById(R.id.play).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                       stopPlayerService(adapter.getItem(position));
+                        handler.postDelayed(() -> startPlayerService(adapter.getItem(position), PlayerForegroundService.START_FOREGROUND_ACTION, null, 0), 2000);
+                    }
+                });
             }
 
             @Override
@@ -149,6 +171,13 @@ public class PlayerFragment extends Fragment {
         }
         startIntent.putExtra(extraKey, miliSecond);
         startIntent.setAction(Action);
+        getActivity().startService(startIntent);
+    }
+
+    private void stopPlayerService(MataData mataData) {
+        Intent startIntent = new Intent(getActivity(), PlayerForegroundService.class);
+        startIntent.putExtra(EXTRA_URI, mataData.getURL());
+        startIntent.setAction(PlayerForegroundService.STOP_ACTION);
         getActivity().startService(startIntent);
     }
 }

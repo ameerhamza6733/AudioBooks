@@ -20,6 +20,7 @@ import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.Util;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.BookSearchDialogFragment;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.RecyclerViewFragment;
+import com.google.android.gms.ads.MobileAds;
 
 
 public class MainActivity extends AppCompatActivity
@@ -41,6 +42,7 @@ public class MainActivity extends AppCompatActivity
         fragmentTransaction.commit();
         reciveQuery = recyclerViewFragment;
 
+        MobileAds.initialize(this, "ca-app-pub-5168564707064012~4212395459");
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
