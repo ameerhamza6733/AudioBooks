@@ -1,7 +1,10 @@
 package com.ameerhamza6733.audioBooksFreeOnlineListen.fragment;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -35,7 +38,6 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 
 import java.util.List;
@@ -44,26 +46,84 @@ import static com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.DetailTabA
 import static com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService.EXTRA_URI;
 import static com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService.FAST_FORWARD_ACTION;
 import static com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService.FAST_REWIND_ACTION;
+import static com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService.SERVICE_STAARTED;
 
 /**
  * Created by apple on 4/23/18.
  */
 
 public class PlayerFragment extends Fragment {
+    public static final String ACTION_PLAYER_BUFFRING = "ACTION_BUFFRING";
+    public static final String ACTION_PLAYER_START = "ACTION_PLAYER_START";
+
+    private static final String TAG = "PlayerFragment";
+    Handler handler = new Handler();
     private Spinner mySpinner;
     private AudioBook audioBook;
     private TextView tvTitle;
     private TextView tVrewind;
     private TextView tVFarword;
+    private TextView tvPlay;
+    private TextView tvPass;
     private ImageView imageView;
     private ProgressBar progressBar;
+    private ProgressBar PlayerStatePB;
     private RelativeLayout rvBackground;
     private MataData mataData;
     private View rootView;
-
-    Handler handler = new Handler();
     private AdView mAdView;
+    private BroadcastReceiver receiver;
+    private IntentFilter filter;
+    private MataData currentAudioBook;
 
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        filter = new IntentFilter();
+        filter.addAction(ACTION_PLAYER_BUFFRING);
+        filter.addAction(ACTION_PLAYER_START);
+
+        receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                //do something based on the intent's action
+                if (intent.getAction().equals(ACTION_PLAYER_BUFFRING)) {
+                    if (tvPlay != null) {
+                        tvPlay.setVisibility(View.GONE);
+                        if (PlayerStatePB != null)
+                            PlayerStatePB.setVisibility(View.VISIBLE);
+                    }
+                } else if (intent.getAction().equals(ACTION_PLAYER_START)) {
+
+                    if (PlayerStatePB != null)
+                        PlayerStatePB.setVisibility(View.GONE);
+                    if (tvPass != null)
+                        tvPass.setVisibility(View.VISIBLE);
+
+                } else if (intent.getAction().equals(SERVICE_STAARTED)) {
+                    if (tvPlay != null)
+                        tvPlay.setVisibility(View.INVISIBLE);
+                }
+            }
+        };
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().registerReceiver(receiver, filter);
+    }
+
+    @Override
+    public void onPause() {
+        if (receiver != null) {
+            getActivity().unregisterReceiver(receiver);
+            receiver = null;
+        }
+        super.onPause();
+    }
 
     @Nullable
     @Override
@@ -81,14 +141,15 @@ public class PlayerFragment extends Fragment {
 
         mAdView = rootView.findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
-       
+          mAdView.loadAd(adRequest);
 
 
     }
 
     private void intiDataSet() {
         progressBar.setVisibility(View.VISIBLE);
+        this.tvPlay.setVisibility(View.GONE);
+        this.PlayerStatePB.setVisibility(View.VISIBLE);
         MetaDataViewModel model = ViewModelProviders.of(this).get(MetaDataViewModel.class);
         if (audioBook.getIdentifier() != null)
             model.loadData(Volley.newRequestQueue(getActivity()), Util.INSTANCE.toMetaDataURI(audioBook.getIdentifier()), audioBook.getIdentifier()).observe(this, audioFileList -> {
@@ -115,16 +176,15 @@ public class PlayerFragment extends Fragment {
         mySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view,
-                                       int position, long id) {
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+               currentAudioBook=adapter.getItem(position);
+                stopPlayerService(adapter.getItem(position));
+                handler.postDelayed(() -> {
+                    startPlayerService(adapter.getItem(position), PlayerForegroundService.START_FOREGROUND_ACTION, null, 0);
 
-                rootView.findViewById(R.id.play).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                       stopPlayerService(adapter.getItem(position));
-                        handler.postDelayed(() -> startPlayerService(adapter.getItem(position), PlayerForegroundService.START_FOREGROUND_ACTION, null, 0), 2000);
-                    }
-                });
+                }, 2000);
+//
+
             }
 
             @Override
@@ -137,10 +197,13 @@ public class PlayerFragment extends Fragment {
         tvTitle = view.findViewById(R.id.title);
         tVrewind = view.findViewById(R.id.fast_rewind);
         tVFarword = view.findViewById(R.id.fast_forword);
+        tvPlay = view.findViewById(R.id.play);
+        tvPass = view.findViewById(R.id.pass);
         imageView = view.findViewById(R.id.iamge);
         rvBackground = view.findViewById(R.id.RVimageView);
         progressBar = view.findViewById(R.id.prograss_bar);
         tvTitle.setText(audioBook.getTitle());
+        PlayerStatePB = view.findViewById(R.id.plater_State_prograss_bar);
 
         Glide.with(this).asBitmap()
                 .load(Util.INSTANCE.toImageURI(audioBook.getIdentifier()))
@@ -161,9 +224,38 @@ public class PlayerFragment extends Fragment {
         tVrewind.setOnClickListener(v -> startPlayerService(null, FAST_REWIND_ACTION, PlayerForegroundService.EXTRA_REWIND_MILI_SECOND, 10000));
         tVFarword.setOnClickListener(v -> startPlayerService(null, FAST_FORWARD_ACTION, PlayerForegroundService.EXTRA_FAST_FORWARD_MILI_SECONDS, 30000));
 
+        tvPass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                tvPlay.setVisibility(View.VISIBLE);
+
+                handler.postDelayed(() -> tvPass.setVisibility(View.GONE), 500);
+                startPlayerService(mataData, PlayerForegroundService.PLAY_PAUSE_ACTION, null, 0);
+            }
+        });
+
+                tvPlay.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //
+
+                        if (PlayerForegroundService.isPlaying) {
+                            startPlayerService(currentAudioBook, PlayerForegroundService.PLAY_PAUSE_ACTION, null, 0);
+                        } else {
+                            stopPlayerService(currentAudioBook);
+                            handler.postDelayed(() -> {
+                                startPlayerService(currentAudioBook, PlayerForegroundService.START_FOREGROUND_ACTION, null, 0);
+
+                            }, 2000);
+                        }
+
+                    }
+                });
     }
 
     private void startPlayerService(MataData mataData, String Action, String extraKey, int miliSecond) {
+
         Intent startIntent = new Intent(getActivity(), PlayerForegroundService.class);
         if (mataData != null) {
             startIntent.putExtra(EXTRA_URI, mataData.getURL());
@@ -180,4 +272,5 @@ public class PlayerFragment extends Fragment {
         startIntent.setAction(PlayerForegroundService.STOP_ACTION);
         getActivity().startService(startIntent);
     }
+
 }

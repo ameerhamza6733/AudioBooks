@@ -30,4 +30,12 @@ public class MySharedPref {
         return null;
     }
 
+    public static String getSavedObjectFromPreference(Context context, String preferenceFileName, String preferenceKey) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(preferenceFileName, 0);
+        if (sharedPreferences.contains(preferenceKey)) {
+            final Gson gson = new Gson();
+            return gson.fromJson(sharedPreferences.getString(preferenceKey, ""), String.class);
+        }
+        return null;
+    }
 }

@@ -1,9 +1,6 @@
 package com.ameerhamza6733.audioBooksFreeOnlineListen.activitys;
 
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
@@ -24,10 +21,10 @@ import com.google.android.gms.ads.MobileAds;
 
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, BookSearchDialogFragment.onSearchQuerySubmit {
+        implements NavigationView.OnNavigationItemSelectedListener, BookSearchDialogFragment.QueryUpdate {
     public static String TAG = "MainActivityTAG";
     private RecyclerViewFragment recyclerViewFragment;
-    private onReciveQuery reciveQuery;
+    private ReciveQuery reciveQuery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +32,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         recyclerViewFragment = new RecyclerViewFragment();
         fragmentTransaction.replace(R.id.fragment_contaner, recyclerViewFragment);
@@ -73,39 +71,40 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        // Handle action bar item clicks here. The action bar will
+//        // automatically handle clicks on the Home/Up button, so long
+//        // as you specify a parent activity in AndroidManifest.xml.
+//        int id = item.getItemId();
+//
+//        //noinspection SimplifiableIfStatement
+//        if (id == R.id.action_rate_me) {
+//            Uri uri = Uri.parse("market://details?id=" + this.getPackageName());
+//            Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
+//            // To count with Play market backstack, After pressing back button,
+//            // to taken back to our application, we need to add following flags to intent.
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
+//                        Intent.FLAG_ACTIVITY_NEW_DOCUMENT |
+//                        Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+//            }else {
+//                goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
+//                        Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET |
+//                        Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+//            }
+//            try {
+//                startActivity(goToMarket);
+//            } catch (ActivityNotFoundException e) {
+//                startActivity(new Intent(Intent.ACTION_VIEW,
+//                        Uri.parse("http://play.google.com/store/apps/details?id=" + this.getPackageName())));
+//            }
+//            return true;
+//        }
+//
+//        return super.onOptionsItemSelected(item);
+//    }
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_rate_me) {
-            Uri uri = Uri.parse("market://details?id=" + this.getPackageName());
-            Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
-            // To count with Play market backstack, After pressing back button,
-            // to taken back to our application, we need to add following flags to intent.
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
-                        Intent.FLAG_ACTIVITY_NEW_DOCUMENT |
-                        Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-            }else {
-                goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
-                        Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET |
-                        Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-            }
-            try {
-                startActivity(goToMarket);
-            } catch (ActivityNotFoundException e) {
-                startActivity(new Intent(Intent.ACTION_VIEW,
-                        Uri.parse("http://play.google.com/store/apps/details?id=" + this.getPackageName())));
-            }
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -115,40 +114,40 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_send_feedback) {
             // Handle the camera action
-            startActivity(new Intent(this, feedbackActivity.class));
-        } else if (id == R.id.poetry) {
-            reciveQuery.onNewBookCatugury(Util.INSTANCE.getPoetry_URL());
-        } else if (id == R.id.nav_librivox) {
-            reciveQuery.onNewBookCatugury(Util.INSTANCE.getLIBRIVOX_URL());
-        } else if (id == R.id.nav_fiction) {
-            reciveQuery.onNewBookCatugury(Util.INSTANCE.getFiction_URL());
-        } else if (id == R.id.nav_literature) {
-            reciveQuery.onNewBookCatugury(Util.INSTANCE.getLiterature_URL());
-        } else if (id == R.id.nav_Community_Audio) {
-            reciveQuery.onNewBookCatugury(Util.INSTANCE.getCommunity_Audio_URL());
-        } else if (id == R.id.nav_philosophy) {
-            reciveQuery.onNewBookCatugury(Util.INSTANCE.getPhilosophy_URL());
-        } else if (id == R.id.nav_children) {
-            reciveQuery.onNewBookCatugury(Util.INSTANCE.getChildren_URL());
-        } else if (id == R.id.nav_plato) {
-            reciveQuery.onNewBookCatugury(Util.INSTANCE.getPlato_URL());
-        } else if (id == R.id.nav_romance) {
-            reciveQuery.onNewBookCatugury(Util.INSTANCE.getRomance_URL());
-        } else if (id == R.id.nav_history) {
-            reciveQuery.onNewBookCatugury(Util.INSTANCE.getHistory_URL());
-        } else if (id == R.id.nav_nature) {
-            reciveQuery.onNewBookCatugury(Util.INSTANCE.getNature_URL());
-        } else if (id == R.id.nav_humor) {
-            reciveQuery.onNewBookCatugury(Util.INSTANCE.getHumor_URL());
-        } else if (id == R.id.nav_mystery) {
-            reciveQuery.onNewBookCatugury(Util.INSTANCE.getMystery_URL());
-        } else if (id == R.id.nav_poem) {
-            reciveQuery.onNewBookCatugury(Util.INSTANCE.getPoem_URL());
-        } else if (id == R.id.nav_animals) {
-            reciveQuery.onNewBookCatugury(Util.INSTANCE.getAnimals_URL());
-        } else if (id == R.id.nav_novel) {
-            reciveQuery.onNewBookCatugury(Util.INSTANCE.getNovel_URL());
-        }
+            startActivity(new Intent(this, feedbackActivity.class));}
+//        } else if (id == R.id.poetry) {
+//            reciveQuery.OnRecivedQuery(Util.INSTANCE.getPoetry_URL());
+//        } else if (id == R.id.nav_librivox) {
+//            reciveQuery.OnRecivedQuery(Util.INSTANCE.getLIBRIVOX_URL());
+//        } else if (id == R.id.nav_fiction) {
+//            reciveQuery.OnRecivedQuery(Util.INSTANCE.getFiction_URL());
+//        } else if (id == R.id.nav_literature) {
+//            reciveQuery.OnRecivedQuery(Util.INSTANCE.getLiterature_URL());
+//        } else if (id == R.id.nav_Community_Audio) {
+//            reciveQuery.OnRecivedQuery(Util.INSTANCE.getCommunity_Audio_URL());
+//        } else if (id == R.id.nav_philosophy) {
+//            reciveQuery.OnRecivedQuery(Util.INSTANCE.getPhilosophy_URL());
+//        } else if (id == R.id.nav_children) {
+//            reciveQuery.OnRecivedQuery(Util.INSTANCE.getChildren_URL());
+//        } else if (id == R.id.nav_plato) {
+//            reciveQuery.OnRecivedQuery(Util.INSTANCE.getPlato_URL());
+//        } else if (id == R.id.nav_romance) {
+//            reciveQuery.OnRecivedQuery(Util.INSTANCE.getRomance_URL());
+//        } else if (id == R.id.nav_history) {
+//            reciveQuery.OnRecivedQuery(Util.INSTANCE.getHistory_URL());
+//        } else if (id == R.id.nav_nature) {
+//            reciveQuery.OnRecivedQuery(Util.INSTANCE.getNature_URL());
+//        } else if (id == R.id.nav_humor) {
+//            reciveQuery.OnRecivedQuery(Util.INSTANCE.getHumor_URL());
+//        } else if (id == R.id.nav_mystery) {
+//            reciveQuery.OnRecivedQuery(Util.INSTANCE.getMystery_URL());
+//        } else if (id == R.id.nav_poem) {
+//            reciveQuery.OnRecivedQuery(Util.INSTANCE.getPoem_URL());
+//        } else if (id == R.id.nav_animals) {
+//            reciveQuery.OnRecivedQuery(Util.INSTANCE.getAnimals_URL());
+//        } else if (id == R.id.nav_novel) {
+//            reciveQuery.OnRecivedQuery(Util.INSTANCE.getNovel_URL());
+//        }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -156,12 +155,12 @@ public class MainActivity extends AppCompatActivity
 
 
     @Override
-    public void onQuerySubmitButtonClick(String query) {
+    public void OnQueryUpdate(String query) {
         Log.d(TAG, "query: " + query);
-        reciveQuery.onNewBookCatugury(Util.INSTANCE.quraryBuilder(query));
+        reciveQuery.OnRecivedQuery(query);
     }
 
-    public interface onReciveQuery {
-        public void onNewBookCatugury(String query);
+    public interface ReciveQuery {
+        public void OnRecivedQuery(String query);
     }
 }

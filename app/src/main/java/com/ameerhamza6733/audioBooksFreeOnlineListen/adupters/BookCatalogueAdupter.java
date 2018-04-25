@@ -7,25 +7,24 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.ameerhamza6733.audioBooksFreeOnlineListen.models.AudioBook;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.MataData;
 
 import java.util.List;
 
 /**
- * Created by Hamza on 4/23/18.
+ * Created by apple on 4/24/18.
  */
 
-public class SpinAdapter  extends ArrayAdapter<MataData> {
+public class BookCatalogueAdupter extends ArrayAdapter<String> {
 
     // Your sent context
     private Context context;
     // Your custom values for the spinner (User)
-    private List<MataData> values;
+    private List<String> values;
 
 
-    public SpinAdapter(Context context, int textViewResourceId,
-                       List<MataData> values) {
+    public BookCatalogueAdupter(Context context, int textViewResourceId,
+                       List<String> values) {
         super(context, textViewResourceId, values);
         this.context = context;
         this.values = values;
@@ -38,7 +37,7 @@ public class SpinAdapter  extends ArrayAdapter<MataData> {
     }
 
     @Override
-    public MataData getItem(int position){
+    public String getItem(int position){
         return values.get(position);
     }
 
@@ -58,7 +57,7 @@ public class SpinAdapter  extends ArrayAdapter<MataData> {
         label.setPadding(16,16,16,16);
         // Then you can get the current item using the values array (Users array) and the current position
         // You can NOW reference each method you has created in your bean object (User class)
-        label.setText(values.get(position).getName());
+        label.setText(values.get(position));
 
         // And finally return your dynamic (or custom) view for each spinner item
         return label;
@@ -71,7 +70,7 @@ public class SpinAdapter  extends ArrayAdapter<MataData> {
                                 ViewGroup parent) {
         TextView label = (TextView) super.getDropDownView(position, convertView, parent);
         label.setTextColor(Color.BLACK);
-        label.setText(values.get(position).getName());
+        label.setText(values.get(position));
 
         return label;
     }

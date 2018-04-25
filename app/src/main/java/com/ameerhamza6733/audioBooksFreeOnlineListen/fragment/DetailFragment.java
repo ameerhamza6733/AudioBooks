@@ -82,7 +82,12 @@ public class DetailFragment extends Fragment {
 
     private String parseDicription() {
 
-        StringBuffer stringBuffer = new StringBuffer(audioBook.getDescription());
-        return stringBuffer.replace(audioBook.getDescription().indexOf("For further information,"), audioBook.getDescription().length(), "").toString();
+        try {
+            StringBuffer stringBuffer = new StringBuffer(audioBook.getDescription());
+            return stringBuffer.replace(audioBook.getDescription().indexOf("For further information,"), audioBook.getDescription().length(), "").toString();
+
+        } catch (Exception e) {
+            return "";
+        }
     }
 }

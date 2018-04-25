@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.Util;
 
 /**
  * Created by AmeerHamza on 2/15/2018.
@@ -23,7 +24,7 @@ import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
 public class BookSearchDialogFragment extends DialogFragment {
     String mEncodedEmail;
     EditText mEditTextSearchQueary;
-    private onSearchQuerySubmit searchQuerySubmit;
+    private QueryUpdate queryUpdate;
 
     /**
      * Public static constructor that creates fragment and
@@ -40,17 +41,17 @@ public class BookSearchDialogFragment extends DialogFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         try{
-            this.searchQuerySubmit = (onSearchQuerySubmit) context;
+            this.queryUpdate = (QueryUpdate) context;
         }catch (Exception e){  throw new ClassCastException(context.toString()
-                + " must implement onSearchQuerySubmit");
+                + " must implement QueryUpdate");
         }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        if (searchQuerySubmit!=null)
-            searchQuerySubmit=null;
+        if (queryUpdate !=null)
+            queryUpdate =null;
     }
 
     /**
@@ -102,13 +103,13 @@ public class BookSearchDialogFragment extends DialogFragment {
          */
         if (!userEnteredQuery.equals("")) {
 
-            if (searchQuerySubmit!=null)
-                searchQuerySubmit.onQuerySubmitButtonClick(userEnteredQuery);
-            BookSearchDialogFragment.this.getDialog().cancel();
+            if (queryUpdate !=null)
+                queryUpdate.OnQueryUpdate(Util.INSTANCE.quraryBuilder(queryUpdate.toString()));
+            BookSearchDialogFragment.this.getDialog().dismiss();
         }
     }
 
-    public interface onSearchQuerySubmit {
-        void onQuerySubmitButtonClick(String query);
+    public interface QueryUpdate {
+        void OnQueryUpdate(String query);
     }
 }

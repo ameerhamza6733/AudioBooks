@@ -12,4 +12,32 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_rate_me">Rate Me</string>
+    <string-array name="catlog">
+        <item>Catalogue</item>
+        <item>librivox</item>
+        <item>literature</item>
+        <item>poetry</item>
+        <item>fiction</item>
+        <item>philosophy</item>
+        <item>children</item>
+        <item>plato</item>
+        <item>romance</item>
+        <item>history</item>
+        <item>nature</item>
+        <item>humor</item>
+        <item>mystery</item>
+        <item>poem</item>
+        <item>animals</item>
+        <item>novel</item>
+    </string-array>
+
+    <string-array name="filters">
+        <item>Choose</item>
+        <item>date</item>
+        <item>downloads</item>
+        <item>size</item>
+        <item>title</item>
+        <item>languageSorter</item>
+        <item>star</item>
+    </string-array>
 </resources>

@@ -15,7 +15,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
-
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.RemoteViews;
@@ -23,6 +22,7 @@ import android.widget.Toast;
 
 import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.Util;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.PlayerFragment;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -41,35 +41,40 @@ import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 
 
-
 /**
  * Created by AmeerHamza on 2/11/2018.
  */
 
 public class PlayerForegroundService extends Service implements Player.EventListener {
 
-    private static final String TAG = "PlayerForegroundService";
-    public static String MAIN_ACTION = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.main";
     public static final String EXTRA_URI = "com.ameerhamza6733.businessaudiobook.mediaPlayer.PlayerForegroundService.uri";
     public static final String EXTRA_TITLE = "com.ameerhamza6733.businessaudiobook.mediaPlayer.PlayerForegroundService.title";
     public static final String EXTRA_SEEK_TO = "EXTRA_SEEK_TO";
-
+    public final static String EXTRA_FAST_FORWARD_MILI_SECONDS = "com.ameerhamza6733.businessaudiobook.mediaPlayer.EXTRA_FAST_FORWARD_MILI_SECONDS";
+    public final static String EXTRA_REWIND_MILI_SECOND = "com.ameerhamza6733.businessaudiobook.mediaPlayer.EXTRA_REWIND_MILI_SECOND";
 
     public final static String FAST_FORWARD_ACTION = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.forward";
     public final static String FAST_REWIND_ACTION = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.rewind";
     public final static String START_FOREGROUND_ACTION = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.startforeground";
     public final static String STOP_ACTION = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.stop";
     public final static String PLAY_PAUSE_ACTION = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.playOrpause";
-   public final static String EXTRA_FAST_FORWARD_MILI_SECONDS ="com.ameerhamza6733.businessaudiobook.mediaPlayer.EXTRA_FAST_FORWARD_MILI_SECONDS";
-  public final static String EXTRA_REWIND_MILI_SECOND ="com.ameerhamza6733.businessaudiobook.mediaPlayer.EXTRA_REWIND_MILI_SECOND";
+
+   public final static String SERVICE_STAARTED="com.ameerhamza6733.businessaudiobook.mediaPlayer.SERVICE_STAARTED";
+
     public static final int ONGOING_NOTIFICATION_ID = 101;
     public final static String START_ACTIVITY_BROAD_CAST = "START_ACTIVITY_BROAD_CAST";
-
-
+    private static final String TAG = "PlayerForegroundService";
+    public static String MAIN_ACTION = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.main";
     protected static String uri;
-    private Boolean isPlaying;
     private static SimpleExoPlayer player;
     private static String title;
+    Handler handler;
+    Runnable runnable;
+    NotificationManager mNotificationManager;
+    RemoteViews NotificationRemoteView;
+    Notification notification;
+    NotificationCompat.Builder mBuilder;
+    public static Boolean isPlaying=false;
     private long seekto = 0;
     private StartPlayerActivtyBrodcastReciver activtyBrodcastReciver;
 
@@ -77,15 +82,15 @@ public class PlayerForegroundService extends Service implements Player.EventList
     @Override
     public void onCreate() {
         super.onCreate();
+        isPlaying=true;
         activtyBrodcastReciver = new StartPlayerActivtyBrodcastReciver();
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addCategory(Intent.CATEGORY_DEFAULT);
         // set the custom action
         intentFilter.addAction(START_ACTIVITY_BROAD_CAST);
-
         registerReceiver(activtyBrodcastReciver, intentFilter);
+        SendMediaStateBroadCast(SERVICE_STAARTED);
     }
-
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -105,12 +110,13 @@ public class PlayerForegroundService extends Service implements Player.EventList
             stopForeground(true);
             stopSelf();
         } else if (intent.getAction().equals(FAST_FORWARD_ACTION)) {
-          int second=  intent.getIntExtra(EXTRA_FAST_FORWARD_MILI_SECONDS,0);
+            int second = intent.getIntExtra(EXTRA_FAST_FORWARD_MILI_SECONDS, 0);
             if (player != null)
                 player.seekTo(player.getCurrentPosition() + second);
 
         } else if (intent.getAction().equals(PLAY_PAUSE_ACTION)) {
             if (player != null) {
+                seekto=player.getContentPosition();
                 if (handler != null) {
                     handler.removeCallbacks(runnable);
                 }
@@ -129,7 +135,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
 
         } else if (intent.getAction().equals(FAST_REWIND_ACTION)) {
             Log.e(TAG, "FAST_REWIND_ACTION");
-            int second =  intent.getIntExtra(EXTRA_REWIND_MILI_SECOND,0);
+            int second = intent.getIntExtra(EXTRA_REWIND_MILI_SECOND, 0);
             player.seekTo(player.getCurrentPosition() - second);
         }
         return START_STICKY;
@@ -139,6 +145,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
     public void onDestroy() {
         if (player != null)
             player.release();
+        if (activtyBrodcastReciver!=null)
         unregisterReceiver(activtyBrodcastReciver);
         super.onDestroy();
 
@@ -149,7 +156,6 @@ public class PlayerForegroundService extends Service implements Player.EventList
         // Used only in case of bound services.
         return null;
     }
-
 
     @Override
     public void onTimelineChanged(Timeline timeline, Object manifest) {
@@ -166,12 +172,10 @@ public class PlayerForegroundService extends Service implements Player.EventList
 
     }
 
-    Handler handler;
-    Runnable runnable;
-
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
         if (playbackState == Player.STATE_READY) {
+            SendMediaStateBroadCast(PlayerFragment.ACTION_PLAYER_START);
             isPlaying = true;
             handler = new Handler();
             runnable = () -> {
@@ -185,9 +189,10 @@ public class PlayerForegroundService extends Service implements Player.EventList
             handler.postDelayed(runnable, 0);
         }
         if (playbackState == Player.STATE_BUFFERING) {
+            SendMediaStateBroadCast(PlayerFragment.ACTION_PLAYER_BUFFRING);
             if (mNotificationManager != null) {
 
-                NotificationRemoteView.setTextViewText(R.id.audio_track_time,"Buffering...");
+                NotificationRemoteView.setTextViewText(R.id.audio_track_time, "Buffering...");
                 mNotificationManager.notify(ONGOING_NOTIFICATION_ID, notification);
             }
         }
@@ -251,10 +256,11 @@ public class PlayerForegroundService extends Service implements Player.EventList
 
     }
 
-    NotificationManager mNotificationManager;
-    RemoteViews NotificationRemoteView;
-    Notification notification;
-    NotificationCompat.Builder mBuilder;
+    private void SendMediaStateBroadCast(String action) {
+        Intent broadcastIntent = new Intent();
+        broadcastIntent.setAction(action);
+        sendBroadcast(broadcastIntent);
+    }
 
     public Notification getNotification() {
         int icon = R.mipmap.ic_launcher_round;
@@ -263,7 +269,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             createChannel(mNotificationManager);
         mBuilder = new NotificationCompat.Builder(this, title).setSmallIcon(android.R.drawable.ic_media_play).setContentTitle(title);
-        notification=mBuilder.build();
+        notification = mBuilder.build();
 
 
         NotificationRemoteView = new RemoteViews(getPackageName(), R.layout.notification);
@@ -286,6 +292,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
         }
         return notification;
     }
+
     @TargetApi(26)
     private void createChannel(NotificationManager notificationManager) {
         String name = title;
@@ -308,16 +315,16 @@ public class PlayerForegroundService extends Service implements Player.EventList
                     Log.d(TAG, "trying to start activty from service ");
                     Intent intent1 = new Intent(context, playerActivty.class);
 
-                    intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent1.putExtra(playerActivty.EXTRA_PLAYER_URI, uri);
-                    intent1.putExtra(playerActivty.EXTRA_TITLE, title);
-                    intent1.putExtra(playerActivty.EXTRA_SEEK_TO, player.getContentPosition());
-                    context.startActivity(intent1);
-
-                    //stop this service
-                    Intent startIntent = new Intent(context, PlayerForegroundService.class);
-                    startIntent.setAction(PlayerForegroundService.STOP_ACTION);
-                    context.startService(startIntent);
+//                    intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                    intent1.putExtra(playerActivty.EXTRA_PLAYER_URI, uri);
+//                    intent1.putExtra(playerActivty.EXTRA_TITLE, title);
+//                    intent1.putExtra(playerActivty.EXTRA_SEEK_TO, player.getContentPosition());
+//                    context.startActivity(intent1);
+//
+//                    //stop this service
+//                    Intent startIntent = new Intent(context, PlayerForegroundService.class);
+//                    startIntent.setAction(PlayerForegroundService.STOP_ACTION);
+//                    context.startService(startIntent);
 
                     break;
             }

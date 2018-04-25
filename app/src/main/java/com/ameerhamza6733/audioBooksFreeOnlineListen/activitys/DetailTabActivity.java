@@ -23,7 +23,14 @@ public class DetailTabActivity extends AppCompatActivity {
         });
         TabLayout mTabLayout = findViewById(R.id.simpleTabLayout);
         mTabLayout.setupWithViewPager(viewPager);
+        try {
+            getSupportActionBar().hide();
+        }catch (Exception e){}
     }
 
-
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
 }

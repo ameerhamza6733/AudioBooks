@@ -5,11 +5,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.net.Uri;
+import android.os.Handler;
 import android.speech.RecognizerIntent;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -18,11 +24,13 @@ import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
+import com.google.android.exoplayer2.extractor.ExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
+import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DataSource;
@@ -37,156 +45,86 @@ import java.util.Locale;
 
 import static com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService.EXTRA_URI;
 
-public class playerActivty extends AppCompatActivity {
-
+public class playerActivty extends  Fragment {
     public static final String EXTRA_PLAYER_URI = "EXTRA_PLAYER_URI";
-    public static final String EXTRA_TITLE = "EXTRA_TITLE";
     public static final String EXTRA_SEEK_TO = "EXTRA_SEEK_TO";
-    private String TAG = "playerActivty";
-    private final int REQ_CODE_SPEECH_INPUT = 100;
-    private SimpleExoPlayerView simpleExoPlayerView;
-    private SimpleExoPlayer player;
-
-    private Timeline.Window window;
-    private DataSource.Factory mediaDataSourceFactory;
-    private DefaultTrackSelector trackSelector;
-    private boolean shouldAutoPlay;
-    private BandwidthMeter bandwidthMeter;
-
-    private String url;
-    private String audioTitle;
-    private long playBack;
+    public static String EXTRA_TITLE="EXTRA_TITLE";
+    SimpleExoPlayerView mPlayerView;
+    private SimpleExoPlayer mPlayer;
 
 
-    private ImageView ivHideControllerButton;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_player_activty);
-        //stop service if already runing
-        Intent startIntent = new Intent(playerActivty.this, PlayerForegroundService.class);
-        startIntent.putExtra(EXTRA_URI, url);
-        startIntent.setAction(PlayerForegroundService.STOP_ACTION);
-        startService(startIntent);
-        AudioManager m_audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        m_audioManager.setSpeakerphoneOn(true);
-        if (getIntent() != null) {
-            url = getIntent().getStringExtra(playerActivty.EXTRA_PLAYER_URI);
-            audioTitle = getIntent().getStringExtra(playerActivty.EXTRA_TITLE);
-            playBack = getIntent().getLongExtra(playerActivty.EXTRA_SEEK_TO, 0);
-        }
-        try {
-            getSupportActionBar().hide();
-
-        } catch (Exception e) {
-        }
-        shouldAutoPlay = true;
-        bandwidthMeter = new DefaultBandwidthMeter();
-        mediaDataSourceFactory = new DefaultDataSourceFactory(this, Util.getUserAgent(this, "mediaPlayerSample"), (TransferListener<? super DataSource>) bandwidthMeter);
-        window = new Timeline.Window();
-        ivHideControllerButton = (ImageView) findViewById(R.id.exo_controller);
-
+    public playerActivty() {
+        // Required empty public constructor
     }
 
-    private void initializePlayer() {
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.activity_player_activty, container, false);
+       mPlayerView=rootView.findViewById(R.id.player_view);
 
-        simpleExoPlayerView = (SimpleExoPlayerView) findViewById(R.id.player_view);
-        simpleExoPlayerView.requestFocus();
+        getPlayer();
+        return rootView;
+    }
 
+    private void getPlayer() {
+        // URL of the video to stream
+        String videoURL = "https://www.youtube.com/watch?v=3tmd-ClpJxA";
+
+        // Handler for the video player
+        Handler mainHandler = new Handler();
+
+	/* A TrackSelector that selects tracks provided by the MediaSource to be consumed by each of the available Renderers.
+	  A TrackSelector is injected when the player is created. */
+        BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
         TrackSelection.Factory videoTrackSelectionFactory =
                 new AdaptiveTrackSelection.Factory(bandwidthMeter);
+        TrackSelector trackSelector =
+                new DefaultTrackSelector(videoTrackSelectionFactory);
 
-        trackSelector = new DefaultTrackSelector(videoTrackSelectionFactory);
+        // Create the player with previously created TrackSelector
+        mPlayer = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector);
 
-        player = ExoPlayerFactory.newSimpleInstance(this, trackSelector);
+        // Load the default controller
+        mPlayerView.setUseController(true);
+        mPlayerView.requestFocus();
 
-        simpleExoPlayerView.setPlayer(player);
-        player.seekTo(playBack);
-        player.setPlayWhenReady(shouldAutoPlay);
-/*        MediaSource mediaSource = new HlsMediaSource(Uri.parse("https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8"),
-                mediaDataSourceFactory, mainHandler, null);*/
+        // Load the SimpleExoPlayerView with the created player
+        mPlayerView.setPlayer(mPlayer);
 
-        DefaultExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
+        // Measures bandwidth during playback. Can be null if not required.
+        DefaultBandwidthMeter defaultBandwidthMeter = new DefaultBandwidthMeter();
 
-        MediaSource mediaSource = new ExtractorMediaSource(Uri.parse(url),
-                mediaDataSourceFactory, extractorsFactory, null, null);
+        // Produces DataSource instances through which media data is loaded.
+        DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(
+                getContext(),
+                Util.getUserAgent(getContext(), "MyAppName"),
+                defaultBandwidthMeter);
 
-        player.prepare(mediaSource);
+        // Produces Extractor instances for parsing the media data.
+        ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
 
-//        ivHideControllerButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                simpleExoPlayerView.hideController();
-//            }
-//        });
-    }
+        // This is the MediaSource representing the media to be played.
+        MediaSource videoSource = new ExtractorMediaSource(
+                Uri.parse(videoURL),
+                dataSourceFactory,
+                extractorsFactory,
+                null,
+                null);
 
-    private void releasePlayer() {
-        if (player != null) {
-            //start playback service;
-            Intent startIntent = new Intent(playerActivty.this, PlayerForegroundService.class);
-            startIntent.putExtra(EXTRA_URI, url);
-            startIntent.putExtra(PlayerForegroundService.EXTRA_SEEK_TO, player.getContentPosition());
-            startIntent.putExtra(PlayerForegroundService.EXTRA_TITLE, audioTitle);
-            startIntent.setAction(PlayerForegroundService.START_FOREGROUND_ACTION);
-            startService(startIntent);
+        // Prepare the player with the source.
+        mPlayer.prepare(videoSource);
 
-            shouldAutoPlay = player.getPlayWhenReady();
-            player.release();
-            player = null;
-            trackSelector = null;
-        }
+        // Autoplay the video when the player is ready
+        mPlayer.setPlayWhenReady(true);
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        if (Util.SDK_INT > 23) {
-            initializePlayer();
-        }
-    }
+    public void onDestroyView() {
+        super.onDestroyView();
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        if ((Util.SDK_INT <= 23 || player == null)) {
-            initializePlayer();
-        }
-    }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (Util.SDK_INT <= 23) {
-            releasePlayer();
-        }
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (Util.SDK_INT > 23) {
-            releasePlayer();
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case REQ_CODE_SPEECH_INPUT: {
-                if (resultCode == RESULT_OK && null != data) {
-                  List<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                  for (String s : result){
-                      Log.d(TAG,"res"+s);
-                  }
-                }
-                break;
-            }
-        }
-
-//        add();
-//        display();
+        // Release the player when it is not needed
+        mPlayer.release();
     }
 }
