@@ -6,7 +6,6 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
-
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -14,22 +13,22 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.DetailTabActivity"
+            android:name=".activitys.DetailTabActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.playerActivty"
+            android:name=".mediaPlayer.playerActivty"
             android:screenOrientation="portrait" />
 
-        <service android:name="com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService" />
+        <service android:name=".mediaPlayer.PlayerForegroundService" />
 
-        <receiver android:name="com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.NotificationHelper$myNotificationCloseButtonHandler" />
-        <receiver android:name="com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.NotificationHelper$NotificationFastForwardButtonHandler" />
-        <receiver android:name="com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.NotificationHelper$NotificationFastRewindButtonHandler" />
-        <receiver android:name="com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.NotificationHelper$NotificationPlayOrPauseButtonHandler" />
-        <receiver android:name="com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService$StartPlayerActivtyBrodcastReciver" />
+        <receiver android:name=".mediaPlayer.NotificationHelper$myNotificationCloseButtonHandler" />
+        <receiver android:name=".mediaPlayer.NotificationHelper$NotificationFastForwardButtonHandler" />
+        <receiver android:name=".mediaPlayer.NotificationHelper$NotificationFastRewindButtonHandler" />
+        <receiver android:name=".mediaPlayer.NotificationHelper$NotificationPlayOrPauseButtonHandler" />
+        <receiver android:name=".mediaPlayer.PlayerForegroundService$StartPlayerActivtyBrodcastReciver" />
 
         <activity
-            android:name="com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.MainActivity"
+            android:name=".activitys.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
@@ -39,7 +38,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.feedbackActivity"></activity>
+        <activity android:name=".activitys.feedbackActivity" />
+        <activity android:name=".mediaPlayer.ResumeFragmentActivty"></activity>
     </application>
 
 </manifest>

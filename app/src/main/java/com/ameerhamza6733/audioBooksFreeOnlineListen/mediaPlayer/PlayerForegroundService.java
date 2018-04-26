@@ -20,6 +20,7 @@ import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
+import com.ameerhamza6733.audioBooksFreeOnlineListen.MySharedPref;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.Util;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.PlayerFragment;
@@ -59,12 +60,13 @@ public class PlayerForegroundService extends Service implements Player.EventList
     public final static String STOP_ACTION = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.stop";
     public final static String PLAY_PAUSE_ACTION = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.playOrpause";
 
-   public final static String SERVICE_STAARTED="com.ameerhamza6733.businessaudiobook.mediaPlayer.SERVICE_STAARTED";
+    public final static String SERVICE_STAARTED = "com.ameerhamza6733.businessaudiobook.mediaPlayer.SERVICE_STAARTED";
 
     public static final int ONGOING_NOTIFICATION_ID = 101;
     public final static String START_ACTIVITY_BROAD_CAST = "START_ACTIVITY_BROAD_CAST";
     private static final String TAG = "PlayerForegroundService";
     public static String MAIN_ACTION = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.main";
+    public static Boolean isPlaying = false;
     protected static String uri;
     private static SimpleExoPlayer player;
     private static String title;
@@ -74,7 +76,6 @@ public class PlayerForegroundService extends Service implements Player.EventList
     RemoteViews NotificationRemoteView;
     Notification notification;
     NotificationCompat.Builder mBuilder;
-    public static Boolean isPlaying=false;
     private long seekto = 0;
     private StartPlayerActivtyBrodcastReciver activtyBrodcastReciver;
 
@@ -82,7 +83,8 @@ public class PlayerForegroundService extends Service implements Player.EventList
     @Override
     public void onCreate() {
         super.onCreate();
-        isPlaying=true;
+        isPlaying = true;
+
         activtyBrodcastReciver = new StartPlayerActivtyBrodcastReciver();
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addCategory(Intent.CATEGORY_DEFAULT);
@@ -97,6 +99,12 @@ public class PlayerForegroundService extends Service implements Player.EventList
         if (intent.getAction().equals(PlayerForegroundService.START_FOREGROUND_ACTION)) {
 
             uri = intent.getStringExtra(EXTRA_URI);
+            try {
+                seekto = MySharedPref.getSavedLongFromPreference(getApplicationContext(),MySharedPref.SHARD_PREF_AUDIO_BOOK,uri);
+            } catch (Exception e) {
+                Log.d(TAG,":"+e.getMessage());
+                e.printStackTrace();
+            }
             seekto = intent.getLongExtra(PlayerForegroundService.EXTRA_SEEK_TO, 0);
             title = intent.getStringExtra(PlayerForegroundService.EXTRA_TITLE);
             Toast.makeText(this, "Start Service", Toast.LENGTH_SHORT).show();
@@ -116,7 +124,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
 
         } else if (intent.getAction().equals(PLAY_PAUSE_ACTION)) {
             if (player != null) {
-                seekto=player.getContentPosition();
+                seekto = player.getContentPosition();
                 if (handler != null) {
                     handler.removeCallbacks(runnable);
                 }
@@ -143,12 +151,19 @@ public class PlayerForegroundService extends Service implements Player.EventList
 
     @Override
     public void onDestroy() {
-        if (player != null)
+        if (player != null) {
+            SaveSongState();
             player.release();
-        if (activtyBrodcastReciver!=null)
-        unregisterReceiver(activtyBrodcastReciver);
+        }
+        if (activtyBrodcastReciver != null)
+            unregisterReceiver(activtyBrodcastReciver);
+
         super.onDestroy();
 
+    }
+
+    private void SaveSongState() {
+        MySharedPref.saveObjectToSharedPreference(getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK, uri, player.getCurrentPosition());
     }
 
     @Override

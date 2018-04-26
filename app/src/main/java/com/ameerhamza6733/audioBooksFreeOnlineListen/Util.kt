@@ -1,5 +1,7 @@
 package com.ameerhamza6733.audioBooksFreeOnlineListen
 
+import android.content.Context
+import android.util.Log
 import org.json.JSONException
 import org.json.JSONObject
 import kotlin.collections.ArrayList
@@ -158,6 +160,15 @@ object Util {
     }
 
 
+    fun isResumeAble(context: Context,URL: String): Long{
+        return try {
+            MySharedPref.getSavedLongFromPreference(context.getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK, URL);
+        } catch (e: Exception) {
+            e.printStackTrace()
+            0;
+        }
+
+    }
     fun formatSeconds(timeInSeconds: Long): String {
         val hours = timeInSeconds / 3600
         val secondsLeft = timeInSeconds - hours * 3600

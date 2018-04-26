@@ -2,6 +2,7 @@ package com.ameerhamza6733.audioBooksFreeOnlineListen;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.AudioBook;
 import com.google.gson.Gson;
@@ -35,6 +36,16 @@ public class MySharedPref {
         if (sharedPreferences.contains(preferenceKey)) {
             final Gson gson = new Gson();
             return gson.fromJson(sharedPreferences.getString(preferenceKey, ""), String.class);
+        }
+        return null;
+    }
+
+
+    public static Long getSavedLongFromPreference(Context context, String preferenceFileName, String preferenceKey) throws Exception{
+        SharedPreferences sharedPreferences = context.getSharedPreferences(preferenceFileName, 0);
+        if (sharedPreferences.contains(preferenceKey)) {
+            final Gson gson = new Gson();
+            return gson.fromJson(sharedPreferences.getString(preferenceKey, ""), Long.class);
         }
         return null;
     }
