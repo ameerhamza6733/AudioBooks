@@ -115,6 +115,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
         } else if (intent.getAction().equals(PlayerForegroundService.STOP_ACTION)) {
             if (handler != null)
                 handler.removeCallbacks(runnable);
+            SendMediaStateBroadCast(PlayerFragment.BROADCAST_ACTION_PLAYER_Closed);
             stopForeground(true);
             stopSelf();
         } else if (intent.getAction().equals(FAST_FORWARD_ACTION)) {
@@ -151,13 +152,15 @@ public class PlayerForegroundService extends Service implements Player.EventList
 
     @Override
     public void onDestroy() {
+
         if (player != null) {
             SaveSongState();
             player.release();
         }
-        if (activtyBrodcastReciver != null)
+        if (activtyBrodcastReciver != null){
             unregisterReceiver(activtyBrodcastReciver);
-
+        }
+        PlayerForegroundService.isPlaying=false;
         super.onDestroy();
 
     }
@@ -190,7 +193,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
         if (playbackState == Player.STATE_READY) {
-            SendMediaStateBroadCast(PlayerFragment.ACTION_PLAYER_START);
+            SendMediaStateBroadCast(PlayerFragment.BROADCAST_ACTION_PLAYER_START);
             isPlaying = true;
             handler = new Handler();
             runnable = () -> {
@@ -204,7 +207,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
             handler.postDelayed(runnable, 0);
         }
         if (playbackState == Player.STATE_BUFFERING) {
-            SendMediaStateBroadCast(PlayerFragment.ACTION_PLAYER_BUFFRING);
+            SendMediaStateBroadCast(PlayerFragment.BROADCAST_ACTION_BUFFRING);
             if (mNotificationManager != null) {
 
                 NotificationRemoteView.setTextViewText(R.id.audio_track_time, "Buffering...");

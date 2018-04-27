@@ -1,7 +1,6 @@
 package com.ameerhamza6733.audioBooksFreeOnlineListen.fragment;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -42,15 +41,15 @@ import java.util.List;
 
 public class RecyclerViewFragment extends Fragment implements MainActivity.ReciveQuery {
 
+    public static final String KEY_SHARED_PREF_CURRENT_CATALOG = "KEY_SHARED_PREF_CURRENT_CATALOG";
     private static final String TAG = "RecyclerViewFragment";
     private static final String KEY_LAYOUT_MANAGER = "layoutManager";
-    public static final String KEY_SHARED_PREF_CURRENT_CATALOG="KEY_SHARED_PREF_CURRENT_CATALOG";
     protected LayoutManagerType mCurrentLayoutManagerType;
     protected RecyclerView mRecyclerViewPoetry;
     protected RecyclerView.LayoutManager mLayoutManager;
     protected ProgressBar progressBar;
     protected FloatingActionButton floatingActionButton;
-    protected  String currentUrl;
+    protected String currentUrl;
 
     @Override
     public void OnRecivedQuery(String query) {
@@ -95,10 +94,10 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
             DialogFragment bookSearchDialogFragment = BookSearchDialogFragment.newInstance();
             bookSearchDialogFragment.show(getFragmentManager(), "bookSearchDialogFragment");
         });
-        initDatasetForPoetry(Util.INSTANCE.BuildQuery("librivox"));
+        initDatasetForPoetry(Util.INSTANCE.qurarySortBuilder("librivox","addeddate+desc"));
         setHasOptionsMenu(true);
         SetToSpinner(rootView);
-        MySharedPref.saveObjectToSharedPreference(getActivity().getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK,KEY_SHARED_PREF_CURRENT_CATALOG,"librivox");
+        MySharedPref.saveObjectToSharedPreference(getActivity().getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK, KEY_SHARED_PREF_CURRENT_CATALOG, "librivox");
 
         return rootView;
     }
@@ -167,11 +166,18 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
 
     private void SetToSpinner(View root) {
         List<String> catalogueList = Arrays.asList(getResources().getStringArray(R.array.catlog));
+        List<String> filterList = Arrays.asList(getResources().getStringArray(R.array.filters));
+
+        /*
+        bind catalogue spinner
+         */
         ArrayAdapter adapter = new BookCatalogueAdupter(getActivity(),
                 R.layout.each_audio_file_spinner, catalogueList
         );
 
         Spinner mySpinner = root.findViewById(R.id.catalogue);
+
+
         mySpinner.setAdapter(adapter); // Set the custom adapter to the spinner
         // You can create an anonymous listener to handle the event when is selected an spinner item
         mySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -190,7 +196,34 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
             public void onNothingSelected(AdapterView<?> adapter) {
             }
         });
+        /*
+         bind filter spinner
+         */
+        ArrayAdapter filteradapter = new BookCatalogueAdupter(getActivity(),
+                R.layout.each_audio_file_spinner, filterList
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        Spinner spinner_filter = root.findViewById(R.id.filter);
+        spinner_filter.setAdapter(filteradapter);
+        spinner_filter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+
+                if (position > 0) {
+                    initDatasetForPoetry(Util.INSTANCE.qurarySortBuilder(MySharedPref.getSavedObjectFromPreference(getActivity().getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK, RecyclerViewFragment.KEY_SHARED_PREF_CURRENT_CATALOG), filterList.get(position) + "+" + "desc"));
+
+                }else if (position==0)
+                //  initDatasetForPoetry(Util.INSTANCE.quraryBuilder(currentUrl,filter.get(position)+"+"+"asc"));
+                    initDatasetForPoetry(Util.INSTANCE.qurarySortBuilder(MySharedPref.getSavedObjectFromPreference(getActivity().getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK, RecyclerViewFragment.KEY_SHARED_PREF_CURRENT_CATALOG), ""));
+
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapter) {
+            }
+        });
 
     }
 
@@ -198,8 +231,8 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
      * Generates Strings for RecyclerView's adapter. This data would usually come
      * from a local content provider or remote server.
      */
-    protected  void initDatasetForPoetry(String url) {
-         currentUrl = url;
+    protected void initDatasetForPoetry(String url) {
+        currentUrl = url;
         progressBar.setVisibility(View.VISIBLE);
         Log.d(TAG, "url: " + url);
         MainActivityViewModel model = ViewModelProviders.of(this).get(MainActivityViewModel.class);
@@ -238,4 +271,4 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
     }
 
 
-    }
+}

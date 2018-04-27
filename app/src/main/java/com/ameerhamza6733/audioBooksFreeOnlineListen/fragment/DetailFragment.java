@@ -36,6 +36,7 @@ public class DetailFragment extends Fragment {
     private TextView mtvRating;
     private TextView mTVViews;
     private TextView mTVCreator;
+    private TextView mTVDate;
     private Spinner mChapterSpinner;
     private AudioBook audioBook;
     private ImageView imageView;
@@ -57,7 +58,9 @@ public class DetailFragment extends Fragment {
         mTVCreator = view.findViewById(R.id.creator);
         mChapterSpinner = view.findViewById(R.id.spinner1);
         imageView = view.findViewById(R.id.iamge);
+        mTVDate=view.findViewById(R.id.pubdate);
 
+        mTVDate.setText(audioBook.getData());
         mTVDetail.setText(parseDicription());
         mtvRating.setText(audioBook.getAvg_rating());
         mTVViews.setText(audioBook.getNum_reviews());

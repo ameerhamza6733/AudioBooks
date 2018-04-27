@@ -32,12 +32,12 @@
     </string-array>
 
     <string-array name="filters">
-        <item>Choose</item>
-        <item>date</item>
+        <item>filter</item>
+        <item>addeddate</item>
         <item>downloads</item>
         <item>size</item>
         <item>title</item>
         <item>languageSorter</item>
-        <item>star</item>
+        <item>stars</item>
     </string-array>
 </resources>

@@ -41,6 +41,7 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
 
 import java.util.List;
 
@@ -55,8 +56,10 @@ import static com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerFo
  */
 
 public class PlayerFragment extends Fragment {
-    public static final String ACTION_PLAYER_BUFFRING = "ACTION_BUFFRING";
-    public static final String ACTION_PLAYER_START = "ACTION_PLAYER_START";
+    public static final String BROADCAST_ACTION_BUFFRING = "ACTION_BUFFRING";
+    public static final String BROADCAST_ACTION_PLAYER_START = "BROADCAST_ACTION_PLAYER_START";
+    public static final String BROADCAST_ACTION_PLAYER_Closed ="BROADCAST_ACTION_PLAYER_Closed";
+    public static final String BROADCAST_ACTION_SHOW_AD ="BROADCAST_ACTION_SHOW_AD";
 
     private static final String TAG = "PlayerFragment";
     Handler handler = new Handler();
@@ -71,9 +74,10 @@ public class PlayerFragment extends Fragment {
     private ProgressBar progressBar;
     private ProgressBar PlayerStatePB;
     private RelativeLayout rvBackground;
-
     private View rootView;
     private AdView mAdView;
+    private InterstitialAd mInterstitialAd;
+
     private BroadcastReceiver receiver;
     private IntentFilter filter;
     private MataData currentAudioBook;
@@ -83,20 +87,22 @@ public class PlayerFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         filter = new IntentFilter();
-        filter.addAction(ACTION_PLAYER_BUFFRING);
-        filter.addAction(ACTION_PLAYER_START);
-
+        filter.addAction(BROADCAST_ACTION_BUFFRING);
+        filter.addAction(BROADCAST_ACTION_PLAYER_START);
+        filter.addAction(BROADCAST_ACTION_PLAYER_Closed);
+        filter.addAction(BROADCAST_ACTION_SHOW_AD);
         receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                Log.d(TAG,"action recived: "+intent.getAction());
                 //do something based on the intent's action
-                if (intent.getAction().equals(ACTION_PLAYER_BUFFRING)) {
+                if (intent.getAction().equals(BROADCAST_ACTION_BUFFRING)) {
                     if (tvPlay != null) {
                         tvPlay.setVisibility(View.GONE);
                         if (PlayerStatePB != null)
                             PlayerStatePB.setVisibility(View.VISIBLE);
                     }
-                } else if (intent.getAction().equals(ACTION_PLAYER_START)) {
+                } else if (intent.getAction().equals(BROADCAST_ACTION_PLAYER_START)) {
 
                     if (PlayerStatePB != null)
                         PlayerStatePB.setVisibility(View.GONE);
@@ -106,6 +112,13 @@ public class PlayerFragment extends Fragment {
                 } else if (intent.getAction().equals(SERVICE_STAARTED)) {
                     if (tvPlay != null)
                         tvPlay.setVisibility(View.INVISIBLE);
+                }else if (intent.getAction().equals(BROADCAST_ACTION_PLAYER_Closed)){
+                    tvPass.setVisibility(View.GONE);
+                    tvPlay.setVisibility(View.VISIBLE);
+
+                }else if (intent.getAction().equals(BROADCAST_ACTION_SHOW_AD)){
+                    if (mInterstitialAd!=null && mInterstitialAd.isLoaded())
+                        mInterstitialAd.show();
                 }
             }
         };
@@ -133,6 +146,7 @@ public class PlayerFragment extends Fragment {
         rootView = inflater.inflate(R.layout.player_fragment, container, false);
         audioBook = MySharedPref.getSavedObjectFromPreference(getActivity().getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK, KEY_SHARD_PREF_AUDIO_BOOK, AudioBook.class);
         mySpinner = (Spinner) rootView.findViewById(R.id.spinner1);
+
         bindViews(rootView);
         intiDataSet();
         loadAd();
@@ -143,7 +157,10 @@ public class PlayerFragment extends Fragment {
 
         mAdView = rootView.findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
-        // mAdView.loadAd(adRequest);
+         mAdView.loadAd(adRequest);
+        mInterstitialAd = new InterstitialAd(getActivity());
+        mInterstitialAd.setAdUnitId("ca-app-pub-5168564707064012/3352880988");
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
 
 
     }
@@ -175,6 +192,7 @@ public class PlayerFragment extends Fragment {
 
         mySpinner.setAdapter(adapter); // Set the custom adapter to the spinner
         // You can create an anonymous listener to handle the event when is selected an spinner item
+        Spinner spinner ;
         mySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
             @Override
@@ -236,9 +254,10 @@ public class PlayerFragment extends Fragment {
             public void onClick(View v) {
 
                 tvPlay.setVisibility(View.VISIBLE);
-
                 handler.postDelayed(() -> tvPass.setVisibility(View.GONE), 500);
                 startPlayerService(currentAudioBook, PlayerForegroundService.PLAY_PAUSE_ACTION, null, 0);
+                if (mInterstitialAd!=null && mInterstitialAd.isLoaded())
+                    mInterstitialAd.show();
             }
         });
 
@@ -256,20 +275,23 @@ public class PlayerFragment extends Fragment {
                     }, 2000);
                 }
 
+
             }
         });
     }
 
     private void startPlayerService(MataData mataData, String Action, String extraKey, long miliSecond) {
 
-        Intent startIntent = new Intent(getActivity(), PlayerForegroundService.class);
-        if (mataData != null) {
-            startIntent.putExtra(EXTRA_URI, mataData.getURL());
-            startIntent.putExtra(PlayerForegroundService.EXTRA_TITLE, mataData.getName());
-        }
-        startIntent.putExtra(extraKey, miliSecond);
-        startIntent.setAction(Action);
-        getActivity().startService(startIntent);
+       try {
+           Intent startIntent = new Intent(getActivity(), PlayerForegroundService.class);
+           if (mataData != null) {
+               startIntent.putExtra(EXTRA_URI, mataData.getURL());
+               startIntent.putExtra(PlayerForegroundService.EXTRA_TITLE, mataData.getName());
+           }
+           startIntent.putExtra(extraKey, miliSecond);
+           startIntent.setAction(Action);
+           getActivity().startService(startIntent);
+       }catch (Exception e){}
     }
 
     private void stopPlayerService(MataData mataData) {

@@ -57,11 +57,11 @@ public class MainActivityViewModel extends ViewModel {
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject docs = jsonArray.getJSONObject(i);
                             if (docs.getString("identifier").toLowerCase().contains("librivox")) {
-                                audioBookList.add(new AudioBook(Util.INSTANCE.ExtractRating(docs), Util.INSTANCE.ExtractDescription(docs), Util.INSTANCE.ExtractNoOfDownloads(docs), docs.getString("identifier"), Util.INSTANCE.ExtractNoReviews(docs), docs.getString("title"), Util.INSTANCE.ExtractPublisher(docs), Util.INSTANCE.ExtractMediaType(docs),Util.INSTANCE.EtracCreator(docs)));
+                                audioBookList.add(new AudioBook(Util.INSTANCE.ExtractRating(docs), Util.INSTANCE.ExtractDescription(docs), Util.INSTANCE.ExtractNoOfDownloads(docs), docs.getString("identifier"), Util.INSTANCE.ExtractNoReviews(docs), docs.getString("title"), Util.INSTANCE.ExtractPublisher(docs), Util.INSTANCE.ExtractMediaType(docs),Util.INSTANCE.EtracCreator(docs),Util.INSTANCE.ExtractData(docs)));
 
                             }
                         }
-                        Collections.shuffle(audioBookList);
+                       // Collections.shuffle(audioBookList);
 
                     } catch (Exception e) {
                         e.printStackTrace();

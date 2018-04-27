@@ -39,7 +39,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".activitys.feedbackActivity" />
-        <activity android:name=".mediaPlayer.ResumeFragmentActivty"></activity>
     </application>
 
 </manifest>

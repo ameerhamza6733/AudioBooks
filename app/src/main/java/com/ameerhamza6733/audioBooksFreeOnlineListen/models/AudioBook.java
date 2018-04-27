@@ -19,8 +19,9 @@ public class AudioBook implements Serializable{
     private String publisher;
     private String creator;
     private String mediatype;
+    private String data;
 
-    public AudioBook(String avg_rating, String description, String downloads, String identifier, String num_reviews, String title,String publisher,String mediatype,String creator) {
+    public AudioBook(String avg_rating, String description, String downloads, String identifier, String num_reviews, String title,String publisher,String mediatype,String creator,String data) {
         this.avg_rating = avg_rating;
         this.description = description;
         this.downloads = downloads;
@@ -30,6 +31,7 @@ public class AudioBook implements Serializable{
         this.publisher=publisher;
         this.mediatype=mediatype;
         this.creator=creator;
+        this.data=data;
     }
 
     protected AudioBook(Parcel in) {
@@ -42,6 +44,7 @@ public class AudioBook implements Serializable{
         publisher = in.readString();
         creator = in.readString();
         mediatype = in.readString();
+        data=in.readString();
     }
 
 
@@ -82,5 +85,7 @@ public class AudioBook implements Serializable{
         return creator;
     }
 
-
+    public String getData() {
+        return data;
+    }
 }

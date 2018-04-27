@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.PlayerFragment;
+
 /**
  * Created by AmeerHamza on 2/13/2018.
  */
@@ -83,6 +85,10 @@ public class NotificationHelper {
             Intent startIntent = new Intent(context, PlayerForegroundService.class);
             startIntent.setAction(PlayerForegroundService.STOP_ACTION);
             context.startService(startIntent);
+
+            Intent broadcastIntent = new Intent();
+            broadcastIntent.setAction(PlayerFragment.BROADCAST_ACTION_SHOW_AD);
+            context.sendBroadcast(broadcastIntent);
         }
 
 
