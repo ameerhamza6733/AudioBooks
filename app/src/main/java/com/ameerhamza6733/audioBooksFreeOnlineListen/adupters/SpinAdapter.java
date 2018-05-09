@@ -18,7 +18,7 @@ import java.util.List;
 
 public class SpinAdapter  extends ArrayAdapter<MataData> {
 
-    // Your sent context
+    // Your sent activity
     private Context context;
     // Your custom values for the spinner (User)
     private List<MataData> values;

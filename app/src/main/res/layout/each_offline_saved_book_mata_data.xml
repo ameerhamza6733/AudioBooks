@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+<LinearLayout
+    android:weightSum="1"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <ImageView
+        android:src="@drawable/ic_music_note_black_24dp"
+        android:layout_weight=".3"
+        android:layout_width="0dp"
+        android:layout_height="75dp" />
+    <TextView
+        android:layout_gravity="center"
+
+        android:textColor="@color/colorPrimaryText"
+        android:textSize="25sp"
+
+        android:layout_weight=".7"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content" />
+</LinearLayout>
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="2dp"
+        android:background="#c0c0c0"/>
+</RelativeLayout>

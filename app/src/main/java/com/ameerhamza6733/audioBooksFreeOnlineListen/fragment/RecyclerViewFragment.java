@@ -1,10 +1,8 @@
 package com.ameerhamza6733.audioBooksFreeOnlineListen.fragment;
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -29,11 +27,22 @@ import com.ameerhamza6733.audioBooksFreeOnlineListen.Util;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.MainActivity;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.BookCatalogueAdupter;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.CustomAdapter;
-import com.ameerhamza6733.audioBooksFreeOnlineListen.viewModels.MainActivityViewModel;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.models.AudioBook;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by AmeerHamza on 2/8/2018.
@@ -49,12 +58,13 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
     protected RecyclerView.LayoutManager mLayoutManager;
     protected ProgressBar progressBar;
     protected FloatingActionButton floatingActionButton;
-    protected String currentUrl;
+    private RequestQueue requsestQueue;
+
 
     @Override
     public void OnRecivedQuery(String query) {
         Log.d(TAG, "query: " + query);
-        initDatasetForPoetry(query);
+        intiVolley(query);
 
     }
 
@@ -94,12 +104,20 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
             DialogFragment bookSearchDialogFragment = BookSearchDialogFragment.newInstance();
             bookSearchDialogFragment.show(getFragmentManager(), "bookSearchDialogFragment");
         });
-        initDatasetForPoetry(Util.INSTANCE.qurarySortBuilder("librivox","addeddate+desc"));
+        String welcomeUrl = Util.INSTANCE.qurarySortBuilder("librivox","addeddate+desc");
+      requsestQueue=  Volley.newRequestQueue(getActivity());
+        intiVolley(welcomeUrl);
         setHasOptionsMenu(true);
         SetToSpinner(rootView);
-        MySharedPref.saveObjectToSharedPreference(getActivity().getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK, KEY_SHARED_PREF_CURRENT_CATALOG, "librivox");
+        MySharedPref.saveObjectToSharedPreference(getActivity().getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, KEY_SHARED_PREF_CURRENT_CATALOG, "librivox");
 
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
     }
 
     /**
@@ -186,8 +204,8 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
 
                 if (position > 0) {
-                    initDatasetForPoetry(Util.INSTANCE.BuildQuery(catalogueList.get(position)));
-                    MySharedPref.saveObjectToSharedPreference(getActivity().getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK, KEY_SHARED_PREF_CURRENT_CATALOG, catalogueList.get(position));
+                    intiVolley(Util.INSTANCE.BuildQuery(catalogueList.get(position)));
+                    MySharedPref.saveObjectToSharedPreference(getActivity().getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, KEY_SHARED_PREF_CURRENT_CATALOG, catalogueList.get(position));
                 }
 
             }
@@ -211,13 +229,9 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
 
                 if (position > 0) {
-                    initDatasetForPoetry(Util.INSTANCE.qurarySortBuilder(MySharedPref.getSavedObjectFromPreference(getActivity().getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK, RecyclerViewFragment.KEY_SHARED_PREF_CURRENT_CATALOG), filterList.get(position) + "+" + "desc"));
+                    intiVolley(Util.INSTANCE.qurarySortBuilder(MySharedPref.getSavedObjectFromPreference(getActivity().getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, RecyclerViewFragment.KEY_SHARED_PREF_CURRENT_CATALOG), filterList.get(position) + "+" + "desc"));
 
-                }else if (position==0)
-                //  initDatasetForPoetry(Util.INSTANCE.quraryBuilder(currentUrl,filter.get(position)+"+"+"asc"));
-                    initDatasetForPoetry(Util.INSTANCE.qurarySortBuilder(MySharedPref.getSavedObjectFromPreference(getActivity().getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK, RecyclerViewFragment.KEY_SHARED_PREF_CURRENT_CATALOG), ""));
-
-
+                }
             }
 
             @Override
@@ -231,40 +245,91 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
      * Generates Strings for RecyclerView's adapter. This data would usually come
      * from a local content provider or remote server.
      */
-    protected void initDatasetForPoetry(String url) {
-        currentUrl = url;
+//    protected void initDatasetForPoetry(String url) {
+//
+//        progressBar.setVisibility(View.VISIBLE);
+//        Log.d(TAG, "url: " + url);
+//        MainActivityViewModel model = ViewModelProviders.of(getActivity()).get(MainActivityViewModel.class);
+//        model.loadData(Volley.newRequestQueue(getActivity()), url).observe(this, updatedAudioBookList -> {
+//            // update UI
+//            if (updatedAudioBookList != null) {
+//                progressBar.setVisibility(View.GONE);
+//                if (updatedAudioBookList.size() == 0) {
+//                    Toast.makeText(getActivity(), "No results matched your criteria.", Toast.LENGTH_LONG).show();
+//                } else {
+//                    CustomAdapter mAdapter = new CustomAdapter(updatedAudioBookList);
+//                    mRecyclerViewPoetry.setAdapter(mAdapter);
+//                }
+//
+//            } else {
+//                progressBar.setVisibility(View.GONE);
+//                Snackbar
+//
+//                        .make(mRecyclerViewPoetry, "Connection Error", Snackbar.LENGTH_LONG)
+//                        .setAction("Try again", new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View view) {
+//                                initDatasetForPoetry(url);
+//                            }
+//                        }).setDuration(Snackbar.LENGTH_INDEFINITE).show();
+//
+//
+//            }
+//        });
+//    }
+
+    private void intiVolley(String s) {
         progressBar.setVisibility(View.VISIBLE);
-        Log.d(TAG, "url: " + url);
-        MainActivityViewModel model = ViewModelProviders.of(this).get(MainActivityViewModel.class);
-        model.loadData(Volley.newRequestQueue(getActivity()), url).observe(this, updatedAudioBookList -> {
-            // update UI
-            if (updatedAudioBookList != null) {
-                progressBar.setVisibility(View.GONE);
-                if (updatedAudioBookList.size() == 0) {
-                    Toast.makeText(getActivity(), "No results matched your criteria.", Toast.LENGTH_LONG).show();
-                } else {
-                    CustomAdapter mAdapter = new CustomAdapter(updatedAudioBookList);
-                    mRecyclerViewPoetry.setAdapter(mAdapter);
+        Log.d(TAG,"intiVolley");
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, s, response -> {
+
+            Observable.fromCallable(() -> {
+                List<AudioBook> audioBookList = new ArrayList<>();
+                try {
+                    JSONObject jsonObject = Util.INSTANCE.toJson(response.substring(response.indexOf("{"), response.lastIndexOf("}") + 1));
+                    JSONArray jsonArray = jsonObject.getJSONObject("response").getJSONArray("docs");
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject docs = jsonArray.getJSONObject(i);
+                        if (docs.getString("identifier").toLowerCase().contains("librivox")) {
+                            audioBookList.add(new AudioBook(Util.INSTANCE.ExtractRating(docs), Util.INSTANCE.ExtractDescription(docs), Util.INSTANCE.ExtractNoOfDownloads(docs), docs.getString("identifier"), Util.INSTANCE.ExtractNoReviews(docs), docs.getString("title"), Util.INSTANCE.ExtractPublisher(docs), Util.INSTANCE.ExtractMediaType(docs),Util.INSTANCE.EtracCreator(docs),Util.INSTANCE.ExtractData(docs)));
+
+                        }
+                    }
+
+                        // Collections.shuffle(audioBookList);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
                 }
+                return audioBookList;
+            }).subscribeOn(Schedulers.computation())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe((result) -> {
+                        if (result != null) {
 
-            } else {
-                progressBar.setVisibility(View.GONE);
-                Snackbar
+                                progressBar.setVisibility(View.GONE);
+                                if (result.size() == 0) {
+                                    Toast.makeText(getActivity(), "No results matched your criteria.", Toast.LENGTH_LONG).show();
+                                } else {
+                                    CustomAdapter mAdapter = new CustomAdapter(result);
+                                    mRecyclerViewPoetry.setAdapter(mAdapter);
+                                }
+                        }else {
+                            Log.d("RecyclerViewFragment","no open source book find");
+                        }
+                    });
 
-                        .make(mRecyclerViewPoetry, "Connection Error", Snackbar.LENGTH_LONG)
-                        .setAction("Try again", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                initDatasetForPoetry(currentUrl);
-                            }
-                        }).setDuration(Snackbar.LENGTH_INDEFINITE).show();
-
-
-            }
+            Log.d(MainActivity.TAG, "volley response");
+        }, (error) -> {
+            error.printStackTrace();
+            progressBar.setVisibility(View.GONE);
+            Toast.makeText(getActivity(),"Error:",Toast.LENGTH_LONG).show();
+            Log.d(MainActivity.TAG, "volley error" + error.getMessage());
         });
+        requsestQueue.add(stringRequest);
+
     }
-
-
     private enum LayoutManagerType {
         GRID_LAYOUT_MANAGER,
         LINEAR_LAYOUT_MANAGER

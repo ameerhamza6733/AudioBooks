@@ -17,7 +17,7 @@ import java.util.List;
 
 public class BookCatalogueAdupter extends ArrayAdapter<String> {
 
-    // Your sent context
+    // Your sent activity
     private Context context;
     // Your custom values for the spinner (User)
     private List<String> values;

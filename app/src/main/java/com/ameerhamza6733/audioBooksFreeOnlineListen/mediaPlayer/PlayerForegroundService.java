@@ -100,7 +100,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
 
             uri = intent.getStringExtra(EXTRA_URI);
             try {
-                seekto = MySharedPref.getSavedLongFromPreference(getApplicationContext(),MySharedPref.SHARD_PREF_AUDIO_BOOK,uri);
+                seekto = MySharedPref.getSavedLongFromPreference(getApplicationContext(),MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME,uri);
             } catch (Exception e) {
                 Log.d(TAG,":"+e.getMessage());
                 e.printStackTrace();
@@ -119,7 +119,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
             stopForeground(true);
             stopSelf();
         } else if (intent.getAction().equals(FAST_FORWARD_ACTION)) {
-            int second = intent.getIntExtra(EXTRA_FAST_FORWARD_MILI_SECONDS, 0);
+            long second = intent.getLongExtra(EXTRA_FAST_FORWARD_MILI_SECONDS, 0);
             if (player != null)
                 player.seekTo(player.getCurrentPosition() + second);
 
@@ -166,7 +166,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
     }
 
     private void SaveSongState() {
-        MySharedPref.saveObjectToSharedPreference(getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK, uri, player.getCurrentPosition());
+        MySharedPref.saveObjectToSharedPreference(getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, uri, player.getCurrentPosition());
     }
 
     @Override
@@ -337,12 +337,12 @@ public class PlayerForegroundService extends Service implements Player.EventList
 //                    intent1.putExtra(playerActivty.EXTRA_PLAYER_URI, uri);
 //                    intent1.putExtra(playerActivty.EXTRA_TITLE, title);
 //                    intent1.putExtra(playerActivty.EXTRA_SEEK_TO, player.getContentPosition());
-//                    context.startActivity(intent1);
+//                    activity.startActivity(intent1);
 //
 //                    //stop this service
-//                    Intent startIntent = new Intent(context, PlayerForegroundService.class);
+//                    Intent startIntent = new Intent(activity, PlayerForegroundService.class);
 //                    startIntent.setAction(PlayerForegroundService.STOP_ACTION);
-//                    context.startService(startIntent);
+//                    activity.startService(startIntent);
 
                     break;
             }

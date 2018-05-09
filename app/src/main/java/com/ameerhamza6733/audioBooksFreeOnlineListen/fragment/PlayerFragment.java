@@ -12,6 +12,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -29,6 +31,7 @@ import android.widget.Toast;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.MySharedPref;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.Util;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.DownloaderActivty;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.SpinAdapter;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.AudioBook;
@@ -43,6 +46,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.DetailTabActivity.KEY_SHARD_PREF_AUDIO_BOOK;
@@ -58,8 +62,8 @@ import static com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerFo
 public class PlayerFragment extends Fragment {
     public static final String BROADCAST_ACTION_BUFFRING = "ACTION_BUFFRING";
     public static final String BROADCAST_ACTION_PLAYER_START = "BROADCAST_ACTION_PLAYER_START";
-    public static final String BROADCAST_ACTION_PLAYER_Closed ="BROADCAST_ACTION_PLAYER_Closed";
-    public static final String BROADCAST_ACTION_SHOW_AD ="BROADCAST_ACTION_SHOW_AD";
+    public static final String BROADCAST_ACTION_PLAYER_Closed = "BROADCAST_ACTION_PLAYER_Closed";
+    public static final String BROADCAST_ACTION_SHOW_AD = "BROADCAST_ACTION_SHOW_AD";
 
     private static final String TAG = "PlayerFragment";
     Handler handler = new Handler();
@@ -77,10 +81,12 @@ public class PlayerFragment extends Fragment {
     private View rootView;
     private AdView mAdView;
     private InterstitialAd mInterstitialAd;
+    private FloatingActionButton fabDownload;
 
     private BroadcastReceiver receiver;
     private IntentFilter filter;
     private MataData currentAudioBook;
+    private ArrayList<MataData> mataDataList;
 
 
     @Override
@@ -94,7 +100,7 @@ public class PlayerFragment extends Fragment {
         receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                Log.d(TAG,"action recived: "+intent.getAction());
+                Log.d(TAG, "action recived: " + intent.getAction());
                 //do something based on the intent's action
                 if (intent.getAction().equals(BROADCAST_ACTION_BUFFRING)) {
                     if (tvPlay != null) {
@@ -112,12 +118,12 @@ public class PlayerFragment extends Fragment {
                 } else if (intent.getAction().equals(SERVICE_STAARTED)) {
                     if (tvPlay != null)
                         tvPlay.setVisibility(View.INVISIBLE);
-                }else if (intent.getAction().equals(BROADCAST_ACTION_PLAYER_Closed)){
+                } else if (intent.getAction().equals(BROADCAST_ACTION_PLAYER_Closed)) {
                     tvPass.setVisibility(View.GONE);
                     tvPlay.setVisibility(View.VISIBLE);
 
-                }else if (intent.getAction().equals(BROADCAST_ACTION_SHOW_AD)){
-                    if (mInterstitialAd!=null && mInterstitialAd.isLoaded())
+                } else if (intent.getAction().equals(BROADCAST_ACTION_SHOW_AD)) {
+                    if (mInterstitialAd != null && mInterstitialAd.isLoaded())
                         mInterstitialAd.show();
                 }
             }
@@ -144,12 +150,12 @@ public class PlayerFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.player_fragment, container, false);
-        audioBook = MySharedPref.getSavedObjectFromPreference(getActivity().getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK, KEY_SHARD_PREF_AUDIO_BOOK, AudioBook.class);
+        audioBook = MySharedPref.getSavedObjectFromPreference(getActivity().getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, KEY_SHARD_PREF_AUDIO_BOOK, AudioBook.class);
         mySpinner = (Spinner) rootView.findViewById(R.id.spinner1);
 
         bindViews(rootView);
         intiDataSet();
-        loadAd();
+        // loadAd();
         return rootView;
     }
 
@@ -157,7 +163,7 @@ public class PlayerFragment extends Fragment {
 
         mAdView = rootView.findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
-         mAdView.loadAd(adRequest);
+        mAdView.loadAd(adRequest);
         mInterstitialAd = new InterstitialAd(getActivity());
         mInterstitialAd.setAdUnitId("ca-app-pub-5168564707064012/3352880988");
         mInterstitialAd.loadAd(new AdRequest.Builder().build());
@@ -171,14 +177,25 @@ public class PlayerFragment extends Fragment {
         this.PlayerStatePB.setVisibility(View.VISIBLE);
         MetaDataViewModel model = ViewModelProviders.of(this).get(MetaDataViewModel.class);
         if (audioBook.getIdentifier() != null)
-            model.loadData(Volley.newRequestQueue(getActivity()), Util.INSTANCE.toMetaDataURI(audioBook.getIdentifier()), audioBook.getIdentifier()).observe(this, audioFileList -> {
+            model.loadData(Volley.newRequestQueue(getActivity()), Util.INSTANCE.toMetaDataURI(audioBook.getIdentifier()), audioBook.getIdentifier()).observe(this, mataDataList -> {
                 // update UI
-                if (audioFileList != null) {
-                    SetToSpinner(audioFileList);
+                if (mataDataList != null) {
+                    this.mataDataList = (ArrayList<MataData>) mataDataList;
+                    SetToSpinner(mataDataList);
                     progressBar.setVisibility(View.GONE);
                 } else {
-                    progressBar.setVisibility(View.GONE);
-                    Toast.makeText(getActivity(), "Error:", Toast.LENGTH_LONG).show();
+                   this. progressBar.setVisibility(View.GONE);
+                    this.PlayerStatePB.setVisibility(View.GONE);
+                    Snackbar.make(progressBar, "Error: ", Snackbar.LENGTH_INDEFINITE)
+                            .setAction("try again", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+
+                                    intiDataSet();
+                                }
+                            })
+
+                            .show();
                 }
 
 
@@ -192,15 +209,15 @@ public class PlayerFragment extends Fragment {
 
         mySpinner.setAdapter(adapter); // Set the custom adapter to the spinner
         // You can create an anonymous listener to handle the event when is selected an spinner item
-        Spinner spinner ;
+        Spinner spinner;
         mySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
                 currentAudioBook = adapter.getItem(position);
-               long seelTo=  Util.INSTANCE.isResumeAble(getActivity(), currentAudioBook.getURL());
-                if (seelTo>1)
-                  ResumeTrackPermistionDialogFragment(seelTo);
+                long seelTo = Util.INSTANCE.isResumeAble(getActivity(), currentAudioBook.getURL());
+                if (seelTo > 1)
+                    ResumeTrackPermistionDialogFragment(seelTo);
                 else {
                     stopPlayerService(currentAudioBook);
                     handler.postDelayed(() -> {
@@ -229,6 +246,7 @@ public class PlayerFragment extends Fragment {
         progressBar = view.findViewById(R.id.prograss_bar);
         tvTitle.setText(audioBook.getTitle());
         PlayerStatePB = view.findViewById(R.id.plater_State_prograss_bar);
+        fabDownload = view.findViewById(R.id.fab_download);
 
         Glide.with(this).asBitmap()
                 .load(Util.INSTANCE.toImageURI(audioBook.getIdentifier()))
@@ -246,8 +264,8 @@ public class PlayerFragment extends Fragment {
                 .load(Util.INSTANCE.toImageURI(audioBook.getIdentifier()))
                 .into(imageView);
 
-        tVrewind.setOnClickListener(v -> startPlayerService(null, FAST_REWIND_ACTION, PlayerForegroundService.EXTRA_REWIND_MILI_SECOND, 10000));
-        tVFarword.setOnClickListener(v -> startPlayerService(null, FAST_FORWARD_ACTION, PlayerForegroundService.EXTRA_FAST_FORWARD_MILI_SECONDS, 30000));
+        tVrewind.setOnClickListener(v -> startPlayerService(currentAudioBook, FAST_REWIND_ACTION, PlayerForegroundService.EXTRA_REWIND_MILI_SECOND, 10000));
+        tVFarword.setOnClickListener(v -> startPlayerService(currentAudioBook, FAST_FORWARD_ACTION, PlayerForegroundService.EXTRA_FAST_FORWARD_MILI_SECONDS, 30000));
 
         tvPass.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -256,7 +274,7 @@ public class PlayerFragment extends Fragment {
                 tvPlay.setVisibility(View.VISIBLE);
                 handler.postDelayed(() -> tvPass.setVisibility(View.GONE), 500);
                 startPlayerService(currentAudioBook, PlayerForegroundService.PLAY_PAUSE_ACTION, null, 0);
-                if (mInterstitialAd!=null && mInterstitialAd.isLoaded())
+                if (mInterstitialAd != null && mInterstitialAd.isLoaded())
                     mInterstitialAd.show();
             }
         });
@@ -278,20 +296,33 @@ public class PlayerFragment extends Fragment {
 
             }
         });
+        fabDownload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               if (mataDataList!=null && mataDataList.size()>0){
+                   Intent downloadingIntent = new Intent(v.getContext(), DownloaderActivty.class);
+                   downloadingIntent.putParcelableArrayListExtra(DownloaderActivty.EXTRA_MATA_DATA_LIST, mataDataList);
+                   v.getContext().startActivity(downloadingIntent);
+               }else {
+                   Toast.makeText(getActivity(),"Please wait ",Toast.LENGTH_LONG).show();
+               }
+            }
+        });
     }
 
     private void startPlayerService(MataData mataData, String Action, String extraKey, long miliSecond) {
 
-       try {
-           Intent startIntent = new Intent(getActivity(), PlayerForegroundService.class);
-           if (mataData != null) {
-               startIntent.putExtra(EXTRA_URI, mataData.getURL());
-               startIntent.putExtra(PlayerForegroundService.EXTRA_TITLE, mataData.getName());
-           }
-           startIntent.putExtra(extraKey, miliSecond);
-           startIntent.setAction(Action);
-           getActivity().startService(startIntent);
-       }catch (Exception e){}
+        try {
+            Intent startIntent = new Intent(getActivity(), PlayerForegroundService.class);
+            if (mataData != null) {
+                startIntent.putExtra(EXTRA_URI, mataData.getURL());
+                startIntent.putExtra(PlayerForegroundService.EXTRA_TITLE, mataData.getName());
+            }
+            startIntent.putExtra(extraKey, miliSecond);
+            startIntent.setAction(Action);
+            getActivity().startService(startIntent);
+        } catch (Exception e) {
+        }
     }
 
     private void stopPlayerService(MataData mataData) {
@@ -302,8 +333,8 @@ public class PlayerFragment extends Fragment {
     }
 
     public void ResumeTrackPermistionDialogFragment(long seekTo) {
-        Log.d(TAG,"trying to ruesume the track ");
-      AlertDialog alertDialog=  new AlertDialog.Builder(getActivity())
+        Log.d(TAG, "trying to ruesume the track ");
+        AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
                 .setTitle("Do you want resume track ")
                 .setPositiveButton("OK", (dialog, which) -> {
                     stopPlayerService(currentAudioBook);

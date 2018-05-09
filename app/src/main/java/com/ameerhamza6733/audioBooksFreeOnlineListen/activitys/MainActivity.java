@@ -2,6 +2,7 @@ package com.ameerhamza6733.audioBooksFreeOnlineListen.activitys;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -14,7 +15,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
-import com.ameerhamza6733.audioBooksFreeOnlineListen.Util;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.BookSearchDialogFragment;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.RecyclerViewFragment;
 import com.google.android.gms.ads.MobileAds;
@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity
     public static String TAG = "MainActivityTAG";
     private RecyclerViewFragment recyclerViewFragment;
     private ReciveQuery reciveQuery;
+    private BottomNavigationView mBottomBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +33,10 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        try {
+            getSupportActionBar().hide();
+        } catch (Exception e) {
+        }
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         recyclerViewFragment = new RecyclerViewFragment();
         fragmentTransaction.replace(R.id.fragment_contaner, recyclerViewFragment);
@@ -47,7 +51,7 @@ public class MainActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-
+        mBottomBar = findViewById(R.id.bottom_navigation);
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
@@ -58,7 +62,7 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+
             finish();
         }
     }
@@ -114,7 +118,8 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_send_feedback) {
             // Handle the camera action
-            startActivity(new Intent(this, feedbackActivity.class));}
+            startActivity(new Intent(this, feedbackActivity.class));
+        }
 //        } else if (id == R.id.poetry) {
 //            reciveQuery.OnRecivedQuery(Util.INSTANCE.getPoetry_URL());
 //        } else if (id == R.id.nav_librivox) {
@@ -159,6 +164,7 @@ public class MainActivity extends AppCompatActivity
         Log.d(TAG, "query: " + query);
         reciveQuery.OnRecivedQuery(query);
     }
+
 
     public interface ReciveQuery {
         public void OnRecivedQuery(String query);

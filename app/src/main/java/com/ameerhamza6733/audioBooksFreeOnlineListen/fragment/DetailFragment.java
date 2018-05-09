@@ -34,18 +34,19 @@ public class DetailFragment extends Fragment {
     private RelativeLayout RVimageView;
     private TextView mTVDetail;
     private TextView mtvRating;
-    private TextView mTVViews;
+    private TextView mTVDownloads;
     private TextView mTVCreator;
     private TextView mTVDate;
     private Spinner mChapterSpinner;
     private AudioBook audioBook;
     private ImageView imageView;
+    private TextView mTVTitle;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.detail_fragment, container, false);
-        audioBook = MySharedPref.getSavedObjectFromPreference(getActivity().getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK, KEY_SHARD_PREF_AUDIO_BOOK, AudioBook.class);
+        audioBook = MySharedPref.getSavedObjectFromPreference(getActivity().getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, KEY_SHARD_PREF_AUDIO_BOOK, AudioBook.class);
         bindViews(view);
         return view;
     }
@@ -54,17 +55,19 @@ public class DetailFragment extends Fragment {
         RVimageView = view.findViewById(R.id.RVimageView);
         mTVDetail = view.findViewById(R.id.detail);
         mtvRating = view.findViewById(R.id.rating);
-        mTVViews = view.findViewById(R.id.views);
+        mTVDownloads = view.findViewById(R.id.downloads);
         mTVCreator = view.findViewById(R.id.creator);
         mChapterSpinner = view.findViewById(R.id.spinner1);
         imageView = view.findViewById(R.id.iamge);
         mTVDate=view.findViewById(R.id.pubdate);
+        mTVTitle =view.findViewById(R.id.title);
 
         mTVDate.setText(audioBook.getData());
         mTVDetail.setText(parseDicription());
         mtvRating.setText(audioBook.getAvg_rating());
-        mTVViews.setText(audioBook.getNum_reviews());
+        mTVDownloads.setText(audioBook.getDownloads());
         mTVCreator.setText(audioBook.getCreator());
+        mTVTitle.setText(audioBook.getTitle());
         Glide.with(this).asBitmap()
                 .load(Util.INSTANCE.toImageURI(audioBook.getIdentifier()))
                 .apply(new RequestOptions().override(8, 8))

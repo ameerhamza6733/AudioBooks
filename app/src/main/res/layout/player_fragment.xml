@@ -138,7 +138,18 @@
                     android:text="30s"
                     android:textColor="@color/colorSecondaryText" />
 
+
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_download"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="27dp"
+        android:layout_marginEnd="27dp"
+        android:src="@drawable/ic_file_download_white_24dp" />
 </RelativeLayout>

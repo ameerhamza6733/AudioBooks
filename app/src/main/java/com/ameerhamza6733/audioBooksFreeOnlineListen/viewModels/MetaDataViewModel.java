@@ -25,25 +25,25 @@ import java.util.List;
 
 public class MetaDataViewModel extends ViewModel {
 
-    private MutableLiveData<List<MataData>> mutableLiveData;
+    private MutableLiveData<ArrayList<MataData>> mutableLiveData;
 
     private String META_DATA_CONNECTION_URL;
     private String TAG = "MetaDataViewModel";
     private String identifier;
 
-    public LiveData<List<MataData>> loadData(RequestQueue requestQueue, String url,String iidentifier) {
-        if (this.mutableLiveData == null || !url.equalsIgnoreCase(this.META_DATA_CONNECTION_URL)) {
-           this. mutableLiveData = new MutableLiveData<List<MataData>>();
+    public LiveData<ArrayList<MataData>> loadData(RequestQueue requestQueue, String url,String iidentifier) {
+       // if (this.mutableLiveData == null || !url.equalsIgnoreCase(this.META_DATA_CONNECTION_URL)) {
+           this. mutableLiveData = new MutableLiveData<ArrayList<MataData>>();
             this.audioFileList = new ArrayList<>();
             this.META_DATA_CONNECTION_URL=url;
             this.identifier=iidentifier;
             intiVolley(requestQueue);
 
-        }
+      //  }
         return mutableLiveData;
     }
 
-    private List<MataData> audioFileList;
+    private ArrayList<MataData> audioFileList;
     private void intiVolley(RequestQueue requestQueue) {
         Log.d(TAG,"intiVolley and url: "+META_DATA_CONNECTION_URL);
         JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.GET, META_DATA_CONNECTION_URL, null, response -> {
@@ -54,7 +54,7 @@ public class MetaDataViewModel extends ViewModel {
                     JSONObject docs = jsonArray.getJSONObject(i);
                     if (docs.getString("source").equalsIgnoreCase("original") && Util.INSTANCE.isSuppotedFormate( docs.getString("name"))) {
                        // Log.d(TAG, "name: " + docs.getString("name"));
-                        MataData mataData= new MataData(docs.getString("name"),Long.parseLong(docs.getString("size")),Util.INSTANCE.toDownloadAbleFileUri(docs.getString("name"),identifier));
+                        MataData mataData= new MataData(docs.getString("name"),Long.parseLong(docs.getString("size")),Util.INSTANCE.toDownloadAbleFileUri(docs.getString("name"),identifier),false);
 
                         audioFileList.add(mataData);
                     }
@@ -65,7 +65,7 @@ public class MetaDataViewModel extends ViewModel {
                         JSONObject docs = jsonArray.getJSONObject(i);
                         if (docs.getString("source").equalsIgnoreCase("derivative") && Util.INSTANCE.isSuppotedFormate( docs.getString("name"))) {
                            // Log.d(TAG, "name: " + docs.getString("name"));
-                            MataData mataData= new MataData(docs.getString("name"),Long.parseLong(docs.getString("size")),Util.INSTANCE.toDownloadAbleFileUri(docs.getString("name"),identifier));
+                            MataData mataData= new MataData(docs.getString("name"),Long.parseLong(docs.getString("size")),Util.INSTANCE.toDownloadAbleFileUri(docs.getString("name"),identifier),false);
                             audioFileList.add(mataData);
                         }
                     }
@@ -77,7 +77,8 @@ public class MetaDataViewModel extends ViewModel {
             Log.d(TAG, "volley response");
         }, (error) -> {
             mutableLiveData.setValue(null);
-            Log.d(TAG, "volley error" + error.getMessage());
+            error.printStackTrace();
+            Log.d(TAG, "volley error" + error.toString());
         });
         requestQueue.add(stringRequest);
 

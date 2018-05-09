@@ -28,13 +28,17 @@ import io.reactivex.schedulers.Schedulers;
  */
 
 public class MainActivityViewModel extends ViewModel {
-
+private static final String TAG = "MainActivityViewModel";
     JSONObject jsonObject;
     private MutableLiveData<List<AudioBook>> mutableLiveData;
     private List<AudioBook> audioBookList;
     private String url;
 
+    public MainActivityViewModel() {
+    }
+
     public LiveData<List<AudioBook>> loadData(RequestQueue requestQueue, String url) {
+        Log.d(TAG,"load data");
         if (mutableLiveData == null ||  !this.url.equalsIgnoreCase(url) ) {
             mutableLiveData = new MutableLiveData<List<AudioBook>>();
             audioBookList = new ArrayList<>();
@@ -46,12 +50,12 @@ public class MainActivityViewModel extends ViewModel {
     }
 
     private void intiVolley(RequestQueue requestQueue) {
-
+        Log.d(TAG,"intiVolley");
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, response -> {
 
                 Observable.fromCallable(() -> {
                     try {
-                        Log.d("RecyclerViewFragment", "url: " + url);
+
                         jsonObject = Util.INSTANCE.toJson(response.substring(response.indexOf("{"), response.lastIndexOf("}") + 1));
                         JSONArray jsonArray = jsonObject.getJSONObject("response").getJSONArray("docs");
                         for (int i = 0; i < jsonArray.length(); i++) {

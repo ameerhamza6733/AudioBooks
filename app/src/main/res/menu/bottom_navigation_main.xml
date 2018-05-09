@@ -1,0 +1,23 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/bn_my_history"
+        android:enabled="true"
+        android:icon="@drawable/ic_history_black_24dp"
+        android:title=" "
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/bn_bookmark"
+        android:enabled="true"
+        android:icon="@drawable/ic_bookmark_black_24dp"
+        android:title=""
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/bn_watch_latter"
+        android:enabled="true"
+        android:icon="@drawable/ic_watch_later_black_24dp"
+        android:title=" "
+        app:showAsAction="ifRoom" />
+
+</menu>
