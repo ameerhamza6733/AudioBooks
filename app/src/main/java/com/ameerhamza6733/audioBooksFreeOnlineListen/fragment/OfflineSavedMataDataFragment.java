@@ -1,40 +1,83 @@
 package com.ameerhamza6733.audioBooksFreeOnlineListen.fragment;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
-import com.ameerhamza6733.audioBooksFreeOnlineListen.MySharedPref;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.OfflineMataDataAdupter;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.AudioBook;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.models.MataData;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.viewModels.OfflineBooksViewModle;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+
+import static com.ameerhamza6733.audioBooksFreeOnlineListen.MySharedPref.SHARD_PREF_DOWNLOADED_AUDIO_BOOK;
 
 /**
- * Created by apple on 5/9/18.
+ * Created by AmeerHamza on 5/9/18.
  */
 
-public class OfflineSavedMataDataFragment extends Fragment {
-    AudioBook audioBook;
+public class OfflineSavedMataDataFragment extends OfflineBookFragment {
+    public static final String BUNDEL_KEY_BOOK_NO = "BUNDEL_KEY_BOOK_NO";
+    private View rootView;
+    private List<MataData> mataDataList = new ArrayList<>();
+    private RecyclerView recyclerView;
+    int bookNumber;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.offline_saved_book_fragemnt,container,false);
-
+        if (rootView == null)
+            rootView = inflater.inflate(R.layout.offline_saved_book_fragemnt, container, false);
+      bookNumber=  getArguments().getInt(BUNDEL_KEY_BOOK_NO);
+        recyclerView = rootView.findViewById(R.id.recyclerViewOfilineSavedBooks);
+        intiDataSet();
+        try {
+            ((AppCompatActivity) getActivity()).getSupportActionBar().show();
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(" Chapters");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return rootView;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        Map<String, ?> allEntries =  MySharedPref.getAllKeys(getActivity().getApplicationContext(),MySharedPref.SHARD_PREF_DOWNLOADED_AUDIO_BOOK);
-        for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
-            Log.d("map values", entry.getKey() + ": " + entry.getValue().toString());
-        }
+
+    public void intiDataSet() {
+        OfflineBooksViewModle offlineBooksViewModle = ViewModelProviders.of(getActivity()).get(OfflineBooksViewModle.class);
+        offlineBooksViewModle.getAudioBook(getActivity().getApplicationContext().getSharedPreferences(SHARD_PREF_DOWNLOADED_AUDIO_BOOK, 0)).observe(this, new Observer<List<AudioBook>>() {
+            @Override
+            public void onChanged(@Nullable List<AudioBook> audioBooks) {
+                if (audioBooks != null && audioBooks.size() > 0) {
+                    for (MataData mataData : audioBooks.get(bookNumber).getMataData())
+                        if (mataData.isHasDownloaded())
+                           mataDataList.add(mataData);
+
+
+                        OfflineMataDataAdupter offlineMataDataAdupter = new OfflineMataDataAdupter(audioBooks, getActivity(),mataDataList);
+                        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                        recyclerView.setAdapter(offlineMataDataAdupter);
+                }else {
+                    Toast.makeText(getActivity(), "You don't have any offline book", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
+
+
 }

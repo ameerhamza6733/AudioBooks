@@ -20,3 +20,5 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 -dontwarn com.squareup.okhttp.**
+-keep public class * implements cn.woblog.android.downloader.db.DownloadDBController
+

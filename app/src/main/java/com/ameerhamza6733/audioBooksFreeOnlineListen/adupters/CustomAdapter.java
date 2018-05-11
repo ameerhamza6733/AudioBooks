@@ -105,8 +105,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
                 @Override
                 public void onClick(View v) {
                     MySharedPref.saveObjectToSharedPreference(v.getContext().getApplicationContext(),MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, DetailTabActivity.KEY_SHARD_PREF_AUDIO_BOOK,mDataSet.get(getAdapterPosition()));
-
-
+                    MySharedPref.saveObjectToSharedPreference(v.getContext().getApplicationContext(),MySharedPref.SHARD_PREF_HISTORY_AUDIO_BOOK_FILE_NAME,mDataSet.get(getAdapterPosition()).getIdentifier(),mDataSet.get(getAdapterPosition()));
                     Log.d(TAG, "Element " + getAdapterPosition() + " clicked.");
                     Intent intent = new Intent(v.getContext(), DetailTabActivity.class);
 

@@ -10,12 +10,13 @@ import com.google.gson.Gson;
 import java.util.Map;
 
 /**
- * Created by apple on 4/23/18.
+ * Created by AmeerHamza on 4/23/18.
  */
 
 public class MySharedPref {
     public static final String SHARD_PREF_AUDIO_BOOK_FILE_NAME ="SHARD_PREF_AUDIO_BOOK_FILE_NAME";
     public static final String SHARD_PREF_DOWNLOADED_AUDIO_BOOK ="SHARD_PREF_DOWNLOADED_AUDIO_BOOK";
+    public static final String  SHARD_PREF_HISTORY_AUDIO_BOOK_FILE_NAME="SHARD_PREF_HISTORY_AUDIO_BOOK_FILE_NAME";
     public static void saveObjectToSharedPreference(Context context, String preferenceFileName, String serializedObjectKey, Object object) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(preferenceFileName, 0);
         SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
@@ -25,8 +26,8 @@ public class MySharedPref {
         sharedPreferencesEditor.apply();
     }
 
-    public static Map<String,?> getAllKeys(Context context, String preferenceFileName){
-      SharedPreferences sharedPreferences =  context.getSharedPreferences(preferenceFileName, 0);
+    public static Map<String,?> getAllKeys(SharedPreferences sharedPreferences){
+
       return sharedPreferences.getAll();
 
     }

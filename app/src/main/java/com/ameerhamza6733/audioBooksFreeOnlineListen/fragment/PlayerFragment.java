@@ -56,7 +56,7 @@ import static com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerFo
 import static com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService.SERVICE_STAARTED;
 
 /**
- * Created by apple on 4/23/18.
+ * Created by AmeerHamza on 4/23/18.
  */
 
 public class PlayerFragment extends Fragment {
@@ -85,7 +85,7 @@ public class PlayerFragment extends Fragment {
 
     private BroadcastReceiver receiver;
     private IntentFilter filter;
-    private MataData currentAudioBook;
+    private MataData currentMataData;
     private ArrayList<MataData> mataDataList;
 
 
@@ -155,7 +155,7 @@ public class PlayerFragment extends Fragment {
 
         bindViews(rootView);
         intiDataSet();
-        // loadAd();
+         loadAd();
         return rootView;
     }
 
@@ -214,14 +214,14 @@ public class PlayerFragment extends Fragment {
 
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-                currentAudioBook = adapter.getItem(position);
-                long seelTo = Util.INSTANCE.isResumeAble(getActivity(), currentAudioBook.getURL());
+                currentMataData = adapter.getItem(position);
+                long seelTo = Util.INSTANCE.isResumeAble(getActivity(), currentMataData.getURL());
                 if (seelTo > 1)
                     ResumeTrackPermistionDialogFragment(seelTo);
                 else {
-                    stopPlayerService(currentAudioBook);
+                    stopPlayerService(currentMataData);
                     handler.postDelayed(() -> {
-                        startPlayerService(currentAudioBook, PlayerForegroundService.START_FOREGROUND_ACTION, null, 0);
+                        startPlayerService(currentMataData, PlayerForegroundService.START_FOREGROUND_ACTION, null, 0);
 
                     }, 2000);
                 }
@@ -264,8 +264,8 @@ public class PlayerFragment extends Fragment {
                 .load(Util.INSTANCE.toImageURI(audioBook.getIdentifier()))
                 .into(imageView);
 
-        tVrewind.setOnClickListener(v -> startPlayerService(currentAudioBook, FAST_REWIND_ACTION, PlayerForegroundService.EXTRA_REWIND_MILI_SECOND, 10000));
-        tVFarword.setOnClickListener(v -> startPlayerService(currentAudioBook, FAST_FORWARD_ACTION, PlayerForegroundService.EXTRA_FAST_FORWARD_MILI_SECONDS, 30000));
+        tVrewind.setOnClickListener(v -> startPlayerService(currentMataData, FAST_REWIND_ACTION, PlayerForegroundService.EXTRA_REWIND_MILI_SECOND, 10000));
+        tVFarword.setOnClickListener(v -> startPlayerService(currentMataData, FAST_FORWARD_ACTION, PlayerForegroundService.EXTRA_FAST_FORWARD_MILI_SECONDS, 30000));
 
         tvPass.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -273,7 +273,7 @@ public class PlayerFragment extends Fragment {
 
                 tvPlay.setVisibility(View.VISIBLE);
                 handler.postDelayed(() -> tvPass.setVisibility(View.GONE), 500);
-                startPlayerService(currentAudioBook, PlayerForegroundService.PLAY_PAUSE_ACTION, null, 0);
+                startPlayerService(currentMataData, PlayerForegroundService.PLAY_PAUSE_ACTION, null, 0);
                 if (mInterstitialAd != null && mInterstitialAd.isLoaded())
                     mInterstitialAd.show();
             }
@@ -284,11 +284,11 @@ public class PlayerFragment extends Fragment {
             public void onClick(View v) {
                 //
                 if (PlayerForegroundService.isPlaying) {
-                    startPlayerService(currentAudioBook, PlayerForegroundService.PLAY_PAUSE_ACTION, null, 0);
+                    startPlayerService(currentMataData, PlayerForegroundService.PLAY_PAUSE_ACTION, null, 0);
                 } else {
-                    stopPlayerService(currentAudioBook);
+                    stopPlayerService(currentMataData);
                     handler.postDelayed(() -> {
-                        startPlayerService(currentAudioBook, PlayerForegroundService.START_FOREGROUND_ACTION, null, 0);
+                        startPlayerService(currentMataData, PlayerForegroundService.START_FOREGROUND_ACTION, null, 0);
 
                     }, 2000);
                 }
@@ -337,16 +337,16 @@ public class PlayerFragment extends Fragment {
         AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
                 .setTitle("Do you want resume track ")
                 .setPositiveButton("OK", (dialog, which) -> {
-                    stopPlayerService(currentAudioBook);
+                    stopPlayerService(currentMataData);
                     handler.postDelayed(() -> {
-                        startPlayerService(currentAudioBook, PlayerForegroundService.START_FOREGROUND_ACTION, PlayerForegroundService.EXTRA_SEEK_TO, seekTo);
+                        startPlayerService(currentMataData, PlayerForegroundService.START_FOREGROUND_ACTION, PlayerForegroundService.EXTRA_SEEK_TO, seekTo);
 
                     }, 2000);
                 })
                 .setNegativeButton("NO", (dialog, which) -> {
-                    stopPlayerService(currentAudioBook);
+                    stopPlayerService(currentMataData);
                     handler.postDelayed(() -> {
-                        startPlayerService(currentAudioBook, PlayerForegroundService.START_FOREGROUND_ACTION, null, 0);
+                        startPlayerService(currentMataData, PlayerForegroundService.START_FOREGROUND_ACTION, null, 0);
 
                     }, 2000);
                 })

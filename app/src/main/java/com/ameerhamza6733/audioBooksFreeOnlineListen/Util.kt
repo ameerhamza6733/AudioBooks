@@ -1,8 +1,11 @@
 package com.ameerhamza6733.audioBooksFreeOnlineListen
 
 import android.content.Context
+import android.os.Environment
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.File
+import java.text.DecimalFormat
 import kotlin.collections.ArrayList
 
 
@@ -197,5 +200,32 @@ object Util {
         formattedTime += seconds
 
         return formattedTime
+    }
+    fun getDir (sdCardFolderAddress : String) :String{
+        val saveFolder = File(Environment.getExternalStorageDirectory(), sdCardFolderAddress)
+        if (!saveFolder.exists())
+            saveFolder.mkdirs()
+
+        return saveFolder.path.toString()
+    }
+
+    fun bytesToMb(size: Long): String {
+
+        val df = DecimalFormat("0.00")
+
+        val sizeKb = 1024.0f
+        val sizeMo = sizeKb * sizeKb
+        val sizeGo = sizeMo * sizeKb
+        val sizeTerra = sizeGo * sizeKb
+
+
+        if (size < sizeMo)
+            return df.format(size / sizeKb) + " KB"
+        else if (size < sizeGo)
+            return df.format(size / sizeMo) + " MB"
+        else if (size < sizeTerra)
+            return df.format(size / sizeGo) + " GB"
+
+        return ""
     }
 }

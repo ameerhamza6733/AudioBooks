@@ -85,6 +85,10 @@ public class MataData implements Parcelable {
         return hasDownloaded;
     }
 
+    public String getSdPath() {
+        return sdPath;
+    }
+
     public static Creator<MataData> getCREATOR() {
         return CREATOR;
     }

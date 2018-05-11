@@ -2,8 +2,10 @@ package com.ameerhamza6733.audioBooksFreeOnlineListen.activitys;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -15,7 +17,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.OfflineBookAdupter;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.BookSearchDialogFragment;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.OfflineBookFragment;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.RecyclerViewFragment;
 import com.google.android.gms.ads.MobileAds;
 
@@ -37,11 +41,12 @@ public class MainActivity extends AppCompatActivity
             getSupportActionBar().hide();
         } catch (Exception e) {
         }
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+
         recyclerViewFragment = new RecyclerViewFragment();
-        fragmentTransaction.replace(R.id.fragment_contaner, recyclerViewFragment);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
+        Bundle bundle = new Bundle();
+        bundle.putString("dataType", "volley");
+        recyclerViewFragment.setArguments(bundle);
+        startFragmentTransction(recyclerViewFragment);
         reciveQuery = recyclerViewFragment;
 
         MobileAds.initialize(this, "ca-app-pub-5168564707064012~4212395459");
@@ -51,9 +56,39 @@ public class MainActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-        mBottomBar = findViewById(R.id.bottom_navigation);
+
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        mBottomBar = findViewById(R.id.bottom_navigation);
+
+        mBottomBar.setOnNavigationItemSelectedListener
+                (new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        Fragment selectedFragment = null;
+                        switch (item.getItemId()) {
+                            case R.id.bn_watch_latter:
+                               startActivity(new Intent(MainActivity.this, OfflineActivity.class));
+                                break;
+                            case R.id.bn_my_history:
+                                startActivity(new Intent(MainActivity.this,HistoryActivity.class));
+                                break;
+
+                        }
+
+                        return true;
+                    }
+
+                    ;
+                });
+    }
+
+    private void startFragmentTransction(Fragment fragment) {
+
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_contaner, fragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 
     @Override

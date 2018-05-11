@@ -27,7 +27,7 @@ import com.bumptech.glide.request.transition.Transition;
 import static com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.DetailTabActivity.KEY_SHARD_PREF_AUDIO_BOOK;
 
 /**
- * Created by apple on 4/23/18.
+ * Created by AmeerHamza on 4/23/18.
  */
 
 public class DetailFragment extends Fragment {

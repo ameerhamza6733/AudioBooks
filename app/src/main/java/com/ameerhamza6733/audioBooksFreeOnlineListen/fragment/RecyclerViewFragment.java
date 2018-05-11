@@ -1,7 +1,10 @@
 package com.ameerhamza6733.audioBooksFreeOnlineListen.fragment;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -27,7 +30,10 @@ import com.ameerhamza6733.audioBooksFreeOnlineListen.Util;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.MainActivity;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.BookCatalogueAdupter;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.CustomAdapter;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.OfflineBookAdupter;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.AudioBook;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.viewModels.HistoryViewModel;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.viewModels.OfflineBooksViewModle;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
@@ -43,6 +49,9 @@ import java.util.List;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+
+import static com.ameerhamza6733.audioBooksFreeOnlineListen.MySharedPref.SHARD_PREF_DOWNLOADED_AUDIO_BOOK;
+import static com.ameerhamza6733.audioBooksFreeOnlineListen.MySharedPref.SHARD_PREF_HISTORY_AUDIO_BOOK_FILE_NAME;
 
 /**
  * Created by AmeerHamza on 2/8/2018.
@@ -80,7 +89,7 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.audio_book_list_frag, container, false);
         rootView.setTag(TAG);
-
+       String type= getArguments().getString("dataType");
         mRecyclerViewPoetry = (RecyclerView) rootView.findViewById(R.id.recyclerView_poetry);
 
 
@@ -106,10 +115,21 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
         });
         String welcomeUrl = Util.INSTANCE.qurarySortBuilder("librivox","addeddate+desc");
       requsestQueue=  Volley.newRequestQueue(getActivity());
-        intiVolley(welcomeUrl);
+      if (type.equalsIgnoreCase("history"))
+      {
+          Spinner mySpinner = rootView.findViewById(R.id.catalogue);
+          Spinner spinner_filter = rootView.findViewById(R.id.filter);
+          mySpinner.setVisibility(View.GONE);
+          spinner_filter.setVisibility(View.GONE);
+          getHistory();
+
+      }else {
+            intiVolley(welcomeUrl);
+          SetToSpinner(rootView);
+          MySharedPref.saveObjectToSharedPreference(getActivity().getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, KEY_SHARED_PREF_CURRENT_CATALOG, "librivox");
+
+      }
         setHasOptionsMenu(true);
-        SetToSpinner(rootView);
-        MySharedPref.saveObjectToSharedPreference(getActivity().getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, KEY_SHARED_PREF_CURRENT_CATALOG, "librivox");
 
         return rootView;
     }
@@ -278,6 +298,23 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
 //        });
 //    }
 
+    private void getHistory(){
+        HistoryViewModel historyViewModel = ViewModelProviders.of(getActivity()).get(HistoryViewModel.class);
+        historyViewModel.getAudioBook(getActivity().getApplicationContext().getSharedPreferences(SHARD_PREF_HISTORY_AUDIO_BOOK_FILE_NAME, 0)).observe(this, new Observer<List<AudioBook>>() {
+            @Override
+            public void onChanged(@Nullable List<AudioBook> audioBooks) {
+                if (audioBooks!=null && audioBooks.size()>0){
+                    progressBar.setVisibility(View.GONE);
+                    CustomAdapter mAdapter = new CustomAdapter(audioBooks);
+                    mRecyclerViewPoetry.setAdapter(mAdapter);
+                }else {
+                    progressBar.setVisibility(View.GONE);
+                    Toast.makeText(getActivity(),"You don't have any history",Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+    }
     private void intiVolley(String s) {
         progressBar.setVisibility(View.VISIBLE);
         Log.d(TAG,"intiVolley");

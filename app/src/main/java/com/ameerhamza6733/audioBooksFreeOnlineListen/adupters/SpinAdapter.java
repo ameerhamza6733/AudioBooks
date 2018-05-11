@@ -13,7 +13,7 @@ import com.ameerhamza6733.audioBooksFreeOnlineListen.models.MataData;
 import java.util.List;
 
 /**
- * Created by Hamza on 4/23/18.
+ * Created by AmeerHamza on 4/23/18.
  */
 
 public class SpinAdapter  extends ArrayAdapter<MataData> {

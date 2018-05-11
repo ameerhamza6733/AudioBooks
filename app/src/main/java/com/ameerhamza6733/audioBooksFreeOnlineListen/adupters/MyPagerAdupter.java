@@ -8,7 +8,7 @@ import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.DetailFragment;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.PlayerFragment;
 
 /**
- * Created by apple on 4/23/18.
+ * Created by AmeerHamza on 4/23/18.
  */
 
 public class MyPagerAdupter extends FragmentStatePagerAdapter {

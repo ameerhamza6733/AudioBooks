@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="cn.woblog.android:downloader:1.0.1@jar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/cn.woblog.android/downloader/1.0.1/919be520525412c04e4e54aa86cdcd2790509c9b/downloader-1.0.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/cn.woblog.android/downloader/1.0.1/93b2044dc59d9e5f92f00edab24740ed5516b3a3/downloader-1.0.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

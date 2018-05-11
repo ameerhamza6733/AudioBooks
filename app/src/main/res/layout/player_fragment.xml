@@ -48,7 +48,7 @@
                     android:layout_height="200dp"
                     android:layout_alignParentStart="true"
                     android:layout_centerVertical="true"
-                    app:srcCompat="@drawable/tom_sawyer_librivox" />
+                    />
             </RelativeLayout>
 
             <TextView

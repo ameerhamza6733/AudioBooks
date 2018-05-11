@@ -8,16 +8,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
     <ImageView
+        android:id="@+id/IV_ICon"
         android:src="@drawable/ic_music_note_black_24dp"
         android:layout_weight=".3"
         android:layout_width="0dp"
         android:layout_height="75dp" />
     <TextView
+        android:id="@+id/tvTitle"
         android:layout_gravity="center"
-
         android:textColor="@color/colorPrimaryText"
-        android:textSize="25sp"
-
+        android:textSize="18sp"
         android:layout_weight=".7"
         android:layout_width="0dp"
         android:layout_height="wrap_content" />
