@@ -7,13 +7,18 @@ package com.ameerhamza6733.audioBooksFreeOnlineListen.adupters;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ameerhamza6733.audioBooksFreeOnlineListen.MySharedPref;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
@@ -75,7 +80,21 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
                         viewHolder.getImageView().setImageBitmap(resource);
                     }
                 });
+        viewHolder.getAppCompatImageButton().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showPopupMenu(viewHolder.getAppCompatImageButton(),position);
+            }
+        });
 
+    }
+    private void showPopupMenu(View view,int position) {
+        // inflate menu
+        PopupMenu popup = new PopupMenu(view.getContext(),view );
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(R.menu.popup, popup.getMenu());
+        popup.setOnMenuItemClickListener(new MyMenuItemClickListener(position,view.getContext()));
+        popup.show();
     }
 
     // Return the size of your dataset (invoked by the layout manager)
@@ -96,6 +115,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
         private final ImageView imageView;
         private final TextView creator;
         private final Context context;
+        private final AppCompatImageButton appCompatImageButton;
 
 
         public ViewHolder(View v) {
@@ -119,6 +139,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
 //            textViewViewCount=v.findViewById(R.id.views);
             imageView = v.findViewById(R.id.imageView);
             creator= v.findViewById(R.id.creator);
+            appCompatImageButton=v.findViewById(R.id.pop_menu);
             context = v.getContext();
 
         }
@@ -154,6 +175,31 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
             return context;
         }
 
+        public AppCompatImageButton getAppCompatImageButton() {
+            return appCompatImageButton;
+        }
+    }
+    class MyMenuItemClickListener implements PopupMenu.OnMenuItemClickListener {
 
+        private int position;
+        private Context context;
+        public MyMenuItemClickListener(int positon,Context context) {
+            this.position=positon;
+            this.context=context;
+        }
+
+        @Override
+        public boolean onMenuItemClick(MenuItem menuItem) {
+            switch (menuItem.getItemId()) {
+
+                case R.id.menu_book_mark:
+                    MySharedPref.saveObjectToSharedPreference(context.getApplicationContext(),MySharedPref.SHARD_PREF_BOOK_MARK_FILE_NAME,mDataSet.get(position).getIdentifier(),mDataSet.get(position));
+                    Toast.makeText(context,"Bookmarks",Toast.LENGTH_LONG).show();
+                    return true;
+
+                default:
+            }
+            return false;
+        }
     }
 }

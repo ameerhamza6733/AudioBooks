@@ -17,6 +17,7 @@ public class MySharedPref {
     public static final String SHARD_PREF_AUDIO_BOOK_FILE_NAME ="SHARD_PREF_AUDIO_BOOK_FILE_NAME";
     public static final String SHARD_PREF_DOWNLOADED_AUDIO_BOOK ="SHARD_PREF_DOWNLOADED_AUDIO_BOOK";
     public static final String  SHARD_PREF_HISTORY_AUDIO_BOOK_FILE_NAME="SHARD_PREF_HISTORY_AUDIO_BOOK_FILE_NAME";
+   public static final String SHARD_PREF_BOOK_MARK_FILE_NAME="SHARD_PREF_BOOK_MARK_FILE_NAME";
     public static void saveObjectToSharedPreference(Context context, String preferenceFileName, String serializedObjectKey, Object object) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(preferenceFileName, 0);
         SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();

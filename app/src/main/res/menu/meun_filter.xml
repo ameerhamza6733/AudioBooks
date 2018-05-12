@@ -5,7 +5,7 @@
         android:id="@+id/action_filter"
         android:icon="@drawable/ic_filter_list_black_24dp"
         android:title="Apply filter "
-
+        android:visible="false"
         app:showAsAction="ifRoom" />
 
 

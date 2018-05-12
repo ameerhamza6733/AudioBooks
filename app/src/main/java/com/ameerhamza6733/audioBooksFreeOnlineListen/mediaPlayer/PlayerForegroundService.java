@@ -16,6 +16,9 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
+
+import android.support.v4.content.ContextCompat;
+import android.support.v4.media.app.NotificationCompat.MediaStyle;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
@@ -65,6 +68,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
     public static final int ONGOING_NOTIFICATION_ID = 101;
     public final static String START_ACTIVITY_BROAD_CAST = "START_ACTIVITY_BROAD_CAST";
     private static final String TAG = "PlayerForegroundService";
+    private static final String NOTIFICATION_CHANNEL_ID ="audio_book_playback_channel";
     public static String MAIN_ACTION = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.main";
     public static Boolean isPlaying = false;
     protected static String uri;
@@ -175,8 +179,9 @@ public class PlayerForegroundService extends Service implements Player.EventList
         return null;
     }
 
+
     @Override
-    public void onTimelineChanged(Timeline timeline, Object manifest) {
+    public void onTimelineChanged(Timeline timeline, Object manifest, int reason) {
 
     }
 
@@ -286,7 +291,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
         mNotificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             createChannel(mNotificationManager);
-        mBuilder = new NotificationCompat.Builder(this, title).setSmallIcon(android.R.drawable.ic_media_play).setContentTitle(title);
+        mBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID ).setSmallIcon(android.R.drawable.ic_media_play).setContentTitle(title);
         notification = mBuilder.build();
 
 
@@ -314,9 +319,9 @@ public class PlayerForegroundService extends Service implements Player.EventList
     @TargetApi(26)
     private void createChannel(NotificationManager notificationManager) {
         String name = title;
-        int importance = NotificationManager.IMPORTANCE_DEFAULT;
+        int importance = NotificationManager.IMPORTANCE_LOW;
 
-        NotificationChannel mChannel = new NotificationChannel(name, name, importance);
+        NotificationChannel mChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, name, importance);
 
         mChannel.enableLights(true);
         mChannel.setLightColor(Color.BLUE);

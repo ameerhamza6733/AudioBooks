@@ -1,13 +1,11 @@
 package com.ameerhamza6733.audioBooksFreeOnlineListen.fragment;
 
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -30,10 +28,7 @@ import com.ameerhamza6733.audioBooksFreeOnlineListen.Util;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.MainActivity;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.BookCatalogueAdupter;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.CustomAdapter;
-import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.OfflineBookAdupter;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.AudioBook;
-import com.ameerhamza6733.audioBooksFreeOnlineListen.viewModels.HistoryViewModel;
-import com.ameerhamza6733.audioBooksFreeOnlineListen.viewModels.OfflineBooksViewModle;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
@@ -50,28 +45,30 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
-import static com.ameerhamza6733.audioBooksFreeOnlineListen.MySharedPref.SHARD_PREF_DOWNLOADED_AUDIO_BOOK;
-import static com.ameerhamza6733.audioBooksFreeOnlineListen.MySharedPref.SHARD_PREF_HISTORY_AUDIO_BOOK_FILE_NAME;
-
 /**
  * Created by AmeerHamza on 2/8/2018.
  */
 
 public class RecyclerViewFragment extends Fragment implements MainActivity.ReciveQuery {
 
-    public static final String KEY_SHARED_PREF_CURRENT_CATALOG = "KEY_SHARED_PREF_CURRENT_CATALOG";
+    public static final java.lang.String ARRGS_KEY = "ARRGS_KEY";
+    public static final String MAKE_API_CALL = "MAKE_API_CALL";
+    protected static final String KEY_LAYOUT_MANAGER = "layoutManager";
+    protected static final String KEY_SHARED_PREF_CURRENT_CATALOG = "KEY_SHARED_PREF_CURRENT_CATALOG";
     private static final String TAG = "RecyclerViewFragment";
-    private static final String KEY_LAYOUT_MANAGER = "layoutManager";
     protected LayoutManagerType mCurrentLayoutManagerType;
     protected RecyclerView mRecyclerViewPoetry;
     protected RecyclerView.LayoutManager mLayoutManager;
     protected ProgressBar progressBar;
     protected FloatingActionButton floatingActionButton;
+    protected Spinner mySpinner;
+    protected Spinner mySpinnerFilter;
     private RequestQueue requsestQueue;
-
+    private String type;
 
     @Override
     public void OnRecivedQuery(String query) {
+
         Log.d(TAG, "query: " + query);
         intiVolley(query);
 
@@ -82,6 +79,7 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
         super.onCreate(savedInstanceState);
 
 
+
     }
 
     @Override
@@ -89,7 +87,7 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.audio_book_list_frag, container, false);
         rootView.setTag(TAG);
-       String type= getArguments().getString("dataType");
+
         mRecyclerViewPoetry = (RecyclerView) rootView.findViewById(R.id.recyclerView_poetry);
 
 
@@ -113,32 +111,31 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
             DialogFragment bookSearchDialogFragment = BookSearchDialogFragment.newInstance();
             bookSearchDialogFragment.show(getFragmentManager(), "bookSearchDialogFragment");
         });
-        String welcomeUrl = Util.INSTANCE.qurarySortBuilder("librivox","addeddate+desc");
-      requsestQueue=  Volley.newRequestQueue(getActivity());
-      if (type.equalsIgnoreCase("history"))
-      {
-          Spinner mySpinner = rootView.findViewById(R.id.catalogue);
-          Spinner spinner_filter = rootView.findViewById(R.id.filter);
-          mySpinner.setVisibility(View.GONE);
-          spinner_filter.setVisibility(View.GONE);
-          getHistory();
 
-      }else {
-            intiVolley(welcomeUrl);
-          SetToSpinner(rootView);
-          MySharedPref.saveObjectToSharedPreference(getActivity().getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, KEY_SHARED_PREF_CURRENT_CATALOG, "librivox");
+        requsestQueue = Volley.newRequestQueue(getActivity());
 
-      }
+        mySpinner = rootView.findViewById(R.id.catalogue);
+        mySpinnerFilter = rootView.findViewById(R.id.filter);
         setHasOptionsMenu(true);
+        SetToSpinner(rootView);
+        try {
+            if (getArguments().getString(ARRGS_KEY).equalsIgnoreCase(MAKE_API_CALL)) {
+                MySharedPref.saveObjectToSharedPreference(getActivity().getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, KEY_SHARED_PREF_CURRENT_CATALOG, "librivox");
+                String welcomeUrl = Util.INSTANCE.qurarySortBuilder("librivox", "addeddate+desc");
+                intiVolley(welcomeUrl);
+            }
+        } catch (Exception e) {
+        }
+        try{
+            ((AppCompatActivity)getActivity()).getSupportActionBar().show();
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Audio Books ");
 
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         return rootView;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-
-    }
 
     /**
      * Set RecyclerView's LayoutManager to the one given.
@@ -213,8 +210,6 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
                 R.layout.each_audio_file_spinner, catalogueList
         );
 
-        Spinner mySpinner = root.findViewById(R.id.catalogue);
-
 
         mySpinner.setAdapter(adapter); // Set the custom adapter to the spinner
         // You can create an anonymous listener to handle the event when is selected an spinner item
@@ -241,9 +236,9 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
                 R.layout.each_audio_file_spinner, filterList
         );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        Spinner spinner_filter = root.findViewById(R.id.filter);
-        spinner_filter.setAdapter(filteradapter);
-        spinner_filter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+        mySpinnerFilter.setAdapter(filteradapter);
+        mySpinnerFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
@@ -297,27 +292,9 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
 //            }
 //        });
 //    }
-
-    private void getHistory(){
-        HistoryViewModel historyViewModel = ViewModelProviders.of(getActivity()).get(HistoryViewModel.class);
-        historyViewModel.getAudioBook(getActivity().getApplicationContext().getSharedPreferences(SHARD_PREF_HISTORY_AUDIO_BOOK_FILE_NAME, 0)).observe(this, new Observer<List<AudioBook>>() {
-            @Override
-            public void onChanged(@Nullable List<AudioBook> audioBooks) {
-                if (audioBooks!=null && audioBooks.size()>0){
-                    progressBar.setVisibility(View.GONE);
-                    CustomAdapter mAdapter = new CustomAdapter(audioBooks);
-                    mRecyclerViewPoetry.setAdapter(mAdapter);
-                }else {
-                    progressBar.setVisibility(View.GONE);
-                    Toast.makeText(getActivity(),"You don't have any history",Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-
-    }
     private void intiVolley(String s) {
         progressBar.setVisibility(View.VISIBLE);
-        Log.d(TAG,"intiVolley");
+        Log.d(TAG, "intiVolley");
         StringRequest stringRequest = new StringRequest(Request.Method.GET, s, response -> {
 
             Observable.fromCallable(() -> {
@@ -328,12 +305,12 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject docs = jsonArray.getJSONObject(i);
                         if (docs.getString("identifier").toLowerCase().contains("librivox")) {
-                            audioBookList.add(new AudioBook(Util.INSTANCE.ExtractRating(docs), Util.INSTANCE.ExtractDescription(docs), Util.INSTANCE.ExtractNoOfDownloads(docs), docs.getString("identifier"), Util.INSTANCE.ExtractNoReviews(docs), docs.getString("title"), Util.INSTANCE.ExtractPublisher(docs), Util.INSTANCE.ExtractMediaType(docs),Util.INSTANCE.EtracCreator(docs),Util.INSTANCE.ExtractData(docs)));
+                            audioBookList.add(new AudioBook(Util.INSTANCE.ExtractRating(docs), Util.INSTANCE.ExtractDescription(docs), Util.INSTANCE.ExtractNoOfDownloads(docs), docs.getString("identifier"), Util.INSTANCE.ExtractNoReviews(docs), docs.getString("title"), Util.INSTANCE.ExtractPublisher(docs), Util.INSTANCE.ExtractMediaType(docs), Util.INSTANCE.EtracCreator(docs), Util.INSTANCE.ExtractData(docs)));
 
                         }
                     }
 
-                        // Collections.shuffle(audioBookList);
+                    // Collections.shuffle(audioBookList);
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -345,15 +322,15 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
                     .subscribe((result) -> {
                         if (result != null) {
 
-                                progressBar.setVisibility(View.GONE);
-                                if (result.size() == 0) {
-                                    Toast.makeText(getActivity(), "No results matched your criteria.", Toast.LENGTH_LONG).show();
-                                } else {
-                                    CustomAdapter mAdapter = new CustomAdapter(result);
-                                    mRecyclerViewPoetry.setAdapter(mAdapter);
-                                }
-                        }else {
-                            Log.d("RecyclerViewFragment","no open source book find");
+                            progressBar.setVisibility(View.GONE);
+                            if (result.size() == 0) {
+                                Toast.makeText(getActivity(), "No results matched your criteria.", Toast.LENGTH_LONG).show();
+                            } else {
+                                CustomAdapter mAdapter = new CustomAdapter(result);
+                                mRecyclerViewPoetry.setAdapter(mAdapter);
+                            }
+                        } else {
+                            Log.d("RecyclerViewFragment", "no open source book find");
                         }
                     });
 
@@ -361,12 +338,13 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
         }, (error) -> {
             error.printStackTrace();
             progressBar.setVisibility(View.GONE);
-            Toast.makeText(getActivity(),"Error:",Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), "Error:", Toast.LENGTH_LONG).show();
             Log.d(MainActivity.TAG, "volley error" + error.getMessage());
         });
         requsestQueue.add(stringRequest);
 
     }
+
     private enum LayoutManagerType {
         GRID_LAYOUT_MANAGER,
         LINEAR_LAYOUT_MANAGER

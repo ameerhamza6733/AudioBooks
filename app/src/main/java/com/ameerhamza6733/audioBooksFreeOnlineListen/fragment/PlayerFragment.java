@@ -1,5 +1,6 @@
 package com.ameerhamza6733.audioBooksFreeOnlineListen.fragment;
 
+import android.app.AlertDialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -15,7 +16,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -155,7 +156,7 @@ public class PlayerFragment extends Fragment {
 
         bindViews(rootView);
         intiDataSet();
-         loadAd();
+        loadAd();
         return rootView;
     }
 
@@ -184,7 +185,7 @@ public class PlayerFragment extends Fragment {
                     SetToSpinner(mataDataList);
                     progressBar.setVisibility(View.GONE);
                 } else {
-                   this. progressBar.setVisibility(View.GONE);
+                    this.progressBar.setVisibility(View.GONE);
                     this.PlayerStatePB.setVisibility(View.GONE);
                     Snackbar.make(progressBar, "Error: ", Snackbar.LENGTH_INDEFINITE)
                             .setAction("try again", new View.OnClickListener() {
@@ -299,13 +300,13 @@ public class PlayerFragment extends Fragment {
         fabDownload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               if (mataDataList!=null && mataDataList.size()>0){
-                   Intent downloadingIntent = new Intent(v.getContext(), DownloaderActivty.class);
-                   downloadingIntent.putParcelableArrayListExtra(DownloaderActivty.EXTRA_MATA_DATA_LIST, mataDataList);
-                   v.getContext().startActivity(downloadingIntent);
-               }else {
-                   Toast.makeText(getActivity(),"Please wait ",Toast.LENGTH_LONG).show();
-               }
+                if (mataDataList != null && mataDataList.size() > 0) {
+                    Intent downloadingIntent = new Intent(v.getContext(), DownloaderActivty.class);
+                    downloadingIntent.putParcelableArrayListExtra(DownloaderActivty.EXTRA_MATA_DATA_LIST, mataDataList);
+                    v.getContext().startActivity(downloadingIntent);
+                } else {
+                    Toast.makeText(getActivity(), "Please wait ", Toast.LENGTH_LONG).show();
+                }
             }
         });
     }
@@ -334,23 +335,27 @@ public class PlayerFragment extends Fragment {
 
     public void ResumeTrackPermistionDialogFragment(long seekTo) {
         Log.d(TAG, "trying to ruesume the track ");
-        AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                .setTitle("Do you want resume track ")
-                .setPositiveButton("OK", (dialog, which) -> {
-                    stopPlayerService(currentMataData);
-                    handler.postDelayed(() -> {
-                        startPlayerService(currentMataData, PlayerForegroundService.START_FOREGROUND_ACTION, PlayerForegroundService.EXTRA_SEEK_TO, seekTo);
+        try {
+            final AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                    .setTitle("Do you want resume track ")
+                    .setPositiveButton("OK", (dialog, which) -> {
+                        stopPlayerService(currentMataData);
+                        handler.postDelayed(() -> {
+                            startPlayerService(currentMataData, PlayerForegroundService.START_FOREGROUND_ACTION, PlayerForegroundService.EXTRA_SEEK_TO, seekTo);
 
-                    }, 2000);
-                })
-                .setNegativeButton("NO", (dialog, which) -> {
-                    stopPlayerService(currentMataData);
-                    handler.postDelayed(() -> {
-                        startPlayerService(currentMataData, PlayerForegroundService.START_FOREGROUND_ACTION, null, 0);
+                        }, 2000);
+                    })
+                    .setNegativeButton("NO", (dialog, which) -> {
+                        stopPlayerService(currentMataData);
+                        handler.postDelayed(() -> {
+                            startPlayerService(currentMataData, PlayerForegroundService.START_FOREGROUND_ACTION, null, 0);
 
-                    }, 2000);
-                })
-                .create();
-        alertDialog.show();
+                        }, 2000);
+                    })
+                    .create();
+            alertDialog.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

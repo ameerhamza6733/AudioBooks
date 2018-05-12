@@ -27,6 +27,7 @@
                 <action android:name="cn.woblog.android.downloader.DOWNLOAD_SERVICE" />
             </intent-filter>
         </service>
+        <service android:name=".mediaPlayer.AudioPlayerService"/>
         <receiver android:name=".mediaPlayer.NotificationHelper$myNotificationCloseButtonHandler" />
         <receiver android:name=".mediaPlayer.NotificationHelper$NotificationFastForwardButtonHandler" />
         <receiver android:name=".mediaPlayer.NotificationHelper$NotificationFastRewindButtonHandler" />

@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -18,7 +19,9 @@ import android.view.MenuItem;
 
 import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.OfflineBookAdupter;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.BookMarkFragemnt;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.BookSearchDialogFragment;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.FragmetnHistory;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.OfflineBookFragment;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.RecyclerViewFragment;
 import com.google.android.gms.ads.MobileAds;
@@ -30,6 +33,7 @@ public class MainActivity extends AppCompatActivity
     private RecyclerViewFragment recyclerViewFragment;
     private ReciveQuery reciveQuery;
     private BottomNavigationView mBottomBar;
+    private FragmentManager fm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +48,7 @@ public class MainActivity extends AppCompatActivity
 
         recyclerViewFragment = new RecyclerViewFragment();
         Bundle bundle = new Bundle();
-        bundle.putString("dataType", "volley");
+        bundle.putString(RecyclerViewFragment.ARRGS_KEY, RecyclerViewFragment.MAKE_API_CALL);
         recyclerViewFragment.setArguments(bundle);
         startFragmentTransction(recyclerViewFragment);
         reciveQuery = recyclerViewFragment;
@@ -71,7 +75,12 @@ public class MainActivity extends AppCompatActivity
                                startActivity(new Intent(MainActivity.this, OfflineActivity.class));
                                 break;
                             case R.id.bn_my_history:
-                                startActivity(new Intent(MainActivity.this,HistoryActivity.class));
+                              Fragment fragmetnHistory = new FragmetnHistory();
+                              startFragmentTransction(fragmetnHistory);
+                                break;
+                            case R.id.bn_bookmark:
+                                Fragment bookMarkFragemnt = new BookMarkFragemnt();
+                                startFragmentTransction(bookMarkFragemnt);
                                 break;
 
                         }
@@ -84,10 +93,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void startFragmentTransction(Fragment fragment) {
-
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+fm= getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fm.beginTransaction();
         fragmentTransaction.replace(R.id.fragment_contaner, fragment);
-        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.addToBackStack(fragment.getClass().getSimpleName());
         fragmentTransaction.commit();
     }
 
@@ -98,7 +107,9 @@ public class MainActivity extends AppCompatActivity
             drawer.closeDrawer(GravityCompat.START);
         } else {
 
-            finish();
+          if(fm.getBackStackEntryCount()>1){
+              fm.popBackStack();
+          }
         }
     }
 

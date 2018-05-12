@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.FragmetnHistory;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.RecyclerViewFragment;
 
 public class HistoryActivity extends AppCompatActivity {
@@ -14,7 +15,7 @@ public class HistoryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
-        Fragment fragment =  new RecyclerViewFragment();
+        Fragment fragment =  new FragmetnHistory();
         Bundle bundle = new Bundle();
         bundle.putString("dataType", "history");
         fragment.setArguments(bundle);
