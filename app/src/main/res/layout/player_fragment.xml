@@ -1,34 +1,31 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:ndroid="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <com.google.android.gms.ads.AdView
-        xmlns:ads="http://schemas.android.com/apk/res-auto"
+
+    <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
         android:id="@+id/adView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
         ads:adSize="BANNER"
 
-        ads:adUnitId="ca-app-pub-5168564707064012/7186753599">
-    </com.google.android.gms.ads.AdView>
+        ads:adUnitId="ca-app-pub-5168564707064012/7186753599"/>
+
     <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-      android:layout_below="@+id/adView"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-       android:layout_marginTop="16dp"
+android:layout_marginTop="18dp"
+        android:id="@+id/scrollView2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/scrollView2">
 
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            xmlns:tools="http://schemas.android.com/tools"
+        android:layout_below="@+id/adView">
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-
-            tools:context="com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.DetailTabActivity">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <!--<FrameLayout-->
             <!--android:id="@+id/audio_player_contaner"-->
@@ -39,16 +36,15 @@
             <RelativeLayout
                 android:id="@+id/RVimageView"
                 android:layout_width="match_parent"
-                android:layout_height="300dp">
+                android:layout_height="200dp">
 
                 <ImageView
 
                     android:id="@+id/iamge"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
+                    android:layout_height="150dp"
                     android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    />
+                    android:layout_centerVertical="true" />
             </RelativeLayout>
 
             <TextView
@@ -57,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:paddingTop="16dp"
-                android:text="The Adventures of Tom Sawyer"
+
                 android:textColor="@color/colorPrimaryText"
                 android:textSize="18sp" />
 
@@ -83,65 +79,69 @@
 
                 android:spinnerMode="dropdown" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="8dp"
-                android:weightSum="3">
 
-                <TextView
-                    android:id="@+id/fast_rewind"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:drawableTop="@drawable/ic_fast_rewind_black_24dp"
-                    android:gravity="center"
-                    android:text="10s"
-                    android:textColor="@color/colorSecondaryText" />
-                <ProgressBar
-                    android:visibility="gone"
-                    android:id="@+id/plater_State_prograss_bar"
-                    style="?android:attr/progressBarStyle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+            />
+            <!--<LinearLayout-->
+            <!--android:visibility="gone"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:orientation="horizontal"-->
+            <!--android:padding="8dp"-->
+            <!--android:weightSum="3">-->
 
-                <TextView
-                    android:id="@+id/play"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:drawableTop="@drawable/ic_play_arrow_black_24dp"
-                    android:gravity="center"
-                    android:text="play"
-                    android:textColor="@color/colorSecondaryText" />
+            <!--<TextView-->
+            <!--android:id="@+id/fast_rewind"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1"-->
+            <!--android:drawableTop="@drawable/ic_fast_rewind_black_24dp"-->
+            <!--android:gravity="center"-->
+            <!--android:text="10s"-->
+            <!--android:textColor="@color/colorSecondaryText" />-->
+            <!--<ProgressBar-->
+            <!--android:visibility="gone"-->
+            <!--android:id="@+id/plater_State_prograss_bar"-->
+            <!--style="?android:attr/progressBarStyle"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1" />-->
 
-                <TextView
-                    android:visibility="gone"
-                    android:id="@+id/pass"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:drawableTop="@drawable/ic_pause_black_24dp"
-                    android:gravity="center"
-                    android:text="pass"
-                    android:textColor="@color/colorSecondaryText" />
+            <!--<TextView-->
+            <!--android:id="@+id/play"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1"-->
+            <!--android:drawableTop="@drawable/ic_play_arrow_black_24dp"-->
+            <!--android:gravity="center"-->
+            <!--android:text="play"-->
+            <!--android:textColor="@color/colorSecondaryText" />-->
 
-                <TextView
-                    android:id="@+id/fast_forword"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:drawableTop="@drawable/ic_fast_forward_black_24dp"
-                    android:gravity="center"
-                    android:text="30s"
-                    android:textColor="@color/colorSecondaryText" />
+            <!--<TextView-->
+            <!--android:visibility="gone"-->
+            <!--android:id="@+id/pass"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1"-->
+            <!--android:drawableTop="@drawable/ic_pause_black_24dp"-->
+            <!--android:gravity="center"-->
+            <!--android:text="pass"-->
+            <!--android:textColor="@color/colorSecondaryText" />-->
+
+            <!--<TextView-->
+            <!--android:id="@+id/fast_forword"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1"-->
+            <!--android:drawableTop="@drawable/ic_fast_forward_black_24dp"-->
+            <!--android:gravity="center"-->
+            <!--android:text="30s"-->
+            <!--android:textColor="@color/colorSecondaryText" />-->
 
 
-            </LinearLayout>
+            <!--</LinearLayout>-->
         </LinearLayout>
     </ScrollView>
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_download"
         android:layout_width="wrap_content"
@@ -152,4 +152,22 @@
         android:layout_marginBottom="27dp"
         android:layout_marginEnd="27dp"
         android:src="@drawable/ic_file_download_white_24dp" />
+
+    <com.google.android.exoplayer2.ui.PlayerControlView
+        android:id="@+id/player_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+android:layout_below="@+id/scrollView2"
+
+        app:show_timeout="0"
+       >
+
+        <ProgressBar
+
+            android:layout_gravity="center"
+            android:id="@+id/plater_State_prograss_bar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </com.google.android.exoplayer2.ui.PlayerControlView>
 </RelativeLayout>

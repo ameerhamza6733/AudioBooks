@@ -45,7 +45,7 @@ import java.util.Locale;
 
 import static com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService.EXTRA_URI;
 
-public class playerActivty extends  Fragment {
+public class PlayerActivty extends  Fragment {
     public static final String EXTRA_PLAYER_URI = "EXTRA_PLAYER_URI";
     public static final String EXTRA_SEEK_TO = "EXTRA_SEEK_TO";
     public static String EXTRA_TITLE="EXTRA_TITLE";
@@ -53,7 +53,7 @@ public class playerActivty extends  Fragment {
     private SimpleExoPlayer mPlayer;
 
 
-    public playerActivty() {
+    public PlayerActivty() {
         // Required empty public constructor
     }
 
@@ -61,7 +61,7 @@ public class playerActivty extends  Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.activity_player_activty, container, false);
-       mPlayerView=rootView.findViewById(R.id.player_view);
+       mPlayerView=rootView.findViewById(R.id.player_viewd);
 
         getPlayer();
         return rootView;

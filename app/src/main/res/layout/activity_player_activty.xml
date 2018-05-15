@@ -10,13 +10,13 @@
     android:text="@string/app_name"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content" />
-    <com.google.android.exoplayer2.ui.AspectRatioFrameLayout
-        android:id="@+id/player_view"
+    <com.google.android.exoplayer2.ui.PlaybackControlView
+        android:id="@+id/player_viewd"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
         android:layout_gravity="bottom"
-        android:focusable="true" />
+        />
 
 </RelativeLayout>

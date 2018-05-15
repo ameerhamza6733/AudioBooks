@@ -44,7 +44,7 @@ public class NotificationHelper {
         @Override
         public void onReceive(Context context, Intent intent) {
             Intent startIntent = new Intent(context, PlayerForegroundService.class);
-            startIntent.setAction(PlayerForegroundService.PLAY_PAUSE_ACTION);
+            startIntent.setAction(PlayerForegroundService.PLAYER_PLAY_PAUSE_ACTION);
             context.startService(startIntent);
         }
     }

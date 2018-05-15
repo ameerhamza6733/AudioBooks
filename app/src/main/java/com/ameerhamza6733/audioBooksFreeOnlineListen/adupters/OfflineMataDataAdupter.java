@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
-import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.OfflineBookFragment;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.AudioBook;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.MataData;
@@ -50,13 +49,13 @@ private Activity activity;
                 @Override
                 public void onClick(View v) {
                     if (PlayerForegroundService.isPlaying) {
-                        startPlayerService(mataDataList.get(position), PlayerForegroundService.PLAY_PAUSE_ACTION, null, 0);
+                        startPlayerService(mataDataList.get(position), PlayerForegroundService.PLAYER_PLAY_PAUSE_ACTION, null, 0);
                     } else {
                         stopPlayerService(mataDataList.get(position));
 
 
                         handler.postDelayed(() -> {
-                            startPlayerService(mataDataList.get(position), PlayerForegroundService.START_FOREGROUND_ACTION, null, 0);
+                            startPlayerService(mataDataList.get(position), PlayerForegroundService.ACTION_START, null, 0);
 
                         }, 2000);
                     }}

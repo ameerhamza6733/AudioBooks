@@ -43,6 +43,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.google.android.exoplayer2.ui.PlayerControlView;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
@@ -52,9 +53,8 @@ import java.util.List;
 
 import static com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.DetailTabActivity.KEY_SHARD_PREF_AUDIO_BOOK;
 import static com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService.EXTRA_URI;
-import static com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService.FAST_FORWARD_ACTION;
-import static com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService.FAST_REWIND_ACTION;
 import static com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService.SERVICE_STAARTED;
+
 
 /**
  * Created by AmeerHamza on 4/23/18.
@@ -71,16 +71,17 @@ public class PlayerFragment extends Fragment {
     private Spinner mySpinner;
     private AudioBook audioBook;
     private TextView tvTitle;
-    private TextView tVrewind;
-    private TextView tVFarword;
-    private TextView tvPlay;
-    private TextView tvPass;
+   // private TextView tVrewind;
+    //private TextView tVFarword;
+   // private TextView tvPlay;
+   // private TextView tvPass;
     private ImageView imageView;
     private ProgressBar progressBar;
     private ProgressBar PlayerStatePB;
     private RelativeLayout rvBackground;
     private View rootView;
     private AdView mAdView;
+    private PlayerControlView mPlayerView;
     private InterstitialAd mInterstitialAd;
     private FloatingActionButton fabDownload;
 
@@ -104,24 +105,26 @@ public class PlayerFragment extends Fragment {
                 Log.d(TAG, "action recived: " + intent.getAction());
                 //do something based on the intent's action
                 if (intent.getAction().equals(BROADCAST_ACTION_BUFFRING)) {
-                    if (tvPlay != null) {
-                        tvPlay.setVisibility(View.GONE);
+//                    if (tvPlay != null) {
+//                        tvPlay.setVisibility(View.GONE);
                         if (PlayerStatePB != null)
                             PlayerStatePB.setVisibility(View.VISIBLE);
-                    }
+//                    }
                 } else if (intent.getAction().equals(BROADCAST_ACTION_PLAYER_START)) {
 
                     if (PlayerStatePB != null)
                         PlayerStatePB.setVisibility(View.GONE);
-                    if (tvPass != null)
-                        tvPass.setVisibility(View.VISIBLE);
-
+//                    if (tvPass != null)
+//                        tvPass.setVisibility(View.VISIBLE);
+                    try{
+                       mPlayerView.setPlayer(PlayerForegroundService.player);
+                    }catch (Exception e){}
                 } else if (intent.getAction().equals(SERVICE_STAARTED)) {
-                    if (tvPlay != null)
-                        tvPlay.setVisibility(View.INVISIBLE);
+//                    if (tvPlay != null)
+//                        tvPlay.setVisibility(View.INVISIBLE);
                 } else if (intent.getAction().equals(BROADCAST_ACTION_PLAYER_Closed)) {
-                    tvPass.setVisibility(View.GONE);
-                    tvPlay.setVisibility(View.VISIBLE);
+//                    tvPass.setVisibility(View.GONE);
+//                    tvPlay.setVisibility(View.VISIBLE);
 
                 } else if (intent.getAction().equals(BROADCAST_ACTION_SHOW_AD)) {
                     if (mInterstitialAd != null && mInterstitialAd.isLoaded())
@@ -152,7 +155,6 @@ public class PlayerFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.player_fragment, container, false);
         audioBook = MySharedPref.getSavedObjectFromPreference(getActivity().getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, KEY_SHARD_PREF_AUDIO_BOOK, AudioBook.class);
-        mySpinner = (Spinner) rootView.findViewById(R.id.spinner1);
 
         bindViews(rootView);
         intiDataSet();
@@ -163,18 +165,18 @@ public class PlayerFragment extends Fragment {
     private void loadAd() {
 
         mAdView = rootView.findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
+        AdRequest adRequest = new AdRequest.Builder().addTestDevice("B94C1B8999D3B59117198A259685D4F8").build();
         mAdView.loadAd(adRequest);
         mInterstitialAd = new InterstitialAd(getActivity());
         mInterstitialAd.setAdUnitId("ca-app-pub-5168564707064012/3352880988");
-        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+        mInterstitialAd.loadAd(new AdRequest.Builder().addTestDevice("B94C1B8999D3B59117198A259685D4F8").build());
 
 
     }
 
     private void intiDataSet() {
         progressBar.setVisibility(View.VISIBLE);
-        this.tvPlay.setVisibility(View.GONE);
+      //  this.tvPlay.setVisibility(View.GONE);
         this.PlayerStatePB.setVisibility(View.VISIBLE);
         MetaDataViewModel model = ViewModelProviders.of(this).get(MetaDataViewModel.class);
         if (audioBook.getIdentifier() != null)
@@ -222,7 +224,7 @@ public class PlayerFragment extends Fragment {
                 else {
                     stopPlayerService(currentMataData);
                     handler.postDelayed(() -> {
-                        startPlayerService(currentMataData, PlayerForegroundService.START_FOREGROUND_ACTION, null, 0);
+                        startPlayerService(currentMataData, PlayerForegroundService.ACTION_START, null, 0);
 
                     }, 2000);
                 }
@@ -238,16 +240,19 @@ public class PlayerFragment extends Fragment {
 
     private void bindViews(View view) {
         tvTitle = view.findViewById(R.id.title);
-        tVrewind = view.findViewById(R.id.fast_rewind);
-        tVFarword = view.findViewById(R.id.fast_forword);
-        tvPlay = view.findViewById(R.id.play);
-        tvPass = view.findViewById(R.id.pass);
+//        tVrewind = view.findViewById(R.id.fast_rewind);
+//        tVFarword = view.findViewById(R.id.fast_forword);
+//        tvPlay = view.findViewById(R.id.play);
+//        tvPass = view.findViewById(R.id.pass);
         imageView = view.findViewById(R.id.iamge);
         rvBackground = view.findViewById(R.id.RVimageView);
         progressBar = view.findViewById(R.id.prograss_bar);
         tvTitle.setText(audioBook.getTitle());
         PlayerStatePB = view.findViewById(R.id.plater_State_prograss_bar);
         fabDownload = view.findViewById(R.id.fab_download);
+        mySpinner = (Spinner) rootView.findViewById(R.id.spinner1);
+       mPlayerView= rootView.findViewById(R.id.player_view);
+
 
         Glide.with(this).asBitmap()
                 .load(Util.INSTANCE.toImageURI(audioBook.getIdentifier()))
@@ -265,38 +270,38 @@ public class PlayerFragment extends Fragment {
                 .load(Util.INSTANCE.toImageURI(audioBook.getIdentifier()))
                 .into(imageView);
 
-        tVrewind.setOnClickListener(v -> startPlayerService(currentMataData, FAST_REWIND_ACTION, PlayerForegroundService.EXTRA_REWIND_MILI_SECOND, 10000));
-        tVFarword.setOnClickListener(v -> startPlayerService(currentMataData, FAST_FORWARD_ACTION, PlayerForegroundService.EXTRA_FAST_FORWARD_MILI_SECONDS, 30000));
+      //  tVrewind.setOnClickListener(v -> startPlayerService(currentMataData, FAST_REWIND_ACTION, PlayerForegroundService.EXTRA_REWIND_MILI_SECOND, 10000));
+        //tVFarword.setOnClickListener(v -> startPlayerService(currentMataData, FAST_FORWARD_ACTION, PlayerForegroundService.EXTRA_FAST_FORWARD_MILI_SECONDS, 30000));
 
-        tvPass.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+//        tvPass.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//                tvPlay.setVisibility(View.VISIBLE);
+//                handler.postDelayed(() -> tvPass.setVisibility(View.GONE), 500);
+//                startPlayerService(currentMataData, PlayerForegroundService.PLAYER_PLAY_PAUSE_ACTION, null, 0);
+//                if (mInterstitialAd != null && mInterstitialAd.isLoaded())
+//                    mInterstitialAd.show();
+//            }
+//        });
 
-                tvPlay.setVisibility(View.VISIBLE);
-                handler.postDelayed(() -> tvPass.setVisibility(View.GONE), 500);
-                startPlayerService(currentMataData, PlayerForegroundService.PLAY_PAUSE_ACTION, null, 0);
-                if (mInterstitialAd != null && mInterstitialAd.isLoaded())
-                    mInterstitialAd.show();
-            }
-        });
-
-        tvPlay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //
-                if (PlayerForegroundService.isPlaying) {
-                    startPlayerService(currentMataData, PlayerForegroundService.PLAY_PAUSE_ACTION, null, 0);
-                } else {
-                    stopPlayerService(currentMataData);
-                    handler.postDelayed(() -> {
-                        startPlayerService(currentMataData, PlayerForegroundService.START_FOREGROUND_ACTION, null, 0);
-
-                    }, 2000);
-                }
-
-
-            }
-        });
+//        tvPlay.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                //
+//                if (PlayerForegroundService.isPlaying) {
+//                    startPlayerService(currentMataData, PlayerForegroundService.PLAYER_PLAY_PAUSE_ACTION, null, 0);
+//                } else {
+//                    stopPlayerService(currentMataData);
+//                    handler.postDelayed(() -> {
+//                        startPlayerService(currentMataData, PlayerForegroundService.ACTION_START, null, 0);
+//
+//                    }, 2000);
+//                }
+//
+//
+//            }
+//        });
         fabDownload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -341,14 +346,14 @@ public class PlayerFragment extends Fragment {
                     .setPositiveButton("OK", (dialog, which) -> {
                         stopPlayerService(currentMataData);
                         handler.postDelayed(() -> {
-                            startPlayerService(currentMataData, PlayerForegroundService.START_FOREGROUND_ACTION, PlayerForegroundService.EXTRA_SEEK_TO, seekTo);
+                            startPlayerService(currentMataData, PlayerForegroundService.ACTION_START, PlayerForegroundService.EXTRA_SEEK_TO, seekTo);
 
                         }, 2000);
                     })
                     .setNegativeButton("NO", (dialog, which) -> {
                         stopPlayerService(currentMataData);
                         handler.postDelayed(() -> {
-                            startPlayerService(currentMataData, PlayerForegroundService.START_FOREGROUND_ACTION, null, 0);
+                            startPlayerService(currentMataData, PlayerForegroundService.ACTION_START, null, 0);
 
                         }, 2000);
                     })

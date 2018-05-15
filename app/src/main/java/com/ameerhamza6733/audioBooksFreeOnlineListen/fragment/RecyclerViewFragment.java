@@ -1,8 +1,10 @@
 package com.ameerhamza6733.audioBooksFreeOnlineListen.fragment;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -29,6 +31,7 @@ import com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.MainActivity;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.BookCatalogueAdupter;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.CustomAdapter;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.AudioBook;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.viewModels.MainActivityViewModel;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
@@ -70,7 +73,7 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
     public void OnRecivedQuery(String query) {
 
         Log.d(TAG, "query: " + query);
-        intiVolley(query);
+        initDatasetForPoetry(query);
 
     }
 
@@ -119,10 +122,11 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
         setHasOptionsMenu(true);
         SetToSpinner(rootView);
         try {
+
             if (getArguments().getString(ARRGS_KEY).equalsIgnoreCase(MAKE_API_CALL)) {
                 MySharedPref.saveObjectToSharedPreference(getActivity().getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, KEY_SHARED_PREF_CURRENT_CATALOG, "librivox");
                 String welcomeUrl = Util.INSTANCE.qurarySortBuilder("librivox", "addeddate+desc");
-                intiVolley(welcomeUrl);
+                initDatasetForPoetry(welcomeUrl);
             }
         } catch (Exception e) {
         }
@@ -219,7 +223,7 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
 
                 if (position > 0) {
-                    intiVolley(Util.INSTANCE.BuildQuery(catalogueList.get(position)));
+                    initDatasetForPoetry(Util.INSTANCE.BuildQuery(catalogueList.get(position)));
                     MySharedPref.saveObjectToSharedPreference(getActivity().getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, KEY_SHARED_PREF_CURRENT_CATALOG, catalogueList.get(position));
                 }
 
@@ -244,7 +248,7 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
 
                 if (position > 0) {
-                    intiVolley(Util.INSTANCE.qurarySortBuilder(MySharedPref.getSavedObjectFromPreference(getActivity().getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, RecyclerViewFragment.KEY_SHARED_PREF_CURRENT_CATALOG), filterList.get(position) + "+" + "desc"));
+                    initDatasetForPoetry(Util.INSTANCE.qurarySortBuilder(MySharedPref.getSavedObjectFromPreference(getActivity().getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, RecyclerViewFragment.KEY_SHARED_PREF_CURRENT_CATALOG), filterList.get(position) + "+" + "desc"));
 
                 }
             }
@@ -260,90 +264,90 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
      * Generates Strings for RecyclerView's adapter. This data would usually come
      * from a local content provider or remote server.
      */
-//    protected void initDatasetForPoetry(String url) {
-//
-//        progressBar.setVisibility(View.VISIBLE);
-//        Log.d(TAG, "url: " + url);
-//        MainActivityViewModel model = ViewModelProviders.of(getActivity()).get(MainActivityViewModel.class);
-//        model.loadData(Volley.newRequestQueue(getActivity()), url).observe(this, updatedAudioBookList -> {
-//            // update UI
-//            if (updatedAudioBookList != null) {
-//                progressBar.setVisibility(View.GONE);
-//                if (updatedAudioBookList.size() == 0) {
-//                    Toast.makeText(getActivity(), "No results matched your criteria.", Toast.LENGTH_LONG).show();
-//                } else {
-//                    CustomAdapter mAdapter = new CustomAdapter(updatedAudioBookList);
-//                    mRecyclerViewPoetry.setAdapter(mAdapter);
-//                }
-//
-//            } else {
-//                progressBar.setVisibility(View.GONE);
-//                Snackbar
-//
-//                        .make(mRecyclerViewPoetry, "Connection Error", Snackbar.LENGTH_LONG)
-//                        .setAction("Try again", new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View view) {
-//                                initDatasetForPoetry(url);
-//                            }
-//                        }).setDuration(Snackbar.LENGTH_INDEFINITE).show();
-//
-//
-//            }
-//        });
-//    }
-    private void intiVolley(String s) {
+    protected void initDatasetForPoetry(String url) {
+
         progressBar.setVisibility(View.VISIBLE);
-        Log.d(TAG, "intiVolley");
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, s, response -> {
-
-            Observable.fromCallable(() -> {
-                List<AudioBook> audioBookList = new ArrayList<>();
-                try {
-                    JSONObject jsonObject = Util.INSTANCE.toJson(response.substring(response.indexOf("{"), response.lastIndexOf("}") + 1));
-                    JSONArray jsonArray = jsonObject.getJSONObject("response").getJSONArray("docs");
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        JSONObject docs = jsonArray.getJSONObject(i);
-                        if (docs.getString("identifier").toLowerCase().contains("librivox")) {
-                            audioBookList.add(new AudioBook(Util.INSTANCE.ExtractRating(docs), Util.INSTANCE.ExtractDescription(docs), Util.INSTANCE.ExtractNoOfDownloads(docs), docs.getString("identifier"), Util.INSTANCE.ExtractNoReviews(docs), docs.getString("title"), Util.INSTANCE.ExtractPublisher(docs), Util.INSTANCE.ExtractMediaType(docs), Util.INSTANCE.EtracCreator(docs), Util.INSTANCE.ExtractData(docs)));
-
-                        }
-                    }
-
-                    // Collections.shuffle(audioBookList);
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return null;
+        Log.d(TAG, "url: " + url);
+        MainActivityViewModel model = ViewModelProviders.of(getActivity()).get(MainActivityViewModel.class);
+        model.loadData(Volley.newRequestQueue(getActivity()), url).observe(this, updatedAudioBookList -> {
+            // update UI
+            if (updatedAudioBookList != null) {
+                progressBar.setVisibility(View.GONE);
+                if (updatedAudioBookList.size() == 0) {
+                    Toast.makeText(getActivity(), "No results matched your criteria.", Toast.LENGTH_LONG).show();
+                } else {
+                    CustomAdapter mAdapter = new CustomAdapter(updatedAudioBookList);
+                    mRecyclerViewPoetry.setAdapter(mAdapter);
                 }
-                return audioBookList;
-            }).subscribeOn(Schedulers.computation())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe((result) -> {
-                        if (result != null) {
 
-                            progressBar.setVisibility(View.GONE);
-                            if (result.size() == 0) {
-                                Toast.makeText(getActivity(), "No results matched your criteria.", Toast.LENGTH_LONG).show();
-                            } else {
-                                CustomAdapter mAdapter = new CustomAdapter(result);
-                                mRecyclerViewPoetry.setAdapter(mAdapter);
+            } else {
+                progressBar.setVisibility(View.GONE);
+                Snackbar
+
+                        .make(mRecyclerViewPoetry, "Connection Error", Snackbar.LENGTH_LONG)
+                        .setAction("Try again", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                initDatasetForPoetry(url);
                             }
-                        } else {
-                            Log.d("RecyclerViewFragment", "no open source book find");
-                        }
-                    });
+                        }).setDuration(Snackbar.LENGTH_INDEFINITE).show();
 
-            Log.d(MainActivity.TAG, "volley response");
-        }, (error) -> {
-            error.printStackTrace();
-            progressBar.setVisibility(View.GONE);
-            Toast.makeText(getActivity(), "Error:", Toast.LENGTH_LONG).show();
-            Log.d(MainActivity.TAG, "volley error" + error.getMessage());
+
+            }
         });
-        requsestQueue.add(stringRequest);
-
     }
+//    private void intiVolley(String s) {
+//        progressBar.setVisibility(View.VISIBLE);
+//        Log.d(TAG, "intiVolley");
+//        StringRequest stringRequest = new StringRequest(Request.Method.GET, s, response -> {
+//
+//            Observable.fromCallable(() -> {
+//                List<AudioBook> audioBookList = new ArrayList<>();
+//                try {
+//                    JSONObject jsonObject = Util.INSTANCE.toJson(response.substring(response.indexOf("{"), response.lastIndexOf("}") + 1));
+//                    JSONArray jsonArray = jsonObject.getJSONObject("response").getJSONArray("docs");
+//                    for (int i = 0; i < jsonArray.length(); i++) {
+//                        JSONObject docs = jsonArray.getJSONObject(i);
+//                        if (docs.getString("identifier").toLowerCase().contains("librivox")) {
+//                            audioBookList.add(new AudioBook(Util.INSTANCE.ExtractRating(docs), Util.INSTANCE.ExtractDescription(docs), Util.INSTANCE.ExtractNoOfDownloads(docs), docs.getString("identifier"), Util.INSTANCE.ExtractNoReviews(docs), docs.getString("title"), Util.INSTANCE.ExtractPublisher(docs), Util.INSTANCE.ExtractMediaType(docs), Util.INSTANCE.EtracCreator(docs), Util.INSTANCE.ExtractData(docs)));
+//
+//                        }
+//                    }
+//
+//                    // Collections.shuffle(audioBookList);
+//
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                    return null;
+//                }
+//                return audioBookList;
+//            }).subscribeOn(Schedulers.computation())
+//                    .observeOn(AndroidSchedulers.mainThread())
+//                    .subscribe((result) -> {
+//                        if (result != null) {
+//
+//                            progressBar.setVisibility(View.GONE);
+//                            if (result.size() == 0) {
+//                                Toast.makeText(getActivity(), "No results matched your criteria.", Toast.LENGTH_LONG).show();
+//                            } else {
+//                                CustomAdapter mAdapter = new CustomAdapter(result);
+//                                mRecyclerViewPoetry.setAdapter(mAdapter);
+//                            }
+//                        } else {
+//                            Log.d("RecyclerViewFragment", "no open source book find");
+//                        }
+//                    });
+//
+//            Log.d(MainActivity.TAG, "volley response");
+//        }, (error) -> {
+//            error.printStackTrace();
+//            progressBar.setVisibility(View.GONE);
+//            Toast.makeText(getActivity(), "Error:", Toast.LENGTH_LONG).show();
+//            Log.d(MainActivity.TAG, "volley error" + error.getMessage());
+//        });
+//        requsestQueue.add(stringRequest);
+//
+//    }
 
     private enum LayoutManagerType {
         GRID_LAYOUT_MANAGER,

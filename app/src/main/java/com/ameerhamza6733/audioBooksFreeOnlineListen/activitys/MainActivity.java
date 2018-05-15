@@ -25,6 +25,7 @@ import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.FragmetnHistory;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.OfflineBookFragment;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.RecyclerViewFragment;
 import com.google.android.gms.ads.MobileAds;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 
 public class MainActivity extends AppCompatActivity
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity
     private ReciveQuery reciveQuery;
     private BottomNavigationView mBottomBar;
     private FragmentManager fm;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +55,6 @@ public class MainActivity extends AppCompatActivity
         startFragmentTransction(recyclerViewFragment);
         reciveQuery = recyclerViewFragment;
 
-        MobileAds.initialize(this, "ca-app-pub-5168564707064012~4212395459");
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -90,6 +91,9 @@ public class MainActivity extends AppCompatActivity
 
                     ;
                 });
+
+        MobileAds.initialize(this, "ca-app-pub-5168564707064012~4212395459");
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
     }
 
     private void startFragmentTransction(Fragment fragment) {
