@@ -110,9 +110,10 @@ fm= getSupportFragmentManager();
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-
-          if(fm.getBackStackEntryCount()>1){
+            if(fm.getBackStackEntryCount()>1){
               fm.popBackStack();
+          }else {
+              super.onBackPressed();
           }
         }
     }

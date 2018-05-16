@@ -103,8 +103,12 @@ public class BookSearchDialogFragment extends DialogFragment {
          */
         if (!userEnteredQuery.equals("")) {
 
-            if (queryUpdate !=null)
-                queryUpdate.OnQueryUpdate(Util.INSTANCE.quraryBuilder(queryUpdate.toString()));
+            if (queryUpdate !=null){
+                userEnteredQuery=  userEnteredQuery.replaceAll(" ","%20");
+                userEnteredQuery = userEnteredQuery.concat("~");
+                queryUpdate.OnQueryUpdate(Util.INSTANCE.quraryBuilder(userEnteredQuery.toString()));
+            }
+
             BookSearchDialogFragment.this.getDialog().dismiss();
         }
     }

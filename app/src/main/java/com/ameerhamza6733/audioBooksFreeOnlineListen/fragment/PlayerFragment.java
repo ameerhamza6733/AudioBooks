@@ -174,6 +174,8 @@ public class PlayerFragment extends Fragment {
 
     }
 
+
+
     private void intiDataSet() {
         progressBar.setVisibility(View.VISIBLE);
       //  this.tvPlay.setVisibility(View.GONE);

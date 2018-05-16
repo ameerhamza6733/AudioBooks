@@ -30,23 +30,12 @@ import com.ameerhamza6733.audioBooksFreeOnlineListen.Util;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.MainActivity;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.BookCatalogueAdupter;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.CustomAdapter;
-import com.ameerhamza6733.audioBooksFreeOnlineListen.models.AudioBook;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.viewModels.MainActivityViewModel;
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by AmeerHamza on 2/8/2018.
@@ -125,7 +114,7 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
 
             if (getArguments().getString(ARRGS_KEY).equalsIgnoreCase(MAKE_API_CALL)) {
                 MySharedPref.saveObjectToSharedPreference(getActivity().getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, KEY_SHARED_PREF_CURRENT_CATALOG, "librivox");
-                String welcomeUrl = Util.INSTANCE.qurarySortBuilder("librivox", "addeddate+desc");
+                String welcomeUrl = Util.INSTANCE.SubjectSortBuilder("librivox", "addeddate+desc");
                 initDatasetForPoetry(welcomeUrl);
             }
         } catch (Exception e) {
@@ -248,7 +237,7 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
 
                 if (position > 0) {
-                    initDatasetForPoetry(Util.INSTANCE.qurarySortBuilder(MySharedPref.getSavedObjectFromPreference(getActivity().getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, RecyclerViewFragment.KEY_SHARED_PREF_CURRENT_CATALOG), filterList.get(position) + "+" + "desc"));
+                    initDatasetForPoetry(Util.INSTANCE.SubjectSortBuilder(MySharedPref.getSavedObjectFromPreference(getActivity().getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, RecyclerViewFragment.KEY_SHARED_PREF_CURRENT_CATALOG), filterList.get(position) + "+" + "desc"));
 
                 }
             }
@@ -273,6 +262,17 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
             // update UI
             if (updatedAudioBookList != null) {
                 progressBar.setVisibility(View.GONE);
+                /*
+                hide felting option so filter can't apply on search reasult
+                 */
+                if (url.startsWith("https://archive.org/advancedsearch.php?q=title"))
+                {
+                    mySpinner.setVisibility(View.GONE);
+                    mySpinnerFilter.setVisibility(View.GONE);
+                }else {
+                    mySpinner.setVisibility(View.VISIBLE);
+                    mySpinnerFilter.setVisibility(View.VISIBLE);
+                }
                 if (updatedAudioBookList.size() == 0) {
                     Toast.makeText(getActivity(), "No results matched your criteria.", Toast.LENGTH_LONG).show();
                 } else {

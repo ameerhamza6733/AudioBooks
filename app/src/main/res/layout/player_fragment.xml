@@ -1,6 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:ndroid="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -12,15 +11,15 @@
         android:layout_centerHorizontal="true"
         ads:adSize="BANNER"
 
-        ads:adUnitId="ca-app-pub-5168564707064012/7186753599"/>
+        ads:adUnitId="ca-app-pub-5168564707064012/7186753599" />
 
     <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_marginTop="18dp"
         android:id="@+id/scrollView2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/adView"
 
-        android:layout_below="@+id/adView">
+        android:layout_marginTop="18dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -157,17 +156,16 @@ android:layout_marginTop="18dp"
         android:id="@+id/player_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-android:layout_below="@+id/scrollView2"
+        android:layout_below="@+id/scrollView2"
 
-        app:show_timeout="0"
-       >
+        app:show_timeout="0">
 
         <ProgressBar
 
-            android:layout_gravity="center"
             android:id="@+id/plater_State_prograss_bar"
             style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
     </com.google.android.exoplayer2.ui.PlayerControlView>
 </RelativeLayout>
