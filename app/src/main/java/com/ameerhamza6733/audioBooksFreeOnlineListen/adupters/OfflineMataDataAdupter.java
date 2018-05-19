@@ -7,12 +7,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.AudioBook;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.MataData;
 
+import java.io.File;
 import java.util.List;
 
 import static com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService.EXTRA_URI;
@@ -25,6 +27,7 @@ public class OfflineMataDataAdupter extends OfflineBookAdupter {
 private String TAG = "OfflineMataDataAdupter";
 private List<MataData >mataDataList;
 private Activity activity;
+
 
     Handler handler=new Handler();
     public OfflineMataDataAdupter(List<AudioBook> audioBookList, Activity activity,List<MataData> mataDataList) {
@@ -73,13 +76,16 @@ private Activity activity;
     private void startPlayerService(MataData mataData, String Action, String extraKey, long miliSecond)   {
 
         try {
+
             Intent startIntent = new Intent(activity, PlayerForegroundService.class);
             if (mataData != null) {
+
                 startIntent.putExtra(EXTRA_URI, mataData.getSdPath());
                 startIntent.putExtra(PlayerForegroundService.EXTRA_TITLE, mataData.getName());
             }
             startIntent.putExtra(extraKey, miliSecond);
             startIntent.setAction(Action);
+
             activity.startService(startIntent);
         } catch (Exception e) {
             e.printStackTrace();

@@ -22,6 +22,7 @@ import com.ameerhamza6733.audioBooksFreeOnlineListen.models.AudioBook;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.MataData;
 import com.daimajia.numberprogressbar.NumberProgressBar;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 
@@ -118,8 +119,11 @@ public class DownloadingAdupter extends RecyclerView.Adapter<DownloadingAdupter.
     }
 
     private boolean isAlreadyDonlaod(int position) {
-
-      return   downloadedAudioBook!=null && downloadedAudioBook.getMataData()!=null && downloadedAudioBook.getMataData().size()>0 && downloadedAudioBook.getMataData().get(position).isHasDownloaded();
+        File f = new File( downloadedAudioBook.getMataData().get(position).getSdPath());
+        if(f.exists()) {
+          return   downloadedAudioBook!=null && downloadedAudioBook.getMataData()!=null && downloadedAudioBook.getMataData().size()>0 && downloadedAudioBook.getMataData().get(position).isHasDownloaded();
+        }
+      return  false;
     }
 
     @Override
@@ -194,9 +198,9 @@ public class DownloadingAdupter extends RecyclerView.Adapter<DownloadingAdupter.
                     DownloadedMataDataList.get(getAdapterPosition()).setHasDownloaded(true);
                     DownloadedMataDataList.get(getAdapterPosition()).setSdPath(downloadInfoHashMap.get(getAdapterPosition()).getPath());
                     MySharedPref.saveObjectToSharedPreference(DownloadingAdupter.this.activity.getApplicationContext(), MySharedPref.SHARD_PREF_DOWNLOADED_AUDIO_BOOK, downloadedAudioBook.getIdentifier(), downloadedAudioBook);
+                  //  Toast.makeText(v.getContext(),"Downloading completed you can watch downloaded file from the main screen by clicking on watch later(clock) button",Toast.LENGTH_LONG).show();
 
-                    Toast.makeText(v.getContext(),"Downloading completed you can watch downloaded file from the main screen by clicking on watch later(clock) button",Toast.LENGTH_LONG).show();
-
+                    notifyDataSetChanged();
                 }
 
                 @Override
@@ -260,6 +264,7 @@ public class DownloadingAdupter extends RecyclerView.Adapter<DownloadingAdupter.
     private void startPlayerService(MataData mataData, String Action, String extraKey, long miliSecond)   {
 
         try {
+
             Intent startIntent = new Intent(activity, PlayerForegroundService.class);
             if (mataData != null) {
                 startIntent.putExtra(EXTRA_URI, mataData.getSdPath());

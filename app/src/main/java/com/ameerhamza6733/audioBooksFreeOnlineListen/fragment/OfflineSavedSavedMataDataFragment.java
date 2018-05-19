@@ -19,6 +19,7 @@ import com.ameerhamza6733.audioBooksFreeOnlineListen.models.AudioBook;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.MataData;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.viewModels.OfflineBooksViewModle;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,17 +31,17 @@ import static com.ameerhamza6733.audioBooksFreeOnlineListen.MySharedPref.SHARD_P
 
 public class OfflineSavedSavedMataDataFragment extends OfflineSavedBookFragment {
     public static final String BUNDEL_KEY_BOOK_NO = "BUNDEL_KEY_BOOK_NO";
+    int bookNumber;
     private View rootView;
     private List<MataData> mataDataList = new ArrayList<>();
     private RecyclerView recyclerView;
-    int bookNumber;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         if (rootView == null)
             rootView = inflater.inflate(R.layout.offline_saved_book_fragemnt, container, false);
-      bookNumber=  getArguments().getInt(BUNDEL_KEY_BOOK_NO);
+        bookNumber = getArguments().getInt(BUNDEL_KEY_BOOK_NO);
         recyclerView = rootView.findViewById(R.id.recyclerViewOfilineSavedBooks);
         intiDataSet();
         try {
@@ -59,15 +60,17 @@ public class OfflineSavedSavedMataDataFragment extends OfflineSavedBookFragment 
             @Override
             public void onChanged(@Nullable List<AudioBook> audioBooks) {
                 if (audioBooks != null && audioBooks.size() > 0) {
-                    for (MataData mataData : audioBooks.get(bookNumber).getMataData())
-                        if (mataData.isHasDownloaded())
-                           mataDataList.add(mataData);
+                    for (MataData mataData : audioBooks.get(bookNumber).getMataData()) {
+                        File f = new File(mataData.getSdPath());
+                        if (f.exists() && mataData.isHasDownloaded()) {
+                                mataDataList.add(mataData);
+                        }
+                    }
 
-
-                        OfflineMataDataAdupter offlineMataDataAdupter = new OfflineMataDataAdupter(audioBooks, getActivity(),mataDataList);
-                        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-                        recyclerView.setAdapter(offlineMataDataAdupter);
-                }else {
+                    OfflineMataDataAdupter offlineMataDataAdupter = new OfflineMataDataAdupter(audioBooks, getActivity(), mataDataList);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                    recyclerView.setAdapter(offlineMataDataAdupter);
+                } else {
                     Toast.makeText(getActivity(), "You don't have any offline book", Toast.LENGTH_LONG).show();
                 }
             }
