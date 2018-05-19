@@ -18,11 +18,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
-import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.OfflineBookAdupter;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.BookMarkFragemnt;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.BookSearchDialogFragment;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.FragmetnHistory;
-import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.OfflineBookFragment;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.RecyclerViewFragment;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -73,7 +71,7 @@ public class MainActivity extends AppCompatActivity
                         Fragment selectedFragment = null;
                         switch (item.getItemId()) {
                             case R.id.bn_watch_latter:
-                               startActivity(new Intent(MainActivity.this, OfflineActivity.class));
+                               startActivity(new Intent(MainActivity.this, OfflineSavedBooksActivity.class));
                                 break;
                             case R.id.bn_my_history:
                               Fragment fragmetnHistory = new FragmetnHistory();

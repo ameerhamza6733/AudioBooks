@@ -1,26 +1,24 @@
 package com.ameerhamza6733.audioBooksFreeOnlineListen.activitys;
 
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
-import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.OfflineBookFragment;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.OfflineSavedBookFragment;
 
-public class OfflineActivity extends AppCompatActivity {
-private String TAG ="OfflineActivity";
+public class OfflineSavedBooksActivity extends AppCompatActivity {
+private String TAG ="OfflineSavedBooksActivity";
     private FragmentManager fragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState==null){
-           OfflineBookFragment offlineBookFragment= new OfflineBookFragment();
-            startFragmentTransction(offlineBookFragment);
+           OfflineSavedBookFragment offlineSavedBookFragment = new OfflineSavedBookFragment();
+            startFragmentTransction(offlineSavedBookFragment);
         }
         setContentView(R.layout.activity_offline);
 

@@ -1,7 +1,6 @@
 package com.ameerhamza6733.audioBooksFreeOnlineListen.fragment;
 
 import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -16,14 +15,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.ameerhamza6733.audioBooksFreeOnlineListen.MySharedPref;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.OfflineBookAdupter;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.AudioBook;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.viewModels.OfflineBooksViewModle;
 
 import java.util.List;
-import java.util.Map;
 
 import static com.ameerhamza6733.audioBooksFreeOnlineListen.MySharedPref.SHARD_PREF_DOWNLOADED_AUDIO_BOOK;
 
@@ -31,14 +28,14 @@ import static com.ameerhamza6733.audioBooksFreeOnlineListen.MySharedPref.SHARD_P
  * Created by AmeerHamza on 5/9/18.
  */
 
-public class OfflineBookFragment extends Fragment {
-    private String TAG="OfflineBookFragment";
+public class OfflineSavedBookFragment extends Fragment {
+    private String TAG="OfflineSavedBookFragment";
     private View rootView;
     private List<AudioBook> audioBookList;
     private RecyclerView recyclerView;
 
 
-    public OfflineBookFragment() {
+    public OfflineSavedBookFragment() {
     }
 
     private OfflineBookAdupter offlineBookAdupter;
@@ -62,7 +59,7 @@ e.printStackTrace();
 
     private void intiDataSet() {
         OfflineBooksViewModle offlineBooksViewModle = ViewModelProviders.of(getActivity()).get(OfflineBooksViewModle.class);
-        offlineBooksViewModle.getAudioBook(getActivity().getApplicationContext().getSharedPreferences(SHARD_PREF_DOWNLOADED_AUDIO_BOOK, 0)).observe(this, new Observer<List<AudioBook>>() {
+        offlineBooksViewModle.getAllSavedAudioBooks(getActivity().getApplicationContext().getSharedPreferences(SHARD_PREF_DOWNLOADED_AUDIO_BOOK, 0)).observe(this, new Observer<List<AudioBook>>() {
             @Override
             public void onChanged(@Nullable List<AudioBook> audioBooks) {
                 if (audioBooks!=null && audioBooks.size()>0){

@@ -14,7 +14,7 @@ import java.util.List;
 
 public class BookMarkViewModel extends OfflineBooksViewModle {
     @Override
-    public LiveData<List<AudioBook>> getAudioBook(SharedPreferences sharedPreferences) {
-        return super.getAudioBook(sharedPreferences);
+    public LiveData<List<AudioBook>> getAllSavedAudioBooks(SharedPreferences sharedPreferences) {
+        return super.getAllSavedAudioBooks(sharedPreferences);
     }
 }

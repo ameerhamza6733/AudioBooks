@@ -48,7 +48,7 @@
         </activity>
         <activity android:name=".activitys.feedbackActivity" />
         <activity android:name=".activitys.DownloaderActivty" />
-        <activity android:name=".activitys.OfflineActivity" />
+        <activity android:name=".activitys.OfflineSavedBooksActivity" />
         <activity android:name=".activitys.HistoryActivity"></activity>
     </application>
 

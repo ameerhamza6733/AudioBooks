@@ -23,7 +23,7 @@ public class OfflineBooksViewModle extends ViewModel {
     protected List<AudioBook> audioBookList;
     private static final String TAG = "OfflineBooksViewModle";
 
-    public LiveData<List<AudioBook>> getAudioBook(SharedPreferences sharedPreferences) {
+    public LiveData<List<AudioBook>> getAllSavedAudioBooks(SharedPreferences sharedPreferences) {
         if (listMutableAudioBook == null) {
             listMutableAudioBook = new MutableLiveData<>();
             audioBookList = new ArrayList<>();

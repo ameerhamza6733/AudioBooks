@@ -1,11 +1,14 @@
 package com.ameerhamza6733.audioBooksFreeOnlineListen.adupters;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -14,6 +17,7 @@ import com.ameerhamza6733.audioBooksFreeOnlineListen.MySharedPref;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.Util;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.DownloaderActivty;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.AudioBook;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.MataData;
 import com.daimajia.numberprogressbar.NumberProgressBar;
@@ -26,6 +30,7 @@ import cn.woblog.android.downloader.domain.DownloadInfo;
 import cn.woblog.android.downloader.exception.DownloadException;
 
 import static com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.DetailTabActivity.KEY_SHARD_PREF_AUDIO_BOOK;
+import static com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService.EXTRA_URI;
 
 
 /**
@@ -39,7 +44,7 @@ public class DownloadingAdupter extends RecyclerView.Adapter<DownloadingAdupter.
     private AudioBook audioBook;
     private List<MataData> mataDataList;
     private HashMap<Integer, DownloadInfo> downloadInfoHashMap = new HashMap<>();
-
+    Handler handler=new Handler();
 
     public DownloadingAdupter(List<MataData> mataDataList, Activity context) {
         this.mataDataList = mataDataList;
@@ -61,6 +66,11 @@ public class DownloadingAdupter extends RecyclerView.Adapter<DownloadingAdupter.
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Log.d(TAG, "onBind");
+        if (isAlreadyDonlaod(position)){
+            holder.getmRootDownloadButton().setVisibility(View.GONE);
+            holder.getBtViewDownload().setVisibility(View.VISIBLE);
+            Log.d(TAG,"sd card path"+downloadedAudioBook.getMataData().get(position).getSdPath());
+        }
         holder.getTitle().setText(mataDataList.get(position).getName() + " (" + Util.INSTANCE.bytesToMb(mataDataList.get(position).getSize()) + ")");
         holder.getBtDownload().setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,6 +99,27 @@ public class DownloadingAdupter extends RecyclerView.Adapter<DownloadingAdupter.
             }
         });
 
+        holder.getBtViewDownload().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (PlayerForegroundService.isPlaying) {
+                    startPlayerService(downloadedAudioBook.getMataData().get(position), PlayerForegroundService.PLAYER_PLAY_PAUSE_ACTION, null, 0);
+                } else {
+                    stopPlayerService(downloadedAudioBook.getMataData().get(position));
+
+
+                    handler.postDelayed(() -> {
+                        startPlayerService(downloadedAudioBook.getMataData().get(position), PlayerForegroundService.ACTION_START, null, 0);
+
+                    }, 2000);
+                }
+            }
+        });
+    }
+
+    private boolean isAlreadyDonlaod(int position) {
+
+      return   downloadedAudioBook!=null && downloadedAudioBook.getMataData()!=null && downloadedAudioBook.getMataData().size()>0 && downloadedAudioBook.getMataData().get(position).isHasDownloaded();
     }
 
     @Override
@@ -99,11 +130,12 @@ public class DownloadingAdupter extends RecyclerView.Adapter<DownloadingAdupter.
     public class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView title;
         private final NumberProgressBar numberProgressBar;
-
         private final View rootView;
         private final ProgressBar endlessPrograssBar;
         private final TextView btDownload;
         private final TextView btDownloadingCancel;
+        private final TextView btViewDownload;
+        private final LinearLayout mRootDownloadButton;
 
         private final DownloadListener downloadListener;
 
@@ -116,6 +148,8 @@ public class DownloadingAdupter extends RecyclerView.Adapter<DownloadingAdupter.
             endlessPrograssBar = v.findViewById(R.id.progressBarEndless);
             btDownload = v.findViewById(R.id.btDownload);
             btDownloadingCancel = v.findViewById(R.id.btDownloadingCancel);
+            btViewDownload=v.findViewById(R.id.btViewDownloadFile);
+            mRootDownloadButton=v.findViewById(R.id.rootLayoutDownloadingButton);
 
             downloadListener = new cn.woblog.android.downloader.callback.DownloadListener() {
                 @Override
@@ -139,6 +173,7 @@ public class DownloadingAdupter extends RecyclerView.Adapter<DownloadingAdupter.
                         getEndlessPrograssBar().setVisibility(View.GONE);
                         getNumberProgressBar().setVisibility(View.VISIBLE);
                         getNumberProgressBar().setProgress((int) (progress * 100.0 / size));
+
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -158,8 +193,9 @@ public class DownloadingAdupter extends RecyclerView.Adapter<DownloadingAdupter.
                     List<MataData> DownloadedMataDataList = downloadedAudioBook.getMataData();
                     DownloadedMataDataList.get(getAdapterPosition()).setHasDownloaded(true);
                     DownloadedMataDataList.get(getAdapterPosition()).setSdPath(downloadInfoHashMap.get(getAdapterPosition()).getPath());
-
                     MySharedPref.saveObjectToSharedPreference(DownloadingAdupter.this.activity.getApplicationContext(), MySharedPref.SHARD_PREF_DOWNLOADED_AUDIO_BOOK, downloadedAudioBook.getIdentifier(), downloadedAudioBook);
+
+                    Toast.makeText(v.getContext(),"Downloading completed you can watch downloaded file from the main screen by clicking on watch later(clock) button",Toast.LENGTH_LONG).show();
 
                 }
 
@@ -203,6 +239,37 @@ public class DownloadingAdupter extends RecyclerView.Adapter<DownloadingAdupter.
 
         public TextView getBtDownloadingCancel() {
             return btDownloadingCancel;
+        }
+
+        public LinearLayout getmRootDownloadButton() {
+            return mRootDownloadButton;
+        }
+
+        public TextView getBtViewDownload() {
+            return btViewDownload;
+        }
+    }
+    private void stopPlayerService(MataData mataData)  {
+        try {
+            Intent startIntent = new Intent(activity, PlayerForegroundService.class);
+            startIntent.putExtra(EXTRA_URI, mataData.getSdPath());
+            startIntent.setAction(PlayerForegroundService.STOP_ACTION);
+            activity.startService(startIntent);
+        }catch (Exception e){e.printStackTrace();}
+    }
+    private void startPlayerService(MataData mataData, String Action, String extraKey, long miliSecond)   {
+
+        try {
+            Intent startIntent = new Intent(activity, PlayerForegroundService.class);
+            if (mataData != null) {
+                startIntent.putExtra(EXTRA_URI, mataData.getSdPath());
+                startIntent.putExtra(PlayerForegroundService.EXTRA_TITLE, mataData.getName());
+            }
+            startIntent.putExtra(extraKey, miliSecond);
+            startIntent.setAction(Action);
+            activity.startService(startIntent);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

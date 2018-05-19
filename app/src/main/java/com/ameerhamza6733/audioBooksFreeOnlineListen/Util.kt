@@ -13,6 +13,11 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.time.Instant
+import java.util.*
+
 
 
 
@@ -85,9 +90,9 @@ object Util {
 
     fun ExtractRating(jsonObj: JSONObject): String {
         return try {
-            jsonObj.getString("avg_rating");
+           "rating " +( jsonObj.getString("avg_rating"))
         } catch (e: Exception) {
-            "N/A"
+            "rating " + "N/A"
         }
     }
 
@@ -134,8 +139,13 @@ object Util {
 
     fun ExtractData(jsonObject: JSONObject):String{
         return try {
-            "date: "+ jsonObject.getString("publicdate")
+         var time =    "date: "+ jsonObject.getString("publicdate")
+            time= time.replace("date:","").trim()
+            time=time.replace("T"," ");
+            time=time.replaceAfterLast(":","");
+            convertTimeWithTimeZome(time)
         }catch (e: Exception){
+            e.printStackTrace()
             "N/A"
         }
     }
@@ -257,4 +267,46 @@ object Util {
 
         return bitmap
     }
+
+
+    private fun  convertTimeWithTimeZome( time : String) : String {
+
+        val dateFormat = SimpleDateFormat("dd-MMM-yyyy E hh:mm a z")
+        var date: Date? = null
+        try {
+                val  sdf = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.ENGLISH)
+                val dateThen = sdf.parse(time)
+                var dateNow = Date(System.currentTimeMillis())
+                dateNow = sdf.parse(sdf.format(dateNow))
+                val diff = dateNow.time - dateThen.getTime()
+                val diffSeconds = diff / 1000 % 60
+                val diffMinutes = diff / (60 * 1000) % 60
+                val diffHours = diff / (60 * 60 * 1000) % 24
+                val diffDays = diff / (24 * 60 * 60 * 1000)
+
+                return getAgo(diffSeconds, diffMinutes, diffHours, diffDays)
+            } catch (e: ParseException) {
+                e.printStackTrace()
+                return "N/A"
+            }
+
+
+    }
+
+    private fun getAgo(diffSeconds: Long, diffMinutes: Long, diffHours: Long, diffDays: Long): String {
+        return if (diffDays > 0) {
+            "submitted $diffDays day ago "
+        } else if (diffHours > 0) {
+            "submitted $diffHours hour ago "
+        } else if (diffMinutes > 0) {
+            "submitted $diffMinutes mint ago "
+        } else if (diffSeconds > 0) {
+            "submitted $diffSeconds second ago "
+        } else {
+            "N/A"
+        }
+
+    }
+
 }
+

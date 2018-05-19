@@ -1,9 +1,12 @@
 package com.ameerhamza6733.audioBooksFreeOnlineListen.activitys;
 
 import android.Manifest;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,8 +15,11 @@ import android.widget.Toast;
 
 import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.DownloadingAdupter;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.models.AudioBook;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.MataData;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.viewModels.OfflineBooksViewModle;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cn.woblog.android.downloader.DownloadService;
@@ -21,17 +27,23 @@ import cn.woblog.android.downloader.callback.DownloadManager;
 import lolodev.permissionswrapper.callback.OnRequestPermissionsCallBack;
 import lolodev.permissionswrapper.wrapper.PermissionWrapper;
 
+import static com.ameerhamza6733.audioBooksFreeOnlineListen.MySharedPref.SHARD_PREF_DOWNLOADED_AUDIO_BOOK;
+
 
 public class DownloaderActivty extends AppCompatActivity {
     public static final String EXTRA_MATA_DATA_LIST = "EXTRA_MATA_DATA_LIST";
+    public static final String EXTRA_BOOK_INDEX ="EXTRA_BOOK_INDEX";
     public static DownloadManager downloadManager;
     List<MataData> mataData;
     private RecyclerView recyclerView;
+    private int bookNumber;
+    private List<MataData> mataDataList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_downloader_activty);
+       bookNumber= getIntent().getIntExtra(EXTRA_BOOK_INDEX,0);
         if (Build.VERSION.SDK_INT > 22) {
             checkRunTimePermission();
         } else
@@ -59,7 +71,7 @@ public class DownloaderActivty extends AppCompatActivity {
                         @Override
                         public void onDenied(String permission) {
                             Toast.makeText(DownloaderActivty.this, "app need read and write storage permission for downloading", Toast.LENGTH_LONG).show();
-                        finish();
+                            finish();
                         }
                     }).build().request();
         } else {
@@ -75,5 +87,27 @@ public class DownloaderActivty extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         DownloadingAdupter downloadingAdupter = new DownloadingAdupter(mataData, this);
         recyclerView.setAdapter(downloadingAdupter);
+    }
+
+    public void intiDataSet() {
+        OfflineBooksViewModle offlineBooksViewModle = ViewModelProviders.of(this).get(OfflineBooksViewModle.class);
+        offlineBooksViewModle.getAllSavedAudioBooks(this.getApplicationContext().getSharedPreferences(SHARD_PREF_DOWNLOADED_AUDIO_BOOK, 0)).observe(this, new Observer<List<AudioBook>>() {
+            @Override
+            public void onChanged(@Nullable List<AudioBook> audioBooks) {
+                if (audioBooks != null && audioBooks.size() > 0) {
+                    for (MataData mataData : audioBooks.get(bookNumber).getMataData())
+                        if (mataData.isHasDownloaded())
+
+                        {
+                            mataDataList.add(mataData);
+                            setRecylerView();
+                        }
+
+
+                } else {
+                    setRecylerView();
+                }
+            }
+        });
     }
 }

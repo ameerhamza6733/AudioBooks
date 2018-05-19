@@ -15,7 +15,6 @@ import com.ameerhamza6733.audioBooksFreeOnlineListen.MySharedPref;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.CustomAdapter;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.AudioBook;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.viewModels.BookMarkViewModel;
-import com.ameerhamza6733.audioBooksFreeOnlineListen.viewModels.HistoryViewModel;
 
 import java.util.List;
 
@@ -46,7 +45,7 @@ public class BookMarkFragemnt extends RecyclerViewFragment {
     private void getHistory(String key) {
         Log.d(TAG, "BookMarkFragemnt");
         BookMarkViewModel BookMarkViewModel = ViewModelProviders.of(getActivity()).get(BookMarkViewModel.class);
-        BookMarkViewModel.getAudioBook(getActivity().getApplicationContext().getSharedPreferences(key, 0)).observe(this, new Observer<List<AudioBook>>() {
+        BookMarkViewModel.getAllSavedAudioBooks(getActivity().getApplicationContext().getSharedPreferences(key, 0)).observe(this, new Observer<List<AudioBook>>() {
             @Override
             public void onChanged(@Nullable List<AudioBook> audioBooks) {
                 if (audioBooks != null && audioBooks.size() > 0) {

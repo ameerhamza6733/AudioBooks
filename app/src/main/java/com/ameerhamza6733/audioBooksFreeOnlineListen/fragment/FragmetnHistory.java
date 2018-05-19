@@ -52,7 +52,7 @@ public class FragmetnHistory extends RecyclerViewFragment {
     private void getHistory(String key) {
         Log.d(TAG, "getHistory");
         HistoryViewModel historyViewModel = ViewModelProviders.of(getActivity()).get(HistoryViewModel.class);
-        historyViewModel.getAudioBook(getActivity().getApplicationContext().getSharedPreferences(key, 0)).observe(this, new Observer<List<AudioBook>>() {
+        historyViewModel.getAllSavedAudioBooks(getActivity().getApplicationContext().getSharedPreferences(key, 0)).observe(this, new Observer<List<AudioBook>>() {
             @Override
             public void onChanged(@Nullable List<AudioBook> audioBooks) {
                 if (audioBooks != null && audioBooks.size() > 0) {

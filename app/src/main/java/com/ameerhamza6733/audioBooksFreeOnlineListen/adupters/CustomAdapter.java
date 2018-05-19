@@ -65,10 +65,11 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
         // Get element from your dataset at this position and replace the contents of the view
         // with that element
         viewHolder.getTextViewTitle().setText(mDataSet.get(position).getTitle());
-//        viewHolder.getTextViewRatingCount().setText(mDataSet.get(position).getAvg_rating());
+        viewHolder.getTextViewRatingCount().setText(mDataSet.get(position).getAvg_rating());
 //        viewHolder.getTextViewMediaType().setText(mDataSet.get(position).getMediatype());
 //        viewHolder.getTextViewViewCount().setText(mDataSet.get(position).getDownloads());
         viewHolder.getCreator().setText(mDataSet.get(position).getCreator());
+        viewHolder.getSubmittedAgo().setText(mDataSet.get(position).getData());
         viewHolder.getTextViewAuthor().setText("source: librivox");
         Glide.with(viewHolder.getContext())
                 .asBitmap()
@@ -76,7 +77,6 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
                 .into(new SimpleTarget<Bitmap>(150, 150) {
                     @Override
                     public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
-
                         viewHolder.getImageView().setImageBitmap(resource);
                     }
                 });
@@ -109,9 +109,10 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
     public class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView textViewTitle;
         private final TextView textViewAuthor;
-        //        private final TextView textViewRatingCount;
+                private final TextView textViewRatingCount;
 //        private final TextView textViewMediaType;
 //        private final TextView textViewViewCount;
+        private final TextView submittedAgo;
         private final ImageView imageView;
         private final TextView creator;
         private final Context context;
@@ -135,10 +136,11 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
             textViewTitle = (TextView) v.findViewById(R.id.title);
             textViewAuthor = v.findViewById(R.id.source);
 //            textViewMediaType=v.findViewById(R.id.type);
-//            textViewRatingCount= v.findViewById(R.id.rating);
+            textViewRatingCount= v.findViewById(R.id.rating);
 //            textViewViewCount=v.findViewById(R.id.views);
             imageView = v.findViewById(R.id.imageView);
             creator= v.findViewById(R.id.creator);
+            submittedAgo=v.findViewById(R.id.time);
             appCompatImageButton=v.findViewById(R.id.pop_menu);
             context = v.getContext();
 
@@ -155,10 +157,14 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
         public TextView getCreator() {
             return creator;
         }
-//        public TextView getTextViewRatingCount() {
-//            return textViewRatingCount;
-//        }
-//
+        public TextView getTextViewRatingCount() {
+            return textViewRatingCount;
+        }
+
+        public TextView getSubmittedAgo() {
+            return submittedAgo;
+        }
+        //
 //        public TextView getTextViewMediaType() {
 //            return textViewMediaType;
 //        }

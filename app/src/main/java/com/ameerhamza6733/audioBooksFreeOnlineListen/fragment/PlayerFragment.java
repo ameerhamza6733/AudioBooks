@@ -310,6 +310,7 @@ public class PlayerFragment extends Fragment {
                 if (mataDataList != null && mataDataList.size() > 0) {
                     Intent downloadingIntent = new Intent(v.getContext(), DownloaderActivty.class);
                     downloadingIntent.putParcelableArrayListExtra(DownloaderActivty.EXTRA_MATA_DATA_LIST, mataDataList);
+
                     v.getContext().startActivity(downloadingIntent);
                 } else {
                     Toast.makeText(getActivity(), "Please wait ", Toast.LENGTH_LONG).show();
