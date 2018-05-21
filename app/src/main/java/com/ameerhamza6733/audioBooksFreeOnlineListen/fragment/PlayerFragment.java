@@ -16,7 +16,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,16 +43,20 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.exoplayer2.ui.PlayerControlView;
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.reward.RewardedVideoAd;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.DetailTabActivity.KEY_SHARD_PREF_AUDIO_BOOK;
 import static com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService.EXTRA_URI;
-import static com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService.SERVICE_STAARTED;
+import static com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService.STOP_ACTION;
+import static com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService.player;
 
 
 /**
@@ -71,10 +74,10 @@ public class PlayerFragment extends Fragment {
     private Spinner mySpinner;
     private AudioBook audioBook;
     private TextView tvTitle;
-   // private TextView tVrewind;
+    // private TextView tVrewind;
     //private TextView tVFarword;
-   // private TextView tvPlay;
-   // private TextView tvPass;
+    // private TextView tvPlay;
+    // private TextView tvPass;
     private ImageView imageView;
     private ProgressBar progressBar;
     private ProgressBar PlayerStatePB;
@@ -89,6 +92,7 @@ public class PlayerFragment extends Fragment {
     private IntentFilter filter;
     private MataData currentMataData;
     private ArrayList<MataData> mataDataList;
+    private RewardedVideoAd mRewardedVideoAd;
 
 
     @Override
@@ -105,30 +109,30 @@ public class PlayerFragment extends Fragment {
                 Log.d(TAG, "action recived: " + intent.getAction());
                 //do something based on the intent's action
                 if (intent.getAction().equals(BROADCAST_ACTION_BUFFRING)) {
-//                    if (tvPlay != null) {
-//                        tvPlay.setVisibility(View.GONE);
-                        if (PlayerStatePB != null)
-                            PlayerStatePB.setVisibility(View.VISIBLE);
-//                    }
+
+                    if (PlayerStatePB != null)
+                        PlayerStatePB.setVisibility(View.VISIBLE);
+
                 } else if (intent.getAction().equals(BROADCAST_ACTION_PLAYER_START)) {
 
                     if (PlayerStatePB != null)
                         PlayerStatePB.setVisibility(View.GONE);
-//                    if (tvPass != null)
-//                        tvPass.setVisibility(View.VISIBLE);
-                    try{
-                       mPlayerView.setPlayer(PlayerForegroundService.player);
-                    }catch (Exception e){}
-                } else if (intent.getAction().equals(SERVICE_STAARTED)) {
-//                    if (tvPlay != null)
-//                        tvPlay.setVisibility(View.INVISIBLE);
-                } else if (intent.getAction().equals(BROADCAST_ACTION_PLAYER_Closed)) {
-//                    tvPass.setVisibility(View.GONE);
-//                    tvPlay.setVisibility(View.VISIBLE);
+                    if (player!=null)
+                    mPlayerView.setPlayer(PlayerForegroundService.player);
 
                 } else if (intent.getAction().equals(BROADCAST_ACTION_SHOW_AD)) {
-                    if (mInterstitialAd != null && mInterstitialAd.isLoaded())
-                        mInterstitialAd.show();
+                    if (mRewardedVideoAd!=null && mRewardedVideoAd.isLoaded()) {
+                        mRewardedVideoAd.show();
+                    }else {
+                        if (mInterstitialAd != null && mInterstitialAd.isLoaded())
+                            mInterstitialAd.show();
+                    }
+
+                } else if (intent.getAction().equals(STOP_ACTION)) {
+
+                    if (mPlayerView != null) {
+                        mPlayerView.setPlayer(null);
+                    }
                 }
             }
         };
@@ -137,8 +141,8 @@ public class PlayerFragment extends Fragment {
 
     @Override
     public void onResume() {
-        super.onResume();
         getActivity().registerReceiver(receiver, filter);
+        super.onResume();
     }
 
     @Override
@@ -167,18 +171,27 @@ public class PlayerFragment extends Fragment {
         mAdView = rootView.findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().addTestDevice("B94C1B8999D3B59117198A259685D4F8").build();
         mAdView.loadAd(adRequest);
+
         mInterstitialAd = new InterstitialAd(getActivity());
         mInterstitialAd.setAdUnitId("ca-app-pub-5168564707064012/3352880988");
         mInterstitialAd.loadAd(new AdRequest.Builder().addTestDevice("B94C1B8999D3B59117198A259685D4F8").build());
+        mInterstitialAd.setAdListener(new AdListener(){
+            @Override
+            public void onAdClosed() {
+                mInterstitialAd.loadAd(new AdRequest.Builder().addTestDevice("B94C1B8999D3B59117198A259685D4F8").build());
+            }
+        });
+
+        mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(getActivity());
+        mRewardedVideoAd.loadAd("ca-app-pub-5168564707064012/7558135093", new AdRequest.Builder().addTestDevice("B94C1B8999D3B59117198A259685D4F8").build());
 
 
     }
 
 
-
     private void intiDataSet() {
         progressBar.setVisibility(View.VISIBLE);
-      //  this.tvPlay.setVisibility(View.GONE);
+        //  this.tvPlay.setVisibility(View.GONE);
         this.PlayerStatePB.setVisibility(View.VISIBLE);
         MetaDataViewModel model = ViewModelProviders.of(this).get(MetaDataViewModel.class);
         if (audioBook.getIdentifier() != null)
@@ -253,7 +266,7 @@ public class PlayerFragment extends Fragment {
         PlayerStatePB = view.findViewById(R.id.plater_State_prograss_bar);
         fabDownload = view.findViewById(R.id.fab_download);
         mySpinner = (Spinner) rootView.findViewById(R.id.spinner1);
-       mPlayerView= rootView.findViewById(R.id.player_view);
+        mPlayerView = rootView.findViewById(R.id.player_view);
 
 
         Glide.with(this).asBitmap()
@@ -272,7 +285,7 @@ public class PlayerFragment extends Fragment {
                 .load(Util.INSTANCE.toImageURI(audioBook.getIdentifier()))
                 .into(imageView);
 
-      //  tVrewind.setOnClickListener(v -> startPlayerService(currentMataData, FAST_REWIND_ACTION, PlayerForegroundService.EXTRA_REWIND_MILI_SECOND, 10000));
+        //  tVrewind.setOnClickListener(v -> startPlayerService(currentMataData, FAST_REWIND_ACTION, PlayerForegroundService.EXTRA_REWIND_MILI_SECOND, 10000));
         //tVFarword.setOnClickListener(v -> startPlayerService(currentMataData, FAST_FORWARD_ACTION, PlayerForegroundService.EXTRA_FAST_FORWARD_MILI_SECONDS, 30000));
 
 //        tvPass.setOnClickListener(new View.OnClickListener() {

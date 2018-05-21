@@ -12,6 +12,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_rate_me">Rate Me</string>
+    <string name="playback_chennel_name">audio_book</string>
     <string-array name="catlog">
         <item>Catalogue</item>
         <item>librivox</item>

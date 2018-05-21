@@ -46,6 +46,7 @@ public class DownloadingAdupter extends RecyclerView.Adapter<DownloadingAdupter.
     private List<MataData> mataDataList;
     private HashMap<Integer, DownloadInfo> downloadInfoHashMap = new HashMap<>();
     Handler handler=new Handler();
+    private File f;
 
     public DownloadingAdupter(List<MataData> mataDataList, Activity context) {
         this.mataDataList = mataDataList;
@@ -94,8 +95,11 @@ public class DownloadingAdupter extends RecyclerView.Adapter<DownloadingAdupter.
         holder.getBtDownloadingCancel().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                DownloaderActivty.downloadManager.pause(downloadInfoHashMap.get(position));
                 DownloaderActivty.downloadManager.remove(downloadInfoHashMap.get(position));
                 holder.getNumberProgressBar().setProgress(0);
+                if (holder.getEndlessPrograssBar().isActivated())
+                    holder.getEndlessPrograssBar().setVisibility(View.GONE);
 
             }
         });
@@ -104,9 +108,10 @@ public class DownloadingAdupter extends RecyclerView.Adapter<DownloadingAdupter.
             @Override
             public void onClick(View v) {
                 if (PlayerForegroundService.isPlaying) {
-                    startPlayerService(downloadedAudioBook.getMataData().get(position), PlayerForegroundService.PLAYER_PLAY_PAUSE_ACTION, null, 0);
-                } else {
                     stopPlayerService(downloadedAudioBook.getMataData().get(position));
+                   // startPlayerService(downloadedAudioBook.getMataData().get(position), PlayerForegroundService.PLAYER_PLAY_PAUSE_ACTION, null, 0);
+                } else {
+
 
 
                     handler.postDelayed(() -> {
@@ -119,11 +124,19 @@ public class DownloadingAdupter extends RecyclerView.Adapter<DownloadingAdupter.
     }
 
     private boolean isAlreadyDonlaod(int position) {
-        File f = new File( downloadedAudioBook.getMataData().get(position).getSdPath());
-        if(f.exists()) {
-          return   downloadedAudioBook!=null && downloadedAudioBook.getMataData()!=null && downloadedAudioBook.getMataData().size()>0 && downloadedAudioBook.getMataData().get(position).isHasDownloaded();
-        }
-      return  false;
+
+       try{
+            f = new File( downloadedAudioBook.getMataData().get(position).getSdPath());
+           if(f.exists()) {
+               return   downloadedAudioBook!=null && downloadedAudioBook.getMataData()!=null && downloadedAudioBook.getMataData().size()>0 && downloadedAudioBook.getMataData().get(position).isHasDownloaded();
+           }else {
+               return false;
+           }
+       }catch (NullPointerException e) {
+           e.printStackTrace();
+           return false;
+       }
+
     }
 
     @Override

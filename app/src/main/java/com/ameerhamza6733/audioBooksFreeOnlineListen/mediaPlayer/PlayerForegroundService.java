@@ -10,13 +10,16 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
-
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
@@ -39,6 +42,7 @@ import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
+import com.google.android.exoplayer2.ui.PlayerNotificationManager;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 
@@ -66,11 +70,11 @@ public class PlayerForegroundService extends Service implements Player.EventList
     public static final int ONGOING_NOTIFICATION_ID = 101;
     public final static String START_ACTIVITY_BROAD_CAST = "START_ACTIVITY_BROAD_CAST";
     private static final String TAG = "PlayerForegroundService";
-    private static final String NOTIFICATION_CHANNEL_ID ="audio_book_playback_channel";
+    private static final String NOTIFICATION_CHANNEL_ID = "audio_book_playback_channel";
     public static String MAIN_ACTION = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.main";
     public static Boolean isPlaying = false;
-    protected static String uri;
     public static SimpleExoPlayer player;
+    protected static String uri;
     private static String title;
     Handler handler;
     Runnable runnable;
@@ -80,6 +84,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
     NotificationCompat.Builder mBuilder;
     private long seekto = 0;
     private StartPlayerActivtyBrodcastReciver activtyBrodcastReciver;
+    private PlayerNotificationManager playerNotificationManager;
 
 
     @Override
@@ -102,18 +107,16 @@ public class PlayerForegroundService extends Service implements Player.EventList
 
             uri = intent.getStringExtra(EXTRA_URI);
             try {
-                seekto = MySharedPref.getSavedLongFromPreference(getApplicationContext(),MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME,uri);
+                seekto = MySharedPref.getSavedLongFromPreference(getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, uri);
             } catch (Exception e) {
-                Log.d(TAG,":"+e.getMessage());
+                Log.d(TAG, ":" + e.getMessage());
                 e.printStackTrace();
             }
             seekto = intent.getLongExtra(PlayerForegroundService.EXTRA_SEEK_TO, 0);
             title = intent.getStringExtra(PlayerForegroundService.EXTRA_TITLE);
             Toast.makeText(this, "Start Service", Toast.LENGTH_SHORT).show();
-            Notification notification = getNotification();
-            startForeground(ONGOING_NOTIFICATION_ID, notification);
-
             initMediaPlayer(uri);
+            getNotification();
         } else if (intent.getAction().equals(PlayerForegroundService.STOP_ACTION)) {
             if (handler != null)
                 handler.removeCallbacks(runnable);
@@ -157,12 +160,15 @@ public class PlayerForegroundService extends Service implements Player.EventList
 
         if (player != null) {
             SaveSongState();
+            playerNotificationManager.setPlayer(null);
+            player.stop();
             player.release();
+            player=null;
         }
-        if (activtyBrodcastReciver != null){
+        if (activtyBrodcastReciver != null) {
             unregisterReceiver(activtyBrodcastReciver);
         }
-        PlayerForegroundService.isPlaying=false;
+        PlayerForegroundService.isPlaying = false;
         super.onDestroy();
 
     }
@@ -195,31 +201,14 @@ public class PlayerForegroundService extends Service implements Player.EventList
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+        Log.d(TAG,""+playbackState);
         if (playbackState == Player.STATE_READY) {
             SendMediaStateBroadCast(PlayerFragment.BROADCAST_ACTION_PLAYER_START);
-            isPlaying = true;
-            handler = new Handler();
-            runnable = () -> {
-                if (mNotificationManager != null) {
-                    NotificationRemoteView.setTextViewCompoundDrawables(R.id.pause, 0, R.drawable.ic_pause_black_24dp, 0, 0);
-                    NotificationRemoteView.setTextViewText(R.id.audio_track_time, String.valueOf(Util.INSTANCE.formatSeconds((player.getContentPosition()) / 1000)) + " / " + String.valueOf(Util.INSTANCE.formatSeconds((player.getDuration() / 1000))));
-                    mNotificationManager.notify(ONGOING_NOTIFICATION_ID, notification);
-                }
-                handler.postDelayed(runnable, 1000);
-            };
-            handler.postDelayed(runnable, 0);
-        }else if (playbackState == Player.STATE_IDLE){
-            NotificationRemoteView.setTextViewCompoundDrawables(R.id.pause, 0, R.drawable.ic_play_arrow_black_24dp, 0, 0);
-            SendMediaStateBroadCast(PlayerFragment.BROADCAST_ACTION_BUFFRING);
 
         }
         if (playbackState == Player.STATE_BUFFERING) {
+            SendMediaStateBroadCast(PlayerFragment.BROADCAST_ACTION_BUFFRING);
 
-            if (mNotificationManager != null) {
-
-                NotificationRemoteView.setTextViewText(R.id.audio_track_time, "Buffering...");
-                mNotificationManager.notify(ONGOING_NOTIFICATION_ID, notification);
-            }
         }
 
     }
@@ -262,7 +251,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
         DefaultTrackSelector trackSelector = new DefaultTrackSelector(trackSelectionFactory);
         DefaultLoadControl loadControl = new DefaultLoadControl();
         player = ExoPlayerFactory.newSimpleInstance(renderersFactory, trackSelector, loadControl);
-        player.addListener(this);
+      //  player.addListener(this);
 
 
         DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(getApplicationContext(), "ExoplayerDemo");
@@ -275,8 +264,9 @@ public class PlayerForegroundService extends Service implements Player.EventList
                 null);
         player.prepare(mediaSource);
         player.seekTo(seekto);
+        player.addListener(this);
         player.setPlayWhenReady(true);
-        player.setPlayWhenReady(true);
+
 
 
     }
@@ -290,31 +280,79 @@ public class PlayerForegroundService extends Service implements Player.EventList
     public Notification getNotification() {
         int icon = R.mipmap.ic_launcher_round;
         long when = System.currentTimeMillis();
-        mNotificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            createChannel(mNotificationManager);
-        mBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID ).setSmallIcon(android.R.drawable.ic_media_play).setContentTitle(title);
-        notification = mBuilder.build();
+        PlayerNotificationManager.MediaDescriptionAdapter mediaDescriptionAdapter = new PlayerNotificationManager.MediaDescriptionAdapter() {
+            @Override
+            public String getCurrentContentTitle(Player player) {
+                return title;
+            }
 
+            @Nullable
+            @Override
+            public PendingIntent createCurrentContentIntent(Player player) {
+                return null;
+            }
 
-        NotificationRemoteView = new RemoteViews(getPackageName(), R.layout.notification);
-        NotificationRemoteView.setOnClickPendingIntent(R.id.close, NotificationHelper.getButtonClosePendingIntent(this));
-        NotificationRemoteView.setOnClickPendingIntent(R.id.fast_forword, NotificationHelper.getButtonFastForwadPendingIntent(this));
-        NotificationRemoteView.setOnClickPendingIntent(R.id.fast_rewind, NotificationHelper.getButtonFastRewindPendingIntent(this));
-        NotificationRemoteView.setOnClickPendingIntent(R.id.pause, NotificationHelper.getButtonPlayOrPausePendingIntent(this));
+            @Nullable
+            @Override
+            public String getCurrentContentText(Player player) {
+                return "";
+            }
 
-        NotificationRemoteView.setTextViewText(R.id.title, title);
-        NotificationRemoteView.setTextViewText(R.id.audio_track_time, "");
-        mBuilder.setCustomContentView(NotificationRemoteView);
-        notification.contentView = NotificationRemoteView;
-        //this will start player activity with resume media play back
-        Intent i = new Intent(START_ACTIVITY_BROAD_CAST);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, i, 0);
-        notification.contentIntent = pendingIntent;
+            @Nullable
+            @Override
+            public Bitmap getCurrentLargeIcon(Player player, PlayerNotificationManager.BitmapCallback callback) {
+                return  BitmapFactory.decodeResource(PlayerForegroundService.this.getResources(),
+                        R.drawable.ic_play_arrow_black_24dp);
+            }
+        };
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            playerNotificationManager = PlayerNotificationManager.createWithNotificationChannel(this, NOTIFICATION_CHANNEL_ID, R.string.playback_chennel_name, ONGOING_NOTIFICATION_ID, mediaDescriptionAdapter);
 
-        if (mNotificationManager != null) {
-            mNotificationManager.notify(ONGOING_NOTIFICATION_ID, mBuilder.build());
+        }else {
+            playerNotificationManager=  new PlayerNotificationManager(this,NOTIFICATION_CHANNEL_ID,ONGOING_NOTIFICATION_ID,mediaDescriptionAdapter);
         }
+
+
+        playerNotificationManager.setNotificationListener(new PlayerNotificationManager.NotificationListener() {
+            @Override
+            public void onNotificationStarted(int notificationId, Notification notification) {
+                startForeground(notificationId, notification);
+            }
+
+            @Override
+            public void onNotificationCancelled(int notificationId) {
+                stopSelf();
+            }
+        });
+        playerNotificationManager.setUseNavigationActions(true);
+
+       playerNotificationManager.setPlayer(player);
+
+//        mNotificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+//            createChannel(mNotificationManager);
+//        mBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID ).setSmallIcon(android.R.drawable.ic_media_play).setContentTitle(title);
+//        notification = mBuilder.build();
+//
+//
+//        NotificationRemoteView = new RemoteViews(getPackageName(), R.layout.notification);
+//        NotificationRemoteView.setOnClickPendingIntent(R.id.close, NotificationHelper.getButtonClosePendingIntent(this));
+//        NotificationRemoteView.setOnClickPendingIntent(R.id.fast_forword, NotificationHelper.getButtonFastForwadPendingIntent(this));
+//        NotificationRemoteView.setOnClickPendingIntent(R.id.fast_rewind, NotificationHelper.getButtonFastRewindPendingIntent(this));
+//        NotificationRemoteView.setOnClickPendingIntent(R.id.pause, NotificationHelper.getButtonPlayOrPausePendingIntent(this));
+//
+//        NotificationRemoteView.setTextViewText(R.id.title, title);
+//        NotificationRemoteView.setTextViewText(R.id.audio_track_time, "");
+//        mBuilder.setCustomContentView(NotificationRemoteView);
+//        notification.contentView = NotificationRemoteView;
+//        //this will start player activity with resume media play back
+//        Intent i = new Intent(START_ACTIVITY_BROAD_CAST);
+//        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, i, 0);
+//        notification.contentIntent = pendingIntent;
+//
+//        if (mNotificationManager != null) {
+//            mNotificationManager.notify(ONGOING_NOTIFICATION_ID, mBuilder.build());
+//        }
         return notification;
     }
 
