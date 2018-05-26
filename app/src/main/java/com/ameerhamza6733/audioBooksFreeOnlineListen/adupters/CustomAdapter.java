@@ -125,12 +125,16 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    MySharedPref.saveObjectToSharedPreference(v.getContext().getApplicationContext(),MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, DetailTabActivity.KEY_SHARD_PREF_AUDIO_BOOK,mDataSet.get(getAdapterPosition()));
+                    Toast.makeText(v.getContext(),"Please wait",Toast.LENGTH_SHORT).show();
+                  boolean isSaved=  MySharedPref.saveObjectToSharedPreference(v.getContext().getApplicationContext(),MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, DetailTabActivity.KEY_SHARD_PREF_AUDIO_BOOK,mDataSet.get(getAdapterPosition()));
                     MySharedPref.saveObjectToSharedPreference(v.getContext().getApplicationContext(),MySharedPref.SHARD_PREF_HISTORY_AUDIO_BOOK_FILE_NAME,mDataSet.get(getAdapterPosition()).getIdentifier(),mDataSet.get(getAdapterPosition()));
                     Log.d(TAG, "Element " + getAdapterPosition() + " clicked.");
                     Intent intent = new Intent(v.getContext(), DetailTabActivity.class);
-
+                    if (isSaved)
                     v.getContext().startActivity(intent);
+                    else {
+                        Toast.makeText(v.getContext(),"Please restart app some thing wrong",Toast.LENGTH_LONG).show();
+                    }
                 }
             });
             textViewTitle = (TextView) v.findViewById(R.id.title);

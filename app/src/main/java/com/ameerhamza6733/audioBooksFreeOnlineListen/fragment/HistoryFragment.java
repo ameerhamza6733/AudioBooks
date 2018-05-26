@@ -23,8 +23,8 @@ import static com.ameerhamza6733.audioBooksFreeOnlineListen.MySharedPref.SHARD_P
  * Created by apple on 5/12/18.
  */
 
-public class FragmetnHistory extends RecyclerViewFragment {
-    private String TAG = "FragmetnHistory";
+public class HistoryFragment extends RecyclerViewFragment {
+    private String TAG = "HistoryFragment";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -37,6 +37,7 @@ public class FragmetnHistory extends RecyclerViewFragment {
         View view = super.onCreateView(inflater, container, savedInstanceState);
         mySpinner.setVisibility(View.GONE);
         mySpinnerFilter.setVisibility(View.GONE);
+        floatingActionButton.setVisibility(View.GONE);
         getHistory(SHARD_PREF_HISTORY_AUDIO_BOOK_FILE_NAME);
         try{
             ((AppCompatActivity)getActivity()).getSupportActionBar().show();

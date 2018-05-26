@@ -18,13 +18,13 @@ public class MySharedPref {
     public static final String SHARD_PREF_DOWNLOADED_AUDIO_BOOK ="SHARD_PREF_DOWNLOADED_AUDIO_BOOK";
     public static final String  SHARD_PREF_HISTORY_AUDIO_BOOK_FILE_NAME="SHARD_PREF_HISTORY_AUDIO_BOOK_FILE_NAME";
    public static final String SHARD_PREF_BOOK_MARK_FILE_NAME="SHARD_PREF_BOOK_MARK_FILE_NAME";
-    public static void saveObjectToSharedPreference(Context context, String preferenceFileName, String serializedObjectKey, Object object) {
+    public static boolean saveObjectToSharedPreference(Context context, String preferenceFileName, String serializedObjectKey, Object object) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(preferenceFileName, 0);
         SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
         final Gson gson = new Gson();
         String serializedObject = gson.toJson(object);
         sharedPreferencesEditor.putString(serializedObjectKey, serializedObject);
-        sharedPreferencesEditor.apply();
+      return  sharedPreferencesEditor.commit();
     }
 
     public static Map<String,?> getAllKeys(SharedPreferences sharedPreferences){

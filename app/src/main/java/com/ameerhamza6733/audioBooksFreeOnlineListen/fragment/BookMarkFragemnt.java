@@ -12,9 +12,13 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.ameerhamza6733.audioBooksFreeOnlineListen.MySharedPref;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.CustomAdapter;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.AudioBook;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.viewModels.BookMarkViewModel;
+import com.google.ads.mediation.AbstractAdViewAdapter;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 import java.util.List;
 
@@ -24,11 +28,15 @@ import java.util.List;
 
 public class BookMarkFragemnt extends RecyclerViewFragment {
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view =super.onCreateView(inflater, container, savedInstanceState);
         mySpinner.setVisibility(View.GONE);
         mySpinnerFilter.setVisibility(View.GONE);
+        floatingActionButton.setVisibility(View.GONE);
+
+        mAdView.setVisibility(View.VISIBLE);
         getHistory(MySharedPref.SHARD_PREF_BOOK_MARK_FILE_NAME);
         try{
             ((AppCompatActivity)getActivity()).getSupportActionBar().show();
@@ -59,6 +67,13 @@ public class BookMarkFragemnt extends RecyclerViewFragment {
             }
         });
 
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mAdView!=null)
+            mAdView.setVisibility(View.GONE);
     }
 }
 

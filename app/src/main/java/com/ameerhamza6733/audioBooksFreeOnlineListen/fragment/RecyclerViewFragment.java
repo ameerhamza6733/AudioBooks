@@ -33,6 +33,8 @@ import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.CustomAdapter;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.viewModels.MainActivityViewModel;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 import java.util.Arrays;
 import java.util.List;
@@ -57,6 +59,7 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
     protected Spinner mySpinnerFilter;
     private RequestQueue requsestQueue;
     private String type;
+    protected AdView mAdView;
 
     @Override
     public void OnRecivedQuery(String query) {
@@ -81,6 +84,11 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
         rootView.setTag(TAG);
 
         mRecyclerViewPoetry = (RecyclerView) rootView.findViewById(R.id.recyclerView_poetry);
+
+        mAdView = rootView.findViewById(R.id.adViewBookMark);
+
+        AdRequest adRequest = new AdRequest.Builder().addTestDevice("B94C1B8999D3B59117198A259685D4F8").build();
+        mAdView.loadAd(adRequest);
 
 
         floatingActionButton = rootView.findViewById(R.id.fab);

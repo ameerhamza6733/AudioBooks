@@ -18,6 +18,8 @@ import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.DownloadingAdupter
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.AudioBook;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.MataData;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.viewModels.OfflineBooksViewModle;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,18 +34,24 @@ import static com.ameerhamza6733.audioBooksFreeOnlineListen.MySharedPref.SHARD_P
 
 public class DownloaderActivty extends AppCompatActivity {
     public static final String EXTRA_MATA_DATA_LIST = "EXTRA_MATA_DATA_LIST";
-    public static final String EXTRA_BOOK_INDEX ="EXTRA_BOOK_INDEX";
+    public static final String EXTRA_BOOK_INDEX = "EXTRA_BOOK_INDEX";
     public static DownloadManager downloadManager;
     List<MataData> mataData;
     private RecyclerView recyclerView;
     private int bookNumber;
     private List<MataData> mataDataList = new ArrayList<>();
+    private AdView mAdView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_downloader_activty);
-       bookNumber= getIntent().getIntExtra(EXTRA_BOOK_INDEX,0);
+        bookNumber = getIntent().getIntExtra(EXTRA_BOOK_INDEX, 0);
+
+        mAdView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().addTestDevice("B94C1B8999D3B59117198A259685D4F8").build();
+        mAdView.loadAd(adRequest);
+
         if (Build.VERSION.SDK_INT > 22) {
             checkRunTimePermission();
         } else

@@ -20,7 +20,6 @@ import android.view.MenuItem;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.BookMarkFragemnt;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.BookSearchDialogFragment;
-import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.FragmetnHistory;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.RecyclerViewFragment;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -74,8 +73,7 @@ public class MainActivity extends AppCompatActivity
                                startActivity(new Intent(MainActivity.this, OfflineSavedBooksActivity.class));
                                 break;
                             case R.id.bn_my_history:
-                              Fragment fragmetnHistory = new FragmetnHistory();
-                              startFragmentTransction(fragmetnHistory);
+                             startActivity(new Intent(MainActivity.this,HistoryActivity.class));
                                 break;
                             case R.id.bn_bookmark:
                                 Fragment bookMarkFragemnt = new BookMarkFragemnt();

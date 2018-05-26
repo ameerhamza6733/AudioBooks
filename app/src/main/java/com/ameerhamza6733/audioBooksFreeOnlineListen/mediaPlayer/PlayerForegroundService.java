@@ -1,8 +1,6 @@
 package com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer;
 
-import android.annotation.TargetApi;
 import android.app.Notification;
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -12,8 +10,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
@@ -26,7 +22,6 @@ import android.widget.Toast;
 
 import com.ameerhamza6733.audioBooksFreeOnlineListen.MySharedPref;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
-import com.ameerhamza6733.audioBooksFreeOnlineListen.Util;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.PlayerFragment;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
@@ -53,7 +48,7 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 
 public class PlayerForegroundService extends Service implements Player.EventListener {
 
-    public static final String EXTRA_URI = "com.ameerhamza6733.businessaudiobook.mediaPlayer.PlayerForegroundService.uri";
+    public static final String EXTRA_URI = "com.ameerhamza6733.businessaudiobook.mediaPlayer.PlayerForegroundService.url";
     public static final String EXTRA_TITLE = "com.ameerhamza6733.businessaudiobook.mediaPlayer.PlayerForegroundService.title";
     public static final String EXTRA_SEEK_TO = "EXTRA_SEEK_TO";
     public final static String EXTRA_FAST_FORWARD_MILI_SECONDS = "com.ameerhamza6733.businessaudiobook.mediaPlayer.EXTRA_FAST_FORWARD_MILI_SECONDS";
@@ -74,7 +69,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
     public static String MAIN_ACTION = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.main";
     public static Boolean isPlaying = false;
     public static SimpleExoPlayer player;
-    protected static String uri;
+    protected static String url;
     private static String title;
     Handler handler;
     Runnable runnable;
@@ -105,9 +100,9 @@ public class PlayerForegroundService extends Service implements Player.EventList
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent.getAction().equals(PlayerForegroundService.ACTION_START)) {
 
-            uri = intent.getStringExtra(EXTRA_URI);
+            url = intent.getStringExtra(EXTRA_URI);
             try {
-                seekto = MySharedPref.getSavedLongFromPreference(getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, uri);
+                seekto = MySharedPref.getSavedLongFromPreference(getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, url);
             } catch (Exception e) {
                 Log.d(TAG, ":" + e.getMessage());
                 e.printStackTrace();
@@ -115,7 +110,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
             seekto = intent.getLongExtra(PlayerForegroundService.EXTRA_SEEK_TO, 0);
             title = intent.getStringExtra(PlayerForegroundService.EXTRA_TITLE);
             Toast.makeText(this, "Start Service", Toast.LENGTH_SHORT).show();
-            initMediaPlayer(uri);
+            initMediaPlayer(url);
             getNotification();
         } else if (intent.getAction().equals(PlayerForegroundService.STOP_ACTION)) {
             if (handler != null)
@@ -163,7 +158,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
             playerNotificationManager.setPlayer(null);
             player.stop();
             player.release();
-            player=null;
+            player = null;
         }
         if (activtyBrodcastReciver != null) {
             unregisterReceiver(activtyBrodcastReciver);
@@ -174,7 +169,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
     }
 
     private void SaveSongState() {
-        MySharedPref.saveObjectToSharedPreference(getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, uri, player.getCurrentPosition());
+        MySharedPref.saveObjectToSharedPreference(getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, url, player.getCurrentPosition());
     }
 
     @Override
@@ -201,7 +196,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-        Log.d(TAG,""+playbackState);
+        Log.d(TAG, "" + playbackState);
         if (playbackState == Player.STATE_READY) {
             SendMediaStateBroadCast(PlayerFragment.BROADCAST_ACTION_PLAYER_START);
 
@@ -244,14 +239,14 @@ public class PlayerForegroundService extends Service implements Player.EventList
     }
 
     private void initMediaPlayer(String url) {
-        Log.d(TAG, "uri: " + url);
+        Log.d(TAG, "url: " + url);
         DefaultRenderersFactory renderersFactory = new DefaultRenderersFactory(getApplicationContext());
         DefaultBandwidthMeter bandwidthMeter = new DefaultBandwidthMeter(); //Provides estimates of the currently available bandwidth.
         AdaptiveTrackSelection.Factory trackSelectionFactory = new AdaptiveTrackSelection.Factory(bandwidthMeter);
         DefaultTrackSelector trackSelector = new DefaultTrackSelector(trackSelectionFactory);
         DefaultLoadControl loadControl = new DefaultLoadControl();
         player = ExoPlayerFactory.newSimpleInstance(renderersFactory, trackSelector, loadControl);
-      //  player.addListener(this);
+        //  player.addListener(this);
 
 
         DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(getApplicationContext(), "ExoplayerDemo");
@@ -268,7 +263,6 @@ public class PlayerForegroundService extends Service implements Player.EventList
         player.setPlayWhenReady(true);
 
 
-
     }
 
     private void SendMediaStateBroadCast(String action) {
@@ -278,8 +272,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
     }
 
     public Notification getNotification() {
-        int icon = R.mipmap.ic_launcher_round;
-        long when = System.currentTimeMillis();
+
         PlayerNotificationManager.MediaDescriptionAdapter mediaDescriptionAdapter = new PlayerNotificationManager.MediaDescriptionAdapter() {
             @Override
             public String getCurrentContentTitle(Player player) {
@@ -289,6 +282,10 @@ public class PlayerForegroundService extends Service implements Player.EventList
             @Nullable
             @Override
             public PendingIntent createCurrentContentIntent(Player player) {
+//                Intent intent = new Intent(PlayerForegroundService.this, OnNotifactionClickActivity.class);
+//                intent.putExtra(OnNotifactionClickActivity.EXTRA_URL,url);
+//                return PendingIntent.getActivity(PlayerForegroundService.this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+
                 return null;
             }
 
@@ -301,15 +298,18 @@ public class PlayerForegroundService extends Service implements Player.EventList
             @Nullable
             @Override
             public Bitmap getCurrentLargeIcon(Player player, PlayerNotificationManager.BitmapCallback callback) {
-                return  BitmapFactory.decodeResource(PlayerForegroundService.this.getResources(),
-                        R.drawable.ic_play_arrow_black_24dp);
+                return BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+
+
             }
+
         };
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             playerNotificationManager = PlayerNotificationManager.createWithNotificationChannel(this, NOTIFICATION_CHANNEL_ID, R.string.playback_chennel_name, ONGOING_NOTIFICATION_ID, mediaDescriptionAdapter);
 
-        }else {
-            playerNotificationManager=  new PlayerNotificationManager(this,NOTIFICATION_CHANNEL_ID,ONGOING_NOTIFICATION_ID,mediaDescriptionAdapter);
+        } else {
+            playerNotificationManager = new PlayerNotificationManager(this, NOTIFICATION_CHANNEL_ID, ONGOING_NOTIFICATION_ID, mediaDescriptionAdapter);
         }
 
 
@@ -325,8 +325,10 @@ public class PlayerForegroundService extends Service implements Player.EventList
             }
         });
         playerNotificationManager.setUseNavigationActions(true);
-
-       playerNotificationManager.setPlayer(player);
+        playerNotificationManager.setUsePlayPauseActions(true);
+        playerNotificationManager.setPriority(NotificationCompat.PRIORITY_MAX);
+        playerNotificationManager.setStopAction(PlayerNotificationManager.ACTION_STOP);
+        playerNotificationManager.setPlayer(player);
 
 //        mNotificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
@@ -355,18 +357,18 @@ public class PlayerForegroundService extends Service implements Player.EventList
 //        }
         return notification;
     }
-
-    @TargetApi(26)
-    private void createChannel(NotificationManager notificationManager) {
-        String name = title;
-        int importance = NotificationManager.IMPORTANCE_LOW;
-
-        NotificationChannel mChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, name, importance);
-
-        mChannel.enableLights(true);
-        mChannel.setLightColor(Color.BLUE);
-        notificationManager.createNotificationChannel(mChannel);
-    }
+//
+//    @TargetApi(26)
+//    private void createChannel(NotificationManager notificationManager) {
+//        String name = title;
+//        int importance = NotificationManager.IMPORTANCE_LOW;
+//
+//        NotificationChannel mChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, name, importance);
+//
+//        mChannel.enableLights(true);
+//        mChannel.setLightColor(Color.BLUE);
+//        notificationManager.createNotificationChannel(mChannel);
+//    }
 
     //this will start activity with resume media player  if user click on notification
     public static class StartPlayerActivtyBrodcastReciver extends BroadcastReceiver {
@@ -379,7 +381,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
                     Intent intent1 = new Intent(context, PlayerActivty.class);
 
 //                    intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                    intent1.putExtra(PlayerActivty.EXTRA_PLAYER_URI, uri);
+//                    intent1.putExtra(PlayerActivty.EXTRA_PLAYER_URI, url);
 //                    intent1.putExtra(PlayerActivty.EXTRA_TITLE, title);
 //                    intent1.putExtra(PlayerActivty.EXTRA_SEEK_TO, player.getContentPosition());
 //                    activity.startActivity(intent1);

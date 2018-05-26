@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ameerhamza6733.audioBooksFreeOnlineListen">
-    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
-
         android:name=".App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -49,7 +49,8 @@
         <activity android:name=".activitys.feedbackActivity" />
         <activity android:name=".activitys.DownloaderActivty" />
         <activity android:name=".activitys.OfflineSavedBooksActivity" />
-        <activity android:name=".activitys.HistoryActivity"></activity>
+        <activity android:name=".activitys.HistoryActivity" />
+        <activity android:name=".activitys.OnNotifactionClickActivity" />
     </application>
 
 </manifest>

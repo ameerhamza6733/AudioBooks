@@ -41,8 +41,8 @@ import static com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerFo
 public class DownloadingAdupter extends RecyclerView.Adapter<DownloadingAdupter.ViewHolder> {
     private static final String TAG = "DownloadingAdupter";
     protected Activity activity;
-    private AudioBook downloadedAudioBook;
-    private AudioBook audioBook;
+    private AudioBook downloadedAudioBook=null;
+    private AudioBook CurrentAudioBook=null;
     private List<MataData> mataDataList;
     private HashMap<Integer, DownloadInfo> downloadInfoHashMap = new HashMap<>();
     Handler handler=new Handler();
@@ -50,9 +50,13 @@ public class DownloadingAdupter extends RecyclerView.Adapter<DownloadingAdupter.
 
     public DownloadingAdupter(List<MataData> mataDataList, Activity context) {
         this.mataDataList = mataDataList;
-        audioBook = MySharedPref.getSavedObjectFromPreference(context.getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, KEY_SHARD_PREF_AUDIO_BOOK, AudioBook.class);
-        audioBook.setMataData(mataDataList);
-        downloadedAudioBook = MySharedPref.getSavedObjectFromPreference(context.getApplicationContext(), MySharedPref.SHARD_PREF_DOWNLOADED_AUDIO_BOOK, audioBook.getIdentifier(), AudioBook.class);
+        CurrentAudioBook = MySharedPref.getSavedObjectFromPreference(context.getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, KEY_SHARD_PREF_AUDIO_BOOK, AudioBook.class);
+
+        if (CurrentAudioBook !=null) {
+            CurrentAudioBook.setMataData(mataDataList);
+            downloadedAudioBook = MySharedPref.getSavedObjectFromPreference(context.getApplicationContext(), MySharedPref.SHARD_PREF_DOWNLOADED_AUDIO_BOOK, CurrentAudioBook.getIdentifier(), AudioBook.class);
+
+        }
 
         this.activity = context;
     }
@@ -71,24 +75,29 @@ public class DownloadingAdupter extends RecyclerView.Adapter<DownloadingAdupter.
         if (isAlreadyDonlaod(position)){
             holder.getmRootDownloadButton().setVisibility(View.GONE);
             holder.getBtViewDownload().setVisibility(View.VISIBLE);
-            Log.d(TAG,"sd card path"+downloadedAudioBook.getMataData().get(position).getSdPath());
+           try{
+               Log.d(TAG,"sd card path"+downloadedAudioBook.getMataData().get(position).getSdPath());
+           }catch (Exception e){
+               e.printStackTrace();
+           }
         }
         holder.getTitle().setText(mataDataList.get(position).getName() + " (" + Util.INSTANCE.bytesToMb(mataDataList.get(position).getSize()) + ")");
         holder.getBtDownload().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (CurrentAudioBook!=null){
+                    final DownloadInfo downloadInfo = new DownloadInfo
+                            .Builder()
+                            .setUrl(mataDataList.get(position).getURL())
+                            .setPath(Util.INSTANCE.getDir("/sdcard/CurrentAudioBook/") + mataDataList.get(position).getName())
+                            .build();
 
-
-                final DownloadInfo downloadInfo = new DownloadInfo
-                        .Builder()
-                        .setUrl(mataDataList.get(position).getURL())
-                        .setPath(Util.INSTANCE.getDir("/sdcard/audioBook/") + mataDataList.get(position).getName())
-                        .build();
-
-                downloadInfo.setDownloadListener(holder.getDownloadListener());
-                DownloaderActivty.downloadManager.download(downloadInfo);
-                downloadInfoHashMap.put(position, downloadInfo);
-
+                    downloadInfo.setDownloadListener(holder.getDownloadListener());
+                    DownloaderActivty.downloadManager.download(downloadInfo);
+                    downloadInfoHashMap.put(position, downloadInfo);
+                }else {
+                    Toast.makeText(v.getContext(),"Some thing wrong please restart app and try again",Toast.LENGTH_LONG).show();
+                }
 
             }
         });
@@ -107,6 +116,7 @@ public class DownloadingAdupter extends RecyclerView.Adapter<DownloadingAdupter.
         holder.getBtViewDownload().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(v.getContext(),"starting media player ",Toast.LENGTH_SHORT).show();
                 if (PlayerForegroundService.isPlaying) {
                     stopPlayerService(downloadedAudioBook.getMataData().get(position));
                    // startPlayerService(downloadedAudioBook.getMataData().get(position), PlayerForegroundService.PLAYER_PLAY_PAUSE_ACTION, null, 0);
@@ -204,16 +214,16 @@ public class DownloadingAdupter extends RecyclerView.Adapter<DownloadingAdupter.
                 @Override
                 public void onDownloadSuccess() {
                     Log.d(TAG, "onDownloadSuccess");
-                    if (downloadedAudioBook == null)
-                        downloadedAudioBook = audioBook;
-                    getNumberProgressBar().setProgress(100);
-                    List<MataData> DownloadedMataDataList = downloadedAudioBook.getMataData();
-                    DownloadedMataDataList.get(getAdapterPosition()).setHasDownloaded(true);
-                    DownloadedMataDataList.get(getAdapterPosition()).setSdPath(downloadInfoHashMap.get(getAdapterPosition()).getPath());
-                    MySharedPref.saveObjectToSharedPreference(DownloadingAdupter.this.activity.getApplicationContext(), MySharedPref.SHARD_PREF_DOWNLOADED_AUDIO_BOOK, downloadedAudioBook.getIdentifier(), downloadedAudioBook);
-                  //  Toast.makeText(v.getContext(),"Downloading completed you can watch downloaded file from the main screen by clicking on watch later(clock) button",Toast.LENGTH_LONG).show();
 
-                    notifyDataSetChanged();
+                        if (downloadedAudioBook == null)
+                            downloadedAudioBook = CurrentAudioBook;
+                        getNumberProgressBar().setProgress(100);
+                        List<MataData> DownloadedMataDataList = downloadedAudioBook.getMataData();
+                        DownloadedMataDataList.get(getAdapterPosition()).setHasDownloaded(true);
+                        DownloadedMataDataList.get(getAdapterPosition()).setSdPath(downloadInfoHashMap.get(getAdapterPosition()).getPath());
+                        MySharedPref.saveObjectToSharedPreference(DownloadingAdupter.this.activity.getApplicationContext(), MySharedPref.SHARD_PREF_DOWNLOADED_AUDIO_BOOK, downloadedAudioBook.getIdentifier(), downloadedAudioBook);
+                        notifyDataSetChanged();
+
                 }
 
                 @Override
