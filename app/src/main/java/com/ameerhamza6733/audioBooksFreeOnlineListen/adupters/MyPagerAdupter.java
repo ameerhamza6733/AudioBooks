@@ -4,8 +4,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.DetailFragment;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.PlayerFragment;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.DetailFragment;
 
 /**
  * Created by AmeerHamza on 4/23/18.

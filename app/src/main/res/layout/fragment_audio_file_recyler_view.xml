@@ -4,8 +4,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:weightSum="1"
-    tools:context="com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.BookMetaDataRecylerView">
-
+  >
 
     <ProgressBar
         android:id="@+id/progressBar"

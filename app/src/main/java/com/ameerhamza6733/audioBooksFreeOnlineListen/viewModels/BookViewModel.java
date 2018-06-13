@@ -27,14 +27,14 @@ import io.reactivex.schedulers.Schedulers;
  * Created by AmeerHamza on 2/8/2018.
  */
 
-public class MainActivityViewModel extends ViewModel {
-private static final String TAG = "MainActivityViewModel";
+public class BookViewModel extends ViewModel {
+private static final String TAG = "BookViewModel";
     JSONObject jsonObject;
     private MutableLiveData<List<AudioBook>> mutableLiveData;
     private List<AudioBook> audioBookList;
     private String url;
 
-    public MainActivityViewModel() {
+    public BookViewModel() {
     }
 
     public LiveData<List<AudioBook>> loadData(RequestQueue requestQueue, String url) {
@@ -79,7 +79,7 @@ private static final String TAG = "MainActivityViewModel";
 
                                 mutableLiveData.setValue(audioBookList);
                             }else {
-                                Log.d("RecyclerViewFragment","no open source book find");
+                                Log.d("BookFragment","no open source book find");
                             }
                         });
 

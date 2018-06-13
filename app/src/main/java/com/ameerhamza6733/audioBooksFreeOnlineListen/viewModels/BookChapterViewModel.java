@@ -23,12 +23,12 @@ import java.util.List;
  * Created by AmeerHamza on 2/8/2018.
  */
 
-public class MetaDataViewModel extends ViewModel {
+public class BookChapterViewModel extends ViewModel {
 
     private MutableLiveData<ArrayList<MataData>> mutableLiveData;
 
     private String META_DATA_CONNECTION_URL;
-    private String TAG = "MetaDataViewModel";
+    private String TAG = "BookChapterViewModel";
     private String identifier;
 
     public LiveData<ArrayList<MataData>> loadData(RequestQueue requestQueue, String url,String iidentifier) {

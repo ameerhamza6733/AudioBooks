@@ -36,12 +36,18 @@ import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.SpinAdapter;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.AudioBook;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.MataData;
-import com.ameerhamza6733.audioBooksFreeOnlineListen.viewModels.MetaDataViewModel;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.viewModels.BookChapterViewModel;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.google.ads.consent.ConsentForm;
+import com.google.ads.consent.ConsentFormListener;
+import com.google.ads.consent.ConsentInfoUpdateListener;
+import com.google.ads.consent.ConsentInformation;
+import com.google.ads.consent.ConsentStatus;
+import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.exoplayer2.ui.PlayerControlView;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -50,6 +56,8 @@ import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.reward.RewardedVideoAd;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,10 +82,6 @@ public class PlayerFragment extends Fragment {
     private Spinner mySpinner;
     private AudioBook audioBook;
     private TextView tvTitle;
-    // private TextView tVrewind;
-    //private TextView tVFarword;
-    // private TextView tvPlay;
-    // private TextView tvPass;
     private ImageView imageView;
     private ProgressBar progressBar;
     private ProgressBar PlayerStatePB;
@@ -162,14 +166,17 @@ public class PlayerFragment extends Fragment {
 
         bindViews(rootView);
         intiDataSet();
-        loadAd();
+        checkForConsent();
+         //loadAd();
         return rootView;
     }
 
     private void loadAd() {
 
         mAdView = rootView.findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().addTestDevice("B94C1B8999D3B59117198A259685D4F8").build();
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice("B94C1B8999D3B59117198A259685D4F8")
+                .build();
         mAdView.loadAd(adRequest);
 
         mInterstitialAd = new InterstitialAd(getActivity());
@@ -193,7 +200,7 @@ public class PlayerFragment extends Fragment {
         progressBar.setVisibility(View.VISIBLE);
         //  this.tvPlay.setVisibility(View.GONE);
         this.PlayerStatePB.setVisibility(View.VISIBLE);
-        MetaDataViewModel model = ViewModelProviders.of(this).get(MetaDataViewModel.class);
+        BookChapterViewModel model = ViewModelProviders.of(this).get(BookChapterViewModel.class);
         if (audioBook.getIdentifier() != null)
             model.loadData(Volley.newRequestQueue(getActivity()), Util.INSTANCE.toMetaDataURI(audioBook.getIdentifier()), audioBook.getIdentifier()).observe(this, mataDataList -> {
                 // update UI
@@ -243,7 +250,6 @@ public class PlayerFragment extends Fragment {
 
                     }, 2000);
                 }
-//
 
             }
 
@@ -255,10 +261,6 @@ public class PlayerFragment extends Fragment {
 
     private void bindViews(View view) {
         tvTitle = view.findViewById(R.id.title);
-//        tVrewind = view.findViewById(R.id.fast_rewind);
-//        tVFarword = view.findViewById(R.id.fast_forword);
-//        tvPlay = view.findViewById(R.id.play);
-//        tvPass = view.findViewById(R.id.pass);
         imageView = view.findViewById(R.id.iamge);
         rvBackground = view.findViewById(R.id.RVimageView);
         progressBar = view.findViewById(R.id.prograss_bar);
@@ -285,38 +287,6 @@ public class PlayerFragment extends Fragment {
                 .load(Util.INSTANCE.toImageURI(audioBook.getIdentifier()))
                 .into(imageView);
 
-        //  tVrewind.setOnClickListener(v -> startPlayerService(currentMataData, FAST_REWIND_ACTION, PlayerForegroundService.EXTRA_REWIND_MILI_SECOND, 10000));
-        //tVFarword.setOnClickListener(v -> startPlayerService(currentMataData, FAST_FORWARD_ACTION, PlayerForegroundService.EXTRA_FAST_FORWARD_MILI_SECONDS, 30000));
-
-//        tvPass.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//                tvPlay.setVisibility(View.VISIBLE);
-//                handler.postDelayed(() -> tvPass.setVisibility(View.GONE), 500);
-//                startPlayerService(currentMataData, PlayerForegroundService.PLAYER_PLAY_PAUSE_ACTION, null, 0);
-//                if (mInterstitialAd != null && mInterstitialAd.isLoaded())
-//                    mInterstitialAd.show();
-//            }
-//        });
-
-//        tvPlay.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                //
-//                if (PlayerForegroundService.isPlaying) {
-//                    startPlayerService(currentMataData, PlayerForegroundService.PLAYER_PLAY_PAUSE_ACTION, null, 0);
-//                } else {
-//                    stopPlayerService(currentMataData);
-//                    handler.postDelayed(() -> {
-//                        startPlayerService(currentMataData, PlayerForegroundService.ACTION_START, null, 0);
-//
-//                    }, 2000);
-//                }
-//
-//
-//            }
-//        });
         fabDownload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -377,6 +347,185 @@ public class PlayerFragment extends Fragment {
             alertDialog.show();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+
+
+    //======================================
+
+    private void checkForConsent() {
+        ConsentInformation consentInformation = ConsentInformation.getInstance(getActivity());
+       // ConsentInformation.getInstance(getActivity()).addTestDevice("B94C1B8999D3B59117198A259685D4F8");
+
+        String[] publisherIds = {"pub-5168564707064012"};
+        consentInformation.requestConsentInfoUpdate(publisherIds, new ConsentInfoUpdateListener() {
+            @Override
+            public void onConsentInfoUpdated(ConsentStatus consentStatus) {
+                // User's consent status successfully updated.
+                switch (consentStatus) {
+                    case PERSONALIZED:
+                        Log.d(TAG, "Showing Personalized ads");
+                        showPersonalizedAds();
+                        break;
+                    case NON_PERSONALIZED:
+                        Log.d(TAG, "Showing Non-Personalized ads");
+                        showNonPersonalizedAds();
+                        break;
+                    case UNKNOWN:
+                        Log.d(TAG, "Requesting Consent");
+                        if (ConsentInformation.getInstance(getActivity())
+                                .isRequestLocationInEeaOrUnknown()) {
+                            requestConsent();
+                        } else {
+                            showPersonalizedAds();
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            @Override
+            public void onFailedToUpdateConsentInfo(String errorDescription) {
+                // User's consent status failed to update.
+            }
+        });
+    }
+ConsentForm form;
+    private void requestConsent() {
+        URL privacyUrl = null;
+        try {
+            // TODO: Replace with your app's privacy policy URL.
+            privacyUrl = new URL("http://alphapk6733.blogspot.com/2018/05/privacy-policy-for-audio-book.html");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            // Handle error.
+        }
+        form = new ConsentForm.Builder(getActivity(), privacyUrl)
+                .withListener(new ConsentFormListener() {
+                    @Override
+                    public void onConsentFormLoaded() {
+                        // Consent form loaded successfully.
+                        Log.d(TAG, "Requesting Consent: onConsentFormLoaded");
+                        showForm();
+                    }
+
+                    @Override
+                    public void onConsentFormOpened() {
+                        // Consent form was displayed.
+                        Log.d(TAG, "Requesting Consent: onConsentFormOpened");
+                    }
+
+                    @Override
+                    public void onConsentFormClosed(
+                            ConsentStatus consentStatus, Boolean userPrefersAdFree) {
+                        Log.d(TAG, "Requesting Consent: onConsentFormClosed");
+                        if (userPrefersAdFree) {
+                            // Buy or Subscribe
+                            Log.d(TAG, "Requesting Consent: User prefers AdFree");
+                        } else {
+                            Log.d(TAG, "Requesting Consent: Requesting consent again");
+                            switch (consentStatus) {
+                                case PERSONALIZED:
+                                    showPersonalizedAds();break;
+                                case NON_PERSONALIZED:
+                                    showNonPersonalizedAds();break;
+                                case UNKNOWN:
+                                    showNonPersonalizedAds();break;
+                            }
+
+                        }
+                        // Consent form was closed.
+                    }
+
+                    @Override
+                    public void onConsentFormError(String errorDescription) {
+                        Log.d(TAG, "Requesting Consent: onConsentFormError. Error - " + errorDescription);
+                        // Consent form error.
+                    }
+                })
+                .withPersonalizedAdsOption()
+                .withNonPersonalizedAdsOption()
+                .withAdFreeOption()
+                .build();
+        form.load();
+    }
+
+    private void showPersonalizedAds() {
+        ConsentInformation.getInstance(getActivity()).setConsentStatus(ConsentStatus.PERSONALIZED);
+        mAdView = rootView.findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice("B94C1B8999D3B59117198A259685D4F8")
+                .build();
+        mAdView.loadAd(adRequest);
+        mAdView.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+                super.onAdLoaded();
+             Log.d(TAG,"onAdLoaded() CALLBACK");
+            }
+
+            @Override
+            public void onAdFailedToLoad(int errorCode) {
+                super.onAdFailedToLoad(errorCode);
+                Log.d(TAG,"onAdFailedToLoad() CALLBACK code: " + errorCode);
+            }
+        });
+        mInterstitialAd = new InterstitialAd(getActivity());
+        mInterstitialAd.setAdUnitId("ca-app-pub-5168564707064012/3352880988");
+        mInterstitialAd.loadAd(new AdRequest.Builder().addTestDevice("B94C1B8999D3B59117198A259685D4F8").build());
+        mInterstitialAd.setAdListener(new AdListener(){
+            @Override
+            public void onAdClosed() {
+                mInterstitialAd.loadAd(new AdRequest.Builder().addTestDevice("B94C1B8999D3B59117198A259685D4F8").build());
+            }
+        });
+
+        mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(getActivity());
+        mRewardedVideoAd.loadAd("ca-app-pub-5168564707064012/7558135093", new AdRequest.Builder().addTestDevice("B94C1B8999D3B59117198A259685D4F8").build());
+
+
+    }
+
+    private void showNonPersonalizedAds() {
+        ConsentInformation.getInstance(getActivity()).setConsentStatus(ConsentStatus.NON_PERSONALIZED);
+        mAdView = rootView.findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice("B94C1B8999D3B59117198A259685D4F8")
+                .build();
+        mAdView.loadAd(adRequest);
+
+        mInterstitialAd = new InterstitialAd(getActivity());
+        mInterstitialAd.setAdUnitId("ca-app-pub-5168564707064012/3352880988");
+        mInterstitialAd.loadAd(new AdRequest.Builder().addTestDevice("B94C1B8999D3B59117198A259685D4F8") .addNetworkExtrasBundle(AdMobAdapter.class, getNonPersonalizedAdsBundle()).build());
+        mInterstitialAd.setAdListener(new AdListener(){
+            @Override
+            public void onAdClosed() {
+                mInterstitialAd.loadAd(new AdRequest.Builder().addTestDevice("B94C1B8999D3B59117198A259685D4F8") .addNetworkExtrasBundle(AdMobAdapter.class, getNonPersonalizedAdsBundle()).build());
+            }
+        });
+
+        mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(getActivity());
+        mRewardedVideoAd.loadAd("ca-app-pub-5168564707064012/7558135093", new AdRequest.Builder().addTestDevice("B94C1B8999D3B59117198A259685D4F8") .addNetworkExtrasBundle(AdMobAdapter.class, getNonPersonalizedAdsBundle()).build());
+
+
+    }
+    public Bundle getNonPersonalizedAdsBundle() {
+        Bundle extras = new Bundle();
+        extras.putString("npa", "1");
+
+        return extras;
+    }
+    private void showForm() {
+        if (form == null) {
+            Log.d(TAG, "Consent form is null");
+        }
+        if (form != null) {
+            Log.d(TAG, "Showing consent form");
+            form.show();
+        } else {
+            Log.d(TAG, "Not Showing consent form");
         }
     }
 }

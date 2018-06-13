@@ -30,11 +30,9 @@ import com.ameerhamza6733.audioBooksFreeOnlineListen.Util;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.MainActivity;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.BookCatalogueAdupter;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.CustomAdapter;
-import com.ameerhamza6733.audioBooksFreeOnlineListen.viewModels.MainActivityViewModel;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.viewModels.BookViewModel;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
 
 import java.util.Arrays;
 import java.util.List;
@@ -43,13 +41,13 @@ import java.util.List;
  * Created by AmeerHamza on 2/8/2018.
  */
 
-public class RecyclerViewFragment extends Fragment implements MainActivity.ReciveQuery {
+public class BookFragment extends Fragment implements MainActivity.ReciveQuery {
 
     public static final java.lang.String ARRGS_KEY = "ARRGS_KEY";
-    public static final String MAKE_API_CALL = "MAKE_API_CALL";
+    public static final String WelcomeCall = "WelcomeCall";
     protected static final String KEY_LAYOUT_MANAGER = "layoutManager";
     protected static final String KEY_SHARED_PREF_CURRENT_CATALOG = "KEY_SHARED_PREF_CURRENT_CATALOG";
-    private static final String TAG = "RecyclerViewFragment";
+    private static final String TAG = "BookFragment";
     protected LayoutManagerType mCurrentLayoutManagerType;
     protected RecyclerView mRecyclerViewPoetry;
     protected RecyclerView.LayoutManager mLayoutManager;
@@ -59,13 +57,13 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
     protected Spinner mySpinnerFilter;
     private RequestQueue requsestQueue;
     private String type;
-    protected AdView mAdView;
+
 
     @Override
     public void OnRecivedQuery(String query) {
 
         Log.d(TAG, "query: " + query);
-        initDatasetForPoetry(query);
+        makeApiCall(query);
 
     }
 
@@ -85,10 +83,6 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
 
         mRecyclerViewPoetry = (RecyclerView) rootView.findViewById(R.id.recyclerView_poetry);
 
-        mAdView = rootView.findViewById(R.id.adViewBookMark);
-
-        AdRequest adRequest = new AdRequest.Builder().addTestDevice("B94C1B8999D3B59117198A259685D4F8").build();
-        mAdView.loadAd(adRequest);
 
 
         floatingActionButton = rootView.findViewById(R.id.fab);
@@ -120,15 +114,16 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
         SetToSpinner(rootView);
         try {
 
-            if (getArguments().getString(ARRGS_KEY).equalsIgnoreCase(MAKE_API_CALL)) {
+            if (getArguments().getString(ARRGS_KEY).equalsIgnoreCase(WelcomeCall)) {
                 MySharedPref.saveObjectToSharedPreference(getActivity().getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, KEY_SHARED_PREF_CURRENT_CATALOG, "librivox");
                 String welcomeUrl = Util.INSTANCE.SubjectSortBuilder("librivox", "addeddate+desc");
-                initDatasetForPoetry(welcomeUrl);
+                makeApiCall(welcomeUrl);
             }
         } catch (Exception e) {
         }
         try{
             ((AppCompatActivity)getActivity()).getSupportActionBar().show();
+            ((AppCompatActivity)getActivity()).getSupportActionBar().setSubtitle("Home");
             ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Audio Books ");
 
         }catch (Exception e){
@@ -220,7 +215,7 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
 
                 if (position > 0) {
-                    initDatasetForPoetry(Util.INSTANCE.BuildQuery(catalogueList.get(position)));
+                    makeApiCall(Util.INSTANCE.BuildQuery(catalogueList.get(position)));
                     MySharedPref.saveObjectToSharedPreference(getActivity().getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, KEY_SHARED_PREF_CURRENT_CATALOG, catalogueList.get(position));
                 }
 
@@ -245,7 +240,7 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
 
                 if (position > 0) {
-                    initDatasetForPoetry(Util.INSTANCE.SubjectSortBuilder(MySharedPref.getSavedObjectFromPreference(getActivity().getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, RecyclerViewFragment.KEY_SHARED_PREF_CURRENT_CATALOG), filterList.get(position) + "+" + "desc"));
+                    makeApiCall(Util.INSTANCE.SubjectSortBuilder(MySharedPref.getSavedObjectFromPreference(getActivity().getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, BookFragment.KEY_SHARED_PREF_CURRENT_CATALOG), filterList.get(position) + "+" + "desc"));
 
                 }
             }
@@ -261,11 +256,11 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
      * Generates Strings for RecyclerView's adapter. This data would usually come
      * from a local content provider or remote server.
      */
-    protected void initDatasetForPoetry(String url) {
+    protected void makeApiCall(String url) {
 
         progressBar.setVisibility(View.VISIBLE);
         Log.d(TAG, "url: " + url);
-        MainActivityViewModel model = ViewModelProviders.of(getActivity()).get(MainActivityViewModel.class);
+        BookViewModel model = ViewModelProviders.of(getActivity()).get(BookViewModel.class);
         model.loadData(Volley.newRequestQueue(getActivity()), url).observe(this, updatedAudioBookList -> {
             // update UI
             if (updatedAudioBookList != null) {
@@ -296,7 +291,7 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
                         .setAction("Try again", new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                initDatasetForPoetry(url);
+                                makeApiCall(url);
                             }
                         }).setDuration(Snackbar.LENGTH_INDEFINITE).show();
 
@@ -342,7 +337,7 @@ public class RecyclerViewFragment extends Fragment implements MainActivity.Reciv
 //                                mRecyclerViewPoetry.setAdapter(mAdapter);
 //                            }
 //                        } else {
-//                            Log.d("RecyclerViewFragment", "no open source book find");
+//                            Log.d("BookFragment", "no open source book find");
 //                        }
 //                    });
 //

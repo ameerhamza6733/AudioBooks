@@ -18,9 +18,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.BookFragment;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.BookMarkFragemnt;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.BookSearchDialogFragment;
-import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.RecyclerViewFragment;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.HistoryFragment;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.OfflineSavedBookFragment;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
@@ -28,7 +30,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, BookSearchDialogFragment.QueryUpdate {
     public static String TAG = "MainActivityTAG";
-    private RecyclerViewFragment recyclerViewFragment;
+    private BookFragment bookFragment;
     private ReciveQuery reciveQuery;
     private BottomNavigationView mBottomBar;
     private FragmentManager fm;
@@ -45,12 +47,12 @@ public class MainActivity extends AppCompatActivity
         } catch (Exception e) {
         }
 
-        recyclerViewFragment = new RecyclerViewFragment();
+        bookFragment = new BookFragment();
         Bundle bundle = new Bundle();
-        bundle.putString(RecyclerViewFragment.ARRGS_KEY, RecyclerViewFragment.MAKE_API_CALL);
-        recyclerViewFragment.setArguments(bundle);
-        startFragmentTransction(recyclerViewFragment);
-        reciveQuery = recyclerViewFragment;
+        bundle.putString(BookFragment.ARRGS_KEY, BookFragment.WelcomeCall);
+        bookFragment.setArguments(bundle);
+        startFragmentTransction(bookFragment);
+        reciveQuery = bookFragment;
 
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -67,17 +69,31 @@ public class MainActivity extends AppCompatActivity
                 (new BottomNavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
                         Fragment selectedFragment = null;
                         switch (item.getItemId()) {
                             case R.id.bn_watch_latter:
-                               startActivity(new Intent(MainActivity.this, OfflineSavedBooksActivity.class));
+                           //     startActivity(new Intent(MainActivity.this, OfflineSavedBooksActivity.class));
+                                OfflineSavedBookFragment offlineSavedBookFragment = new OfflineSavedBookFragment();
+                                startFragmentTransction(offlineSavedBookFragment);
+
                                 break;
                             case R.id.bn_my_history:
-                             startActivity(new Intent(MainActivity.this,HistoryActivity.class));
+
+                                Fragment fragment =  new HistoryFragment();
+                                startFragmentTransction(fragment);
                                 break;
                             case R.id.bn_bookmark:
                                 Fragment bookMarkFragemnt = new BookMarkFragemnt();
                                 startFragmentTransction(bookMarkFragemnt);
+                                break;
+                            case R.id.bn_home:
+                                bookFragment = new BookFragment();
+                                Bundle bundle = new Bundle();
+                                bundle.putString(BookFragment.ARRGS_KEY, BookFragment.WelcomeCall);
+                                bookFragment.setArguments(bundle);
+                                startFragmentTransction(bookFragment);
+                                reciveQuery = bookFragment;
                                 break;
 
                         }
@@ -93,11 +109,18 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void startFragmentTransction(Fragment fragment) {
-fm= getSupportFragmentManager();
+        fm = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fm.beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_contaner, fragment);
-        fragmentTransaction.addToBackStack(fragment.getClass().getSimpleName());
-        fragmentTransaction.commit();
+        if (fm.findFragmentByTag(fragment.getClass().getSimpleName()) != null) {
+            fragmentTransaction.show(fm.findFragmentByTag(fragment.getClass().getSimpleName())).commit();
+            Log.d(TAG,"fragment already in backstack");
+        } else {
+            fragmentTransaction.replace(R.id.fragment_contaner, fragment);
+            fragmentTransaction.addToBackStack(fragment.getClass().getSimpleName());
+
+            fragmentTransaction.commit();
+        }
+
     }
 
     @Override
@@ -106,11 +129,11 @@ fm= getSupportFragmentManager();
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            if(fm.getBackStackEntryCount()>1){
-              fm.popBackStack();
-          }else {
-              super.onBackPressed();
-          }
+            if (fm.getBackStackEntryCount() > 1) {
+                fm.popBackStack();
+            } else {
+                super.onBackPressed();
+            }
         }
     }
 
