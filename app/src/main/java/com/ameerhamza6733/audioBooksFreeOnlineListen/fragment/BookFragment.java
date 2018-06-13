@@ -49,7 +49,7 @@ public class BookFragment extends Fragment implements MainActivity.ReciveQuery {
     protected static final String KEY_SHARED_PREF_CURRENT_CATALOG = "KEY_SHARED_PREF_CURRENT_CATALOG";
     private static final String TAG = "BookFragment";
     protected LayoutManagerType mCurrentLayoutManagerType;
-    protected RecyclerView mRecyclerViewPoetry;
+    protected RecyclerView recyclerView;
     protected RecyclerView.LayoutManager mLayoutManager;
     protected ProgressBar progressBar;
     protected FloatingActionButton floatingActionButton;
@@ -81,7 +81,7 @@ public class BookFragment extends Fragment implements MainActivity.ReciveQuery {
         View rootView = inflater.inflate(R.layout.audio_book_list_frag, container, false);
         rootView.setTag(TAG);
 
-        mRecyclerViewPoetry = (RecyclerView) rootView.findViewById(R.id.recyclerView_poetry);
+        recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView_poetry);
 
 
 
@@ -143,8 +143,8 @@ public class BookFragment extends Fragment implements MainActivity.ReciveQuery {
         int scrollPostionDahzial = 0;
 
         // If a layout manager has already been set, get current scroll position.
-        if (mRecyclerViewPoetry.getLayoutManager() != null) {
-            scrollPosition = ((LinearLayoutManager) mRecyclerViewPoetry.getLayoutManager())
+        if (recyclerView.getLayoutManager() != null) {
+            scrollPosition = ((LinearLayoutManager) recyclerView.getLayoutManager())
                     .findFirstCompletelyVisibleItemPosition();
 
         }
@@ -163,8 +163,8 @@ public class BookFragment extends Fragment implements MainActivity.ReciveQuery {
                 mCurrentLayoutManagerType = LayoutManagerType.LINEAR_LAYOUT_MANAGER;
         }
 
-        mRecyclerViewPoetry.setLayoutManager(mLayoutManager);
-        mRecyclerViewPoetry.scrollToPosition(scrollPosition);
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.scrollToPosition(scrollPosition);
 
     }
 
@@ -280,14 +280,14 @@ public class BookFragment extends Fragment implements MainActivity.ReciveQuery {
                     Toast.makeText(getActivity(), "No results matched your criteria.", Toast.LENGTH_LONG).show();
                 } else {
                     CustomAdapter mAdapter = new CustomAdapter(updatedAudioBookList);
-                    mRecyclerViewPoetry.setAdapter(mAdapter);
+                    recyclerView.setAdapter(mAdapter);
                 }
 
             } else {
                 progressBar.setVisibility(View.GONE);
                 Snackbar
 
-                        .make(mRecyclerViewPoetry, "Connection Error", Snackbar.LENGTH_LONG)
+                        .make(recyclerView, "Connection Error", Snackbar.LENGTH_LONG)
                         .setAction("Try again", new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
@@ -334,7 +334,7 @@ public class BookFragment extends Fragment implements MainActivity.ReciveQuery {
 //                                Toast.makeText(getActivity(), "No results matched your criteria.", Toast.LENGTH_LONG).show();
 //                            } else {
 //                                CustomAdapter mAdapter = new CustomAdapter(result);
-//                                mRecyclerViewPoetry.setAdapter(mAdapter);
+//                                recyclerView.setAdapter(mAdapter);
 //                            }
 //                        } else {
 //                            Log.d("BookFragment", "no open source book find");

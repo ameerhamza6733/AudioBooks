@@ -13,15 +13,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
-import com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.OfflineSavedBooksActivity;
-import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.OfflineSavedSavedMataDataFragment;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.MainActivity;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.OfflineBookChapterFragment;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.AudioBook;
 import com.bumptech.glide.Glide;
 
 import java.util.List;
 
 
-import static com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.OfflineSavedSavedMataDataFragment.BUNDEL_KEY_BOOK_NO;
+import static com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.OfflineBookChapterFragment.BUNDEL_KEY_BOOK_NO;
 
 /**
  * Created by apple on 5/10/18.
@@ -29,13 +29,13 @@ import static com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.OfflineSave
 
 public class OfflineBookAdupter extends RecyclerView.Adapter<OfflineBookAdupter.ViewHolder>  {
     private List<AudioBook> audioBookList;
-    private OfflineSavedBooksActivity activity;
+    private MainActivity activity;
     private static String TAG="OfflineSavedBookFragment";
 
     public OfflineBookAdupter(List<AudioBook> audioBookList,Activity activity) {
         Log.d(TAG,"OfflineBookAdupter");
         this.audioBookList = audioBookList;
-        this.activity= (OfflineSavedBooksActivity) activity;
+        this.activity= (MainActivity) activity;
     }
 
     @Override
@@ -57,7 +57,7 @@ public class OfflineBookAdupter extends RecyclerView.Adapter<OfflineBookAdupter.
         holder.getRootView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                OfflineSavedSavedMataDataFragment offlineSavedMataDataFragment = new OfflineSavedSavedMataDataFragment();
+                OfflineBookChapterFragment offlineSavedMataDataFragment = new OfflineBookChapterFragment();
                 Bundle bundle = new Bundle();
                 bundle.putInt(BUNDEL_KEY_BOOK_NO, position);
                 offlineSavedMataDataFragment.setArguments(bundle);

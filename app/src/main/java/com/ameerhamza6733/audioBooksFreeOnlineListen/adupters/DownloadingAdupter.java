@@ -117,18 +117,11 @@ public class DownloadingAdupter extends RecyclerView.Adapter<DownloadingAdupter.
             @Override
             public void onClick(View v) {
                 Toast.makeText(v.getContext(),"starting media player ",Toast.LENGTH_SHORT).show();
-                if (PlayerForegroundService.isPlaying) {
-                    stopPlayerService(downloadedAudioBook.getMataData().get(position));
-                   // startPlayerService(downloadedAudioBook.getMataData().get(position), PlayerForegroundService.PLAYER_PLAY_PAUSE_ACTION, null, 0);
-                } else {
+                startPlayerService(mataDataList.get(position), PlayerForegroundService.STOP_ACTION, null, 0);
+                handler.postDelayed(() -> {
+                    startPlayerService(mataDataList.get(position), PlayerForegroundService.ACTION_START, null, 0);
 
-
-
-                    handler.postDelayed(() -> {
-                        startPlayerService(downloadedAudioBook.getMataData().get(position), PlayerForegroundService.ACTION_START, null, 0);
-
-                    }, 2000);
-                }
+                }, 2000);
             }
         });
     }
@@ -276,14 +269,7 @@ public class DownloadingAdupter extends RecyclerView.Adapter<DownloadingAdupter.
             return btViewDownload;
         }
     }
-    private void stopPlayerService(MataData mataData)  {
-        try {
-            Intent startIntent = new Intent(activity, PlayerForegroundService.class);
-            startIntent.putExtra(EXTRA_URI, mataData.getSdPath());
-            startIntent.setAction(PlayerForegroundService.STOP_ACTION);
-            activity.startService(startIntent);
-        }catch (Exception e){e.printStackTrace();}
-    }
+
     private void startPlayerService(MataData mataData, String Action, String extraKey, long miliSecond)   {
 
         try {

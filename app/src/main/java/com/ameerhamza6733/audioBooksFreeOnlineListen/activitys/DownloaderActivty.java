@@ -97,25 +97,6 @@ public class DownloaderActivty extends AppCompatActivity {
         recyclerView.setAdapter(downloadingAdupter);
     }
 
-    public void intiDataSet() {
-        OfflineBooksViewModle offlineBooksViewModle = ViewModelProviders.of(this).get(OfflineBooksViewModle.class);
-        offlineBooksViewModle.getAllSavedAudioBooks(this.getApplicationContext().getSharedPreferences(SHARD_PREF_DOWNLOADED_AUDIO_BOOK, 0)).observe(this, new Observer<List<AudioBook>>() {
-            @Override
-            public void onChanged(@Nullable List<AudioBook> audioBooks) {
-                if (audioBooks != null && audioBooks.size() > 0) {
-                    for (MataData mataData : audioBooks.get(bookNumber).getMataData())
-                        if (mataData.isHasDownloaded())
-
-                        {
-                            mataDataList.add(mataData);
-                            setRecylerView();
-                        }
 
 
-                } else {
-                    setRecylerView();
-                }
-            }
-        });
-    }
 }

@@ -18,7 +18,6 @@ import com.ameerhamza6733.audioBooksFreeOnlineListen.viewModels.HistoryViewModel
 import com.google.ads.consent.ConsentInformation;
 import com.google.ads.consent.ConsentStatus;
 import com.google.ads.mediation.admob.AdMobAdapter;
-import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
@@ -78,7 +77,7 @@ public class HistoryFragment extends BookFragment {
                 if (audioBooks != null && audioBooks.size() > 0) {
                     progressBar.setVisibility(View.GONE);
                     CustomAdapter mAdapter = new CustomAdapter(audioBooks);
-                    mRecyclerViewPoetry.setAdapter(mAdapter);
+                    recyclerView.setAdapter(mAdapter);
                 } else {
                     progressBar.setVisibility(View.GONE);
                     Toast.makeText(getActivity(), "You don't have any history", Toast.LENGTH_LONG).show();

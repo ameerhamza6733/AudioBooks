@@ -29,7 +29,7 @@ import static com.ameerhamza6733.audioBooksFreeOnlineListen.MySharedPref.SHARD_P
  * Created by AmeerHamza on 5/9/18.
  */
 
-public class OfflineSavedSavedMataDataFragment extends OfflineSavedBookFragment {
+public class OfflineBookChapterFragment extends OfflineSavedBookFragment {
     public static final String BUNDEL_KEY_BOOK_NO = "BUNDEL_KEY_BOOK_NO";
     int bookNumber;
     private View rootView;

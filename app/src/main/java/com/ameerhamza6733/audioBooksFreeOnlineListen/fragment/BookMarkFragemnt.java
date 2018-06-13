@@ -73,7 +73,7 @@ public class BookMarkFragemnt extends BookFragment {
                 if (audioBooks != null && audioBooks.size() > 0) {
                     progressBar.setVisibility(View.GONE);
                     CustomAdapter mAdapter = new CustomAdapter(audioBooks);
-                    mRecyclerViewPoetry.setAdapter(mAdapter);
+                    recyclerView.setAdapter(mAdapter);
                 } else {
                     progressBar.setVisibility(View.GONE);
                     Toast.makeText(getActivity(), "You don't have any Bookmarks", Toast.LENGTH_LONG).show();

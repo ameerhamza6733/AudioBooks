@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -244,7 +245,8 @@ public class PlayerFragment extends Fragment {
                 if (seelTo > 1)
                     ResumeTrackPermistionDialogFragment(seelTo);
                 else {
-                    stopPlayerService(currentMataData);
+                    startPlayerService(currentMataData, PlayerForegroundService.STOP_ACTION, null, 0);
+
                     handler.postDelayed(() -> {
                         startPlayerService(currentMataData, PlayerForegroundService.ACTION_START, null, 0);
 
@@ -312,17 +314,15 @@ public class PlayerFragment extends Fragment {
             }
             startIntent.putExtra(extraKey, miliSecond);
             startIntent.setAction(Action);
+            if (Build.VERSION.SDK_INT>25){
+                getActivity().startForegroundService(startIntent);
+            }else
             getActivity().startService(startIntent);
         } catch (Exception e) {
         }
     }
 
-    private void stopPlayerService(MataData mataData) {
-        Intent startIntent = new Intent(getActivity(), PlayerForegroundService.class);
-        startIntent.putExtra(EXTRA_URI, mataData.getURL());
-        startIntent.setAction(PlayerForegroundService.STOP_ACTION);
-        getActivity().startService(startIntent);
-    }
+
 
     public void ResumeTrackPermistionDialogFragment(long seekTo) {
         Log.d(TAG, "trying to ruesume the track ");
@@ -330,14 +330,16 @@ public class PlayerFragment extends Fragment {
             final AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
                     .setTitle("Do you want resume track ")
                     .setPositiveButton("OK", (dialog, which) -> {
-                        stopPlayerService(currentMataData);
+                        startPlayerService(currentMataData, PlayerForegroundService.STOP_ACTION, null, 0);
+
                         handler.postDelayed(() -> {
                             startPlayerService(currentMataData, PlayerForegroundService.ACTION_START, PlayerForegroundService.EXTRA_SEEK_TO, seekTo);
 
                         }, 2000);
                     })
                     .setNegativeButton("NO", (dialog, which) -> {
-                        stopPlayerService(currentMataData);
+                        startPlayerService(currentMataData, PlayerForegroundService.STOP_ACTION, null, 0);
+
                         handler.postDelayed(() -> {
                             startPlayerService(currentMataData, PlayerForegroundService.ACTION_START, null, 0);
 
