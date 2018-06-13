@@ -1,6 +1,8 @@
 package com.ameerhamza6733.audioBooksFreeOnlineListen.activitys;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -11,6 +13,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -129,11 +132,8 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            if (fm.getBackStackEntryCount() > 1) {
-                fm.popBackStack();
-            } else {
-                super.onBackPressed();
-            }
+           RateMe();
+         //  super.onBackPressed();
         }
     }
 
@@ -144,40 +144,6 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_rate_me) {
-//            Uri uri = Uri.parse("market://details?id=" + this.getPackageName());
-//            Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
-//            // To count with Play market backstack, After pressing back button,
-//            // to taken back to our application, we need to add following flags to intent.
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//                goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
-//                        Intent.FLAG_ACTIVITY_NEW_DOCUMENT |
-//                        Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-//            }else {
-//                goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
-//                        Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET |
-//                        Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-//            }
-//            try {
-//                startActivity(goToMarket);
-//            } catch (ActivityNotFoundException e) {
-//                startActivity(new Intent(Intent.ACTION_VIEW,
-//                        Uri.parse("http://play.google.com/store/apps/details?id=" + this.getPackageName())));
-//            }
-//            return true;
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
 
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -190,39 +156,7 @@ public class MainActivity extends AppCompatActivity
             // Handle the camera action
             startActivity(new Intent(this, feedbackActivity.class));
         }
-//        } else if (id == R.id.poetry) {
-//            reciveQuery.OnRecivedQuery(Util.INSTANCE.getPoetry_URL());
-//        } else if (id == R.id.nav_librivox) {
-//            reciveQuery.OnRecivedQuery(Util.INSTANCE.getLIBRIVOX_URL());
-//        } else if (id == R.id.nav_fiction) {
-//            reciveQuery.OnRecivedQuery(Util.INSTANCE.getFiction_URL());
-//        } else if (id == R.id.nav_literature) {
-//            reciveQuery.OnRecivedQuery(Util.INSTANCE.getLiterature_URL());
-//        } else if (id == R.id.nav_Community_Audio) {
-//            reciveQuery.OnRecivedQuery(Util.INSTANCE.getCommunity_Audio_URL());
-//        } else if (id == R.id.nav_philosophy) {
-//            reciveQuery.OnRecivedQuery(Util.INSTANCE.getPhilosophy_URL());
-//        } else if (id == R.id.nav_children) {
-//            reciveQuery.OnRecivedQuery(Util.INSTANCE.getChildren_URL());
-//        } else if (id == R.id.nav_plato) {
-//            reciveQuery.OnRecivedQuery(Util.INSTANCE.getPlato_URL());
-//        } else if (id == R.id.nav_romance) {
-//            reciveQuery.OnRecivedQuery(Util.INSTANCE.getRomance_URL());
-//        } else if (id == R.id.nav_history) {
-//            reciveQuery.OnRecivedQuery(Util.INSTANCE.getHistory_URL());
-//        } else if (id == R.id.nav_nature) {
-//            reciveQuery.OnRecivedQuery(Util.INSTANCE.getNature_URL());
-//        } else if (id == R.id.nav_humor) {
-//            reciveQuery.OnRecivedQuery(Util.INSTANCE.getHumor_URL());
-//        } else if (id == R.id.nav_mystery) {
-//            reciveQuery.OnRecivedQuery(Util.INSTANCE.getMystery_URL());
-//        } else if (id == R.id.nav_poem) {
-//            reciveQuery.OnRecivedQuery(Util.INSTANCE.getPoem_URL());
-//        } else if (id == R.id.nav_animals) {
-//            reciveQuery.OnRecivedQuery(Util.INSTANCE.getAnimals_URL());
-//        } else if (id == R.id.nav_novel) {
-//            reciveQuery.OnRecivedQuery(Util.INSTANCE.getNovel_URL());
-//        }
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -234,7 +168,27 @@ public class MainActivity extends AppCompatActivity
         Log.d(TAG, "query: " + query);
         reciveQuery.OnRecivedQuery(query);
     }
+    private void RateMe() {
+        AlertDialog.Builder builder;
 
+        builder = new AlertDialog.Builder(this);
+        builder.setTitle("Rate Me")
+                .setMessage("Audio book download need your help please rate us on google play")
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // continue with delete
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + MainActivity.this.getPackageName())));
+                    }
+                })
+                .setNegativeButton("Close", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        MainActivity.this.finish();
+                    }
+                })
+                .setIcon(android.R.drawable.star_big_on)
+                .show();
+    }
 
     public interface ReciveQuery {
         public void OnRecivedQuery(String query);

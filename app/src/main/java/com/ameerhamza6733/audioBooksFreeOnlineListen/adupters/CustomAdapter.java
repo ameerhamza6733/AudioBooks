@@ -6,7 +6,6 @@ package com.ameerhamza6733.audioBooksFreeOnlineListen.adupters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -26,8 +25,6 @@ import com.ameerhamza6733.audioBooksFreeOnlineListen.Util;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.DetailTabActivity;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.AudioBook;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.transition.Transition;
 
 import java.util.List;
 
@@ -62,38 +59,38 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
 
-        // Get element from your dataset at this position and replace the contents of the view
-        // with that element
         viewHolder.getTextViewTitle().setText(mDataSet.get(position).getTitle());
         viewHolder.getTextViewRatingCount().setText(mDataSet.get(position).getAvg_rating());
-//        viewHolder.getTextViewMediaType().setText(mDataSet.get(position).getMediatype());
-//        viewHolder.getTextViewViewCount().setText(mDataSet.get(position).getDownloads());
         viewHolder.getCreator().setText(mDataSet.get(position).getCreator());
         viewHolder.getSubmittedAgo().setText(mDataSet.get(position).getData());
         viewHolder.getTextViewAuthor().setText("source: librivox");
-        Glide.with(viewHolder.getContext())
-                .asBitmap()
-                .load(Util.INSTANCE.toImageURI(mDataSet.get(position).getIdentifier()))
-                .into(new SimpleTarget<Bitmap>(150, 150) {
-                    @Override
-                    public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
-                        viewHolder.getImageView().setImageBitmap(resource);
-                    }
-                });
+        if (Util.INSTANCE.toImageURI(mDataSet.get(position).getIdentifier()) != null) {
+            //    Log.d(TAG,"iamge url"+Util.INSTANCE.toImageURI(mDataSet.get(position).getIdentifier()));
+            Glide.with(viewHolder.getContext())
+                    .asBitmap()
+
+                    .load(Util.INSTANCE.toImageURI(mDataSet.get(position).getIdentifier()))
+
+                    .into(viewHolder.getImageView());
+        } else {
+            Glide.with(viewHolder.getContext()).clear(viewHolder.getImageView());
+        }
         viewHolder.getAppCompatImageButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showPopupMenu(viewHolder.getAppCompatImageButton(),position);
+                showPopupMenu(v, position);
             }
         });
 
     }
-    private void showPopupMenu(View view,int position) {
+
+
+    private void showPopupMenu(View view, int position) {
         // inflate menu
-        PopupMenu popup = new PopupMenu(view.getContext(),view );
+        PopupMenu popup = new PopupMenu(view.getContext(), view);
         MenuInflater inflater = popup.getMenuInflater();
         inflater.inflate(R.menu.popup, popup.getMenu());
-        popup.setOnMenuItemClickListener(new MyMenuItemClickListener(position,view.getContext()));
+        popup.setOnMenuItemClickListener(new MyMenuItemClickListener(position, view.getContext()));
         popup.show();
     }
 
@@ -109,8 +106,8 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
     public class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView textViewTitle;
         private final TextView textViewAuthor;
-                private final TextView textViewRatingCount;
-//        private final TextView textViewMediaType;
+        private final TextView textViewRatingCount;
+        //        private final TextView textViewMediaType;
 //        private final TextView textViewViewCount;
         private final TextView submittedAgo;
         private final ImageView imageView;
@@ -125,27 +122,27 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(v.getContext(),"Please wait",Toast.LENGTH_SHORT).show();
-                  boolean isSaved=  MySharedPref.saveObjectToSharedPreference(v.getContext().getApplicationContext(),MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, DetailTabActivity.KEY_SHARD_PREF_AUDIO_BOOK,mDataSet.get(getAdapterPosition()));
-                    MySharedPref.saveObjectToSharedPreference(v.getContext().getApplicationContext(),MySharedPref.SHARD_PREF_HISTORY_AUDIO_BOOK_FILE_NAME,mDataSet.get(getAdapterPosition()).getIdentifier(),mDataSet.get(getAdapterPosition()));
+                    Toast.makeText(v.getContext(), "Please wait", Toast.LENGTH_SHORT).show();
+                    boolean isSaved = MySharedPref.saveObjectToSharedPreference(v.getContext().getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, DetailTabActivity.KEY_SHARD_PREF_AUDIO_BOOK, mDataSet.get(getAdapterPosition()));
+                    MySharedPref.saveObjectToSharedPreference(v.getContext().getApplicationContext(), MySharedPref.SHARD_PREF_HISTORY_AUDIO_BOOK_FILE_NAME, mDataSet.get(getAdapterPosition()).getIdentifier(), mDataSet.get(getAdapterPosition()));
                     Log.d(TAG, "Element " + getAdapterPosition() + " clicked.");
                     Intent intent = new Intent(v.getContext(), DetailTabActivity.class);
                     if (isSaved)
-                    v.getContext().startActivity(intent);
+                        v.getContext().startActivity(intent);
                     else {
-                        Toast.makeText(v.getContext(),"Please restart app some thing wrong",Toast.LENGTH_LONG).show();
+                        Toast.makeText(v.getContext(), "Please restart app some thing wrong", Toast.LENGTH_LONG).show();
                     }
                 }
             });
             textViewTitle = (TextView) v.findViewById(R.id.title);
             textViewAuthor = v.findViewById(R.id.source);
 //            textViewMediaType=v.findViewById(R.id.type);
-            textViewRatingCount= v.findViewById(R.id.rating);
+            textViewRatingCount = v.findViewById(R.id.rating);
 //            textViewViewCount=v.findViewById(R.id.views);
             imageView = v.findViewById(R.id.imageView);
-            creator= v.findViewById(R.id.creator);
-            submittedAgo=v.findViewById(R.id.time);
-            appCompatImageButton=v.findViewById(R.id.pop_menu);
+            creator = v.findViewById(R.id.creator);
+            submittedAgo = v.findViewById(R.id.time);
+            appCompatImageButton = v.findViewById(R.id.pop_menu);
             context = v.getContext();
 
         }
@@ -161,6 +158,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
         public TextView getCreator() {
             return creator;
         }
+
         public TextView getTextViewRatingCount() {
             return textViewRatingCount;
         }
@@ -189,13 +187,15 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
             return appCompatImageButton;
         }
     }
+
     class MyMenuItemClickListener implements PopupMenu.OnMenuItemClickListener {
 
         private int position;
         private Context context;
-        public MyMenuItemClickListener(int positon,Context context) {
-            this.position=positon;
-            this.context=context;
+
+        public MyMenuItemClickListener(int positon, Context context) {
+            this.position = positon;
+            this.context = context;
         }
 
         @Override
@@ -203,8 +203,8 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
             switch (menuItem.getItemId()) {
 
                 case R.id.menu_book_mark:
-                    MySharedPref.saveObjectToSharedPreference(context.getApplicationContext(),MySharedPref.SHARD_PREF_BOOK_MARK_FILE_NAME,mDataSet.get(position).getIdentifier(),mDataSet.get(position));
-                    Toast.makeText(context,"Bookmarks",Toast.LENGTH_LONG).show();
+                    MySharedPref.saveObjectToSharedPreference(context.getApplicationContext(), MySharedPref.SHARD_PREF_BOOK_MARK_FILE_NAME, mDataSet.get(position).getIdentifier(), mDataSet.get(position));
+                    Toast.makeText(context, "Bookmarks", Toast.LENGTH_LONG).show();
                     return true;
 
                 default:

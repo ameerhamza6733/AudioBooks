@@ -22,3 +22,9 @@
 -dontwarn com.squareup.okhttp.**
 -keep public class * implements cn.woblog.android.downloader.db.DownloadDBController
 
+-keep public class * implements com.bumptech.glide.module.GlideModule
+-keep public class * extends com.bumptech.glide.module.AppGlideModule
+-keep public enum com.bumptech.glide.load.ImageHeaderParser$** {
+  **[] $VALUES;
+  public *;
+}
