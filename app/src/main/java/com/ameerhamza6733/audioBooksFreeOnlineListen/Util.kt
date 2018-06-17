@@ -194,7 +194,7 @@ object Util {
 
     fun isResumeAble(context: Context,URL: String): Long{
         return try {
-            MySharedPref.getSavedLongFromPreference(context.getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, URL);
+            MySharedPref.getSavedLongFromPreference(context.applicationContext, MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, URL);
         } catch (e: Exception) {
             e.printStackTrace()
             0;

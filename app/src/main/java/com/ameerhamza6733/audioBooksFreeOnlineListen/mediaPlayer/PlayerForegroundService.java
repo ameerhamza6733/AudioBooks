@@ -4,21 +4,22 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.media.MediaDescriptionCompat;
+import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.ameerhamza6733.audioBooksFreeOnlineListen.MySharedPref;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.PlayerFragment;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.models.AudioBook;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.models.MataData;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -27,9 +28,10 @@ import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
+import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector;
+import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator;
+import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
-import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
@@ -38,6 +40,9 @@ import com.google.android.exoplayer2.ui.PlayerNotificationManager;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 
+import java.io.File;
+import java.util.List;
+
 
 /**
  * Created by AmeerHamza on 2/11/2018.
@@ -45,57 +50,94 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 
 public class PlayerForegroundService extends Service implements Player.EventListener {
 
-    public static final String EXTRA_URI = "com.ameerhamza6733.businessaudiobook.mediaPlayer.PlayerForegroundService.url";
-    public static final String EXTRA_TITLE = "com.ameerhamza6733.businessaudiobook.mediaPlayer.PlayerForegroundService.title";
-    public static final String EXTRA_SEEK_TO = "EXTRA_SEEK_TO";
-    public final static String ACTION_START = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.startforeground";
+    public static final String KEY_PREFF_CURRENT_TRACK_INDEX = "KEY_PREFF_CURRENT_TRACK_INDEX";
+    public final static String ACTION_UPDATE_MEDIA_SOURCE = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.startforeground";
     public final static String STOP_ACTION = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.stop";
-
-   // public final static String BROAD_CAST_SERVICE_STAARTED = "com.ameerhamza6733.businessaudiobook.mediaPlayer.BROAD_CAST_SERVICE_STAARTED";
-
+    public final static String KEY_SHARD_PREF_AUDIO_BOOK = "PlayerForegroundService.KEY_SHARD_PREF_AUDIO_BOOK";
     public static final int ONGOING_NOTIFICATION_ID = 101;
-    public final static String START_ACTIVITY_BROAD_CAST = "START_ACTIVITY_BROAD_CAST";
+    public static final int FLAG_OFFLINE = 404;
     private static final String TAG = "PlayerForegroundService";
     private static final String NOTIFICATION_CHANNEL_ID = "audio_book_playback_channel";
-    public static String MAIN_ACTION = "com.ameerhamza6733.businessaudiobook.mediaPlayer.action.main";
+    private static final java.lang.String MEDIA_SESSION_TAG = "MEDIA_SESSION_TAG";
     public static Boolean isPlaying = false;
     public static SimpleExoPlayer player;
-    protected static String url;
     private static String title;
-
+    protected List<MataData> mataDataList;
+    private AudioBook audioBook;
     private long seekto = 0;
+    private String currentTrackIndex = "0";
 
     private PlayerNotificationManager playerNotificationManager;
+    private MediaSessionCompat mediaSessionCompat;
+    private MediaSessionConnector mediaSessionConntor;
+    private ConcatenatingMediaSource concatenatingMediaSource;
+    private ExtractorMediaSource mediaSource;
 
 
     @Override
     public void onCreate() {
         super.onCreate();
         isPlaying = true;
-        getPlayerNotification();
+        audioBook = MySharedPref.getSavedObjectFromPreference(this, MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, KEY_SHARD_PREF_AUDIO_BOOK, AudioBook.class);
+        currentTrackIndex = MySharedPref.getSavedObjectFromPreference(this, MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, KEY_PREFF_CURRENT_TRACK_INDEX);
+        if (currentTrackIndex.isEmpty())
+            currentTrackIndex = "0";
+        if (audioBook != null && audioBook.getMataData() != null) {
+            mataDataList = audioBook.getMataData();
+            title = audioBook.getTitle();
+            initMediaPlayer();
+        } else {
+            stopSelf();
+        }
+
     }
+
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent.getAction().equals(PlayerForegroundService.ACTION_START)) {
-            url = intent.getStringExtra(EXTRA_URI);
-            try {
-                seekto = MySharedPref.getSavedLongFromPreference(getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, url);
-            } catch (Exception e) {
-                Log.d(TAG, ":" + e.getMessage());
-                e.printStackTrace();
+
+        if (intent != null && intent.getAction() != null) {
+            if (intent.getAction().equals(PlayerForegroundService.ACTION_UPDATE_MEDIA_SOURCE)) {
+                audioBook = MySharedPref.getSavedObjectFromPreference(this, MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, KEY_SHARD_PREF_AUDIO_BOOK, AudioBook.class);
+                currentTrackIndex = MySharedPref.getSavedObjectFromPreference(this, MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, KEY_PREFF_CURRENT_TRACK_INDEX);
+                if (currentTrackIndex.isEmpty())
+                    currentTrackIndex = "0";
+                if (audioBook != null && audioBook.getMataData() != null) {
+                    mataDataList = audioBook.getMataData();
+                    title = audioBook.getTitle();
+                    DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(getApplicationContext(), "ExoplayerDemo");
+                    concatenatingMediaSource = new ConcatenatingMediaSource();
+                    for (MataData mataData : mataDataList) {
+
+
+                        if (mataData.hasDownloaded()) {
+                            File file = new File(mataData.getSdPath());
+                            if (file.exists()) {
+                                Log.d(TAG, "" + mataData.getSdPath());
+                                mediaSource = new ExtractorMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(mataData.getSdPath()));
+                            } else {
+                                mediaSource = new ExtractorMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(mataData.getURL()));
+
+                            }
+
+                        } else {
+                            mediaSource = new ExtractorMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(mataData.getURL()));
+
+                        }
+
+                        concatenatingMediaSource.addMediaSource(mediaSource);
+                    }
+
+                    player.prepare(concatenatingMediaSource);
+                    player.seekTo(Integer.parseInt(currentTrackIndex), seekto);
+                    player.setPlayWhenReady(true);
+                }
+            } else if (intent.getAction().equals(PlayerForegroundService.STOP_ACTION)) {
+
+                SendMediaStateBroadCast(PlayerFragment.BROADCAST_ACTION_PLAYER_Closed);
+                stopForeground(true);
+                stopSelf();
             }
-            seekto = intent.getLongExtra(PlayerForegroundService.EXTRA_SEEK_TO, 0);
-            title = intent.getStringExtra(PlayerForegroundService.EXTRA_TITLE);
-            Toast.makeText(this, "Start Service", Toast.LENGTH_SHORT).show();
-
-            initMediaPlayer(url);
-
-        } else if (intent.getAction().equals(PlayerForegroundService.STOP_ACTION)) {
-
-            SendMediaStateBroadCast(PlayerFragment.BROADCAST_ACTION_PLAYER_Closed);
-            stopForeground(true);
-            stopSelf();
         }
         return START_REDELIVER_INTENT;
     }
@@ -103,6 +145,11 @@ public class PlayerForegroundService extends Service implements Player.EventList
     @Override
     public void onDestroy() {
 
+        if (mediaSessionCompat != null)
+            mediaSessionCompat.release();
+        if (mediaSessionConntor != null) {
+            mediaSessionConntor.setPlayer(null, null);
+        }
         if (player != null) {
             SaveSongState();
             playerNotificationManager.setPlayer(null);
@@ -117,7 +164,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
     }
 
     private void SaveSongState() {
-        MySharedPref.saveObjectToSharedPreference(getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, url, player.getCurrentPosition());
+        MySharedPref.saveObjectToSharedPreference(getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, mataDataList.get(player.getCurrentWindowIndex()).getURL(), player.getCurrentPosition());
     }
 
     @Override
@@ -186,8 +233,8 @@ public class PlayerForegroundService extends Service implements Player.EventList
 
     }
 
-    private void initMediaPlayer(String url) {
-        Log.d(TAG, "url: " + url);
+    private void initMediaPlayer() {
+
 
         DefaultRenderersFactory renderersFactory = new DefaultRenderersFactory(getApplicationContext());
         DefaultBandwidthMeter bandwidthMeter = new DefaultBandwidthMeter(); //Provides estimates of the currently available bandwidth.
@@ -197,14 +244,33 @@ public class PlayerForegroundService extends Service implements Player.EventList
         player = ExoPlayerFactory.newSimpleInstance(renderersFactory, trackSelector, loadControl);
 
 
-
         DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(getApplicationContext(), "ExoplayerDemo");
-        MediaSource mediaSource = new ExtractorMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(url));
-        player.prepare(mediaSource);
-        player.seekTo(seekto);
+        concatenatingMediaSource = new ConcatenatingMediaSource();
+        for (MataData mataData : mataDataList) {
+            mediaSource = new ExtractorMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(mataData.getURL()));
+
+            concatenatingMediaSource.addMediaSource(mediaSource);
+
+
+        }
+
+        player.prepare(concatenatingMediaSource);
+        player.seekTo(Integer.parseInt(currentTrackIndex), seekto);
         player.addListener(this);
         player.setPlayWhenReady(true);
+        getPlayerNotification();
 
+        mediaSessionCompat = new MediaSessionCompat(this, MEDIA_SESSION_TAG);
+        mediaSessionCompat.setActive(true);
+        playerNotificationManager.setMediaSessionToken(mediaSessionCompat.getSessionToken());
+        mediaSessionConntor = new MediaSessionConnector(mediaSessionCompat);
+        mediaSessionConntor.setQueueNavigator(new TimelineQueueNavigator(mediaSessionCompat) {
+            @Override
+            public MediaDescriptionCompat getMediaDescription(Player player, int windowIndex) {
+                return new MediaDescriptionCompat.Builder().setTitle(mataDataList.get(windowIndex).getName()).build();
+            }
+        });
+        mediaSessionConntor.setPlayer(player, null);
 
     }
 

@@ -1,28 +1,16 @@
 package com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer;
 
-import android.content.ActivityNotFoundException;
-import android.content.Context;
-import android.content.Intent;
-import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Handler;
-import android.speech.RecognizerIntent;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.extractor.ExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
@@ -36,18 +24,11 @@ import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
-import com.google.android.exoplayer2.upstream.TransferListener;
 import com.google.android.exoplayer2.util.Util;
-
-
-import java.util.List;
-import java.util.Locale;
-
-import static com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService.EXTRA_URI;
 
 public class PlayerActivty extends  Fragment {
     public static final String EXTRA_PLAYER_URI = "EXTRA_PLAYER_URI";
-    public static final String EXTRA_SEEK_TO = "EXTRA_SEEK_TO";
+    public static final String EXTRA_SEEK_TO = "KEY_PREFF_CURRENT_TRACK_INDEX";
     public static String EXTRA_TITLE="EXTRA_TITLE";
     SimpleExoPlayerView mPlayerView;
     private SimpleExoPlayer mPlayer;

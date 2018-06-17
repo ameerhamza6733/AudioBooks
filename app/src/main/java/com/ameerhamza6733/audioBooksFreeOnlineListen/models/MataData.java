@@ -81,7 +81,7 @@ public class MataData implements Parcelable {
         return URL;
     }
 
-    public boolean isHasDownloaded() {
+    public boolean hasDownloaded() {
         return hasDownloaded;
     }
 

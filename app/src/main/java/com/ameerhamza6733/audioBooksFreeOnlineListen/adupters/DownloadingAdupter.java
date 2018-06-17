@@ -1,7 +1,9 @@
 package com.ameerhamza6733.audioBooksFreeOnlineListen.adupters;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -31,7 +33,6 @@ import cn.woblog.android.downloader.domain.DownloadInfo;
 import cn.woblog.android.downloader.exception.DownloadException;
 
 import static com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.DetailTabActivity.KEY_SHARD_PREF_AUDIO_BOOK;
-import static com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService.EXTRA_URI;
 
 
 /**
@@ -117,11 +118,13 @@ public class DownloadingAdupter extends RecyclerView.Adapter<DownloadingAdupter.
             @Override
             public void onClick(View v) {
                 Toast.makeText(v.getContext(),"starting media player ",Toast.LENGTH_SHORT).show();
-                startPlayerService(mataDataList.get(position), PlayerForegroundService.STOP_ACTION, null, 0);
-                handler.postDelayed(() -> {
-                    startPlayerService(mataDataList.get(position), PlayerForegroundService.ACTION_START, null, 0);
+                MySharedPref.saveObjectToSharedPreference(v.getContext(),MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME,PlayerForegroundService.KEY_PREFF_CURRENT_TRACK_INDEX,String.valueOf(position));
+                if (PlayerForegroundService.player!=null){
+                    startPlayerService(v.getContext(),PlayerForegroundService.ACTION_UPDATE_MEDIA_SOURCE,0);
+                }else {
+                    startPlayerService(v.getContext(),null,0);
+                }
 
-                }, 2000);
             }
         });
     }
@@ -131,7 +134,7 @@ public class DownloadingAdupter extends RecyclerView.Adapter<DownloadingAdupter.
        try{
             f = new File( downloadedAudioBook.getMataData().get(position).getSdPath());
            if(f.exists()) {
-               return   downloadedAudioBook!=null && downloadedAudioBook.getMataData()!=null && downloadedAudioBook.getMataData().size()>0 && downloadedAudioBook.getMataData().get(position).isHasDownloaded();
+               return   downloadedAudioBook!=null && downloadedAudioBook.getMataData()!=null && downloadedAudioBook.getMataData().size()>0 && downloadedAudioBook.getMataData().get(position).hasDownloaded();
            }else {
                return false;
            }
@@ -215,7 +218,9 @@ public class DownloadingAdupter extends RecyclerView.Adapter<DownloadingAdupter.
                         DownloadedMataDataList.get(getAdapterPosition()).setHasDownloaded(true);
                         DownloadedMataDataList.get(getAdapterPosition()).setSdPath(downloadInfoHashMap.get(getAdapterPosition()).getPath());
                         MySharedPref.saveObjectToSharedPreference(DownloadingAdupter.this.activity.getApplicationContext(), MySharedPref.SHARD_PREF_DOWNLOADED_AUDIO_BOOK, downloadedAudioBook.getIdentifier(), downloadedAudioBook);
-                        notifyDataSetChanged();
+                        MySharedPref.saveObjectToSharedPreference(DownloadingAdupter.this.activity, MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, PlayerForegroundService.KEY_SHARD_PREF_AUDIO_BOOK, downloadedAudioBook);
+
+                    notifyDataSetChanged();
 
                 }
 
@@ -270,21 +275,18 @@ public class DownloadingAdupter extends RecyclerView.Adapter<DownloadingAdupter.
         }
     }
 
-    private void startPlayerService(MataData mataData, String Action, String extraKey, long miliSecond)   {
+    private void startPlayerService(Context context, String Action, long miliSecond) {
+        Intent startIntent = new Intent(context, PlayerForegroundService.class);
+        startIntent.putExtra(PlayerForegroundService.KEY_PREFF_CURRENT_TRACK_INDEX, miliSecond);
 
-        try {
-
-            Intent startIntent = new Intent(activity, PlayerForegroundService.class);
-            if (mataData != null) {
-                startIntent.putExtra(EXTRA_URI, mataData.getSdPath());
-                startIntent.putExtra(PlayerForegroundService.EXTRA_TITLE, mataData.getName());
-            }
-            startIntent.putExtra(extraKey, miliSecond);
+        if (Action!=null)
             startIntent.setAction(Action);
-            activity.startService(startIntent);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
+        if (Build.VERSION.SDK_INT > 25) {
+            context.startForegroundService(startIntent);
+        } else
+            context.startService(startIntent);
+
     }
 
 }

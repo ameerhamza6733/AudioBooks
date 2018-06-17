@@ -32,14 +32,14 @@ public class BookChapterViewModel extends ViewModel {
     private String identifier;
 
     public LiveData<ArrayList<MataData>> loadData(RequestQueue requestQueue, String url,String iidentifier) {
-       // if (this.mutableLiveData == null || !url.equalsIgnoreCase(this.META_DATA_CONNECTION_URL)) {
+        if (this.mutableLiveData == null || !url.equalsIgnoreCase(this.META_DATA_CONNECTION_URL)) {
            this. mutableLiveData = new MutableLiveData<ArrayList<MataData>>();
             this.audioFileList = new ArrayList<>();
             this.META_DATA_CONNECTION_URL=url;
             this.identifier=iidentifier;
             intiVolley(requestQueue);
 
-      //  }
+       }
         return mutableLiveData;
     }
 
@@ -72,6 +72,7 @@ public class BookChapterViewModel extends ViewModel {
                 }
                mutableLiveData.setValue(audioFileList);
             } catch (Exception e) {
+                mutableLiveData.setValue(null);
                 e.printStackTrace();
             }
             Log.d(TAG, "volley response");

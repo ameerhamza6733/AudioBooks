@@ -6,7 +6,11 @@ import android.util.Log;
 
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.AudioBook;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.reflect.TypeToken;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,7 +37,7 @@ public class MySharedPref {
 
     }
 
-    public static AudioBook getSavedObjectFromPreference(Context context, String preferenceFileName, String preferenceKey, Class<AudioBook> classType) {
+    public static synchronized AudioBook getSavedObjectFromPreference(Context context, String preferenceFileName, String preferenceKey, Class<AudioBook> classType) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(preferenceFileName, 0);
         if (sharedPreferences.contains(preferenceKey)) {
             final Gson gson = new Gson();
@@ -42,7 +46,7 @@ public class MySharedPref {
         return null;
     }
 
-    public static String getSavedObjectFromPreference(Context context, String preferenceFileName, String preferenceKey) {
+    public static synchronized String getSavedObjectFromPreference(Context context, String preferenceFileName, String preferenceKey) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(preferenceFileName, 0);
         if (sharedPreferences.contains(preferenceKey)) {
             final Gson gson = new Gson();
@@ -52,7 +56,7 @@ public class MySharedPref {
     }
 
 
-    public static Long getSavedLongFromPreference(Context context, String preferenceFileName, String preferenceKey) throws Exception{
+    public static synchronized Long getSavedLongFromPreference(Context context, String preferenceFileName, String preferenceKey) throws Exception{
         SharedPreferences sharedPreferences = context.getSharedPreferences(preferenceFileName, 0);
         if (sharedPreferences.contains(preferenceKey)) {
             final Gson gson = new Gson();

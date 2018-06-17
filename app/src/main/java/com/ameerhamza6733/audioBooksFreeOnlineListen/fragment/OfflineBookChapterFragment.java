@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
-import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.OfflineMataDataAdupter;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.OfflineChapterAdupter;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.AudioBook;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.MataData;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.viewModels.OfflineBooksViewModle;
@@ -62,14 +62,14 @@ public class OfflineBookChapterFragment extends OfflineSavedBookFragment {
                 if (audioBooks != null && audioBooks.size() > 0) {
                     for (MataData mataData : audioBooks.get(bookNumber).getMataData()) {
                         File f = new File(mataData.getSdPath());
-                        if (f.exists() && mataData.isHasDownloaded()) {
+                        if (f.exists() && mataData.hasDownloaded()) {
                                 mataDataList.add(mataData);
                         }
                     }
 
-                    OfflineMataDataAdupter offlineMataDataAdupter = new OfflineMataDataAdupter(audioBooks, getActivity(), mataDataList);
+                    OfflineChapterAdupter offlineChapterAdupter = new OfflineChapterAdupter(audioBooks, getActivity(), mataDataList,bookNumber);
                     recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-                    recyclerView.setAdapter(offlineMataDataAdupter);
+                    recyclerView.setAdapter(offlineChapterAdupter);
                 } else {
                     Toast.makeText(getActivity(), "You don't have any offline book", Toast.LENGTH_LONG).show();
                 }
