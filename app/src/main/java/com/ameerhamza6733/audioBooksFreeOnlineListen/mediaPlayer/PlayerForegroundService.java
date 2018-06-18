@@ -17,6 +17,7 @@ import android.util.Log;
 
 import com.ameerhamza6733.audioBooksFreeOnlineListen.MySharedPref;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.MainActivity;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.PlayerFragment;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.AudioBook;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.MataData;
@@ -280,8 +281,9 @@ public class PlayerForegroundService extends Service implements Player.EventList
             @Nullable
             @Override
             public PendingIntent createCurrentContentIntent(Player player) {
-
-                return null;
+                Intent intent = new Intent(PlayerForegroundService.this, MainActivity.class);
+                PendingIntent pendIntent = PendingIntent.getActivity(PlayerForegroundService.this, 0, intent, 0);
+                return pendIntent;
             }
 
             @Nullable

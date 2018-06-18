@@ -31,8 +31,6 @@ import com.ameerhamza6733.audioBooksFreeOnlineListen.models.MataData;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.viewModels.BookChapterViewModel;
 import com.android.volley.toolbox.Volley;
 import com.google.ads.consent.ConsentForm;
-import com.google.ads.consent.ConsentFormListener;
-import com.google.ads.consent.ConsentInfoUpdateListener;
 import com.google.ads.consent.ConsentInformation;
 import com.google.ads.consent.ConsentStatus;
 import com.google.ads.mediation.admob.AdMobAdapter;
@@ -44,8 +42,6 @@ import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.reward.RewardedVideoAd;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -142,8 +138,11 @@ public class PlayerFragment extends Fragment {
         rootView = inflater.inflate(R.layout.player_fragment, container, false);
         bindViews(rootView);
         intiDataSet();
-        checkForConsent();
-        //loadAd();
+        if (ConsentInformation.getInstance(getActivity()).getConsentStatus() == ConsentStatus.PERSONALIZED) {
+            showPersonalizedAds();
+        } else if (ConsentInformation.getInstance(getActivity()).getConsentStatus() == ConsentStatus.NON_PERSONALIZED) {
+            showNonPersonalizedAds();
+        }
         return rootView;
     }
 
@@ -234,109 +233,6 @@ public class PlayerFragment extends Fragment {
 
     }
 
-    private void checkForConsent() {
-        ConsentInformation consentInformation = ConsentInformation.getInstance(getActivity());
-        // ConsentInformation.getInstance(getActivity()).addTestDevice("B94C1B8999D3B59117198A259685D4F8");
-
-        String[] publisherIds = {"pub-5168564707064012"};
-        consentInformation.requestConsentInfoUpdate(publisherIds, new ConsentInfoUpdateListener() {
-            @Override
-            public void onConsentInfoUpdated(ConsentStatus consentStatus) {
-                // User's consent status successfully updated.
-                switch (consentStatus) {
-                    case PERSONALIZED:
-                        Log.d(TAG, "Showing Personalized ads");
-                        showPersonalizedAds();
-                        break;
-                    case NON_PERSONALIZED:
-                        Log.d(TAG, "Showing Non-Personalized ads");
-                        showNonPersonalizedAds();
-                        break;
-                    case UNKNOWN:
-                        Log.d(TAG, "Requesting Consent");
-                        if (ConsentInformation.getInstance(getActivity())
-                                .isRequestLocationInEeaOrUnknown()) {
-                            requestConsent();
-                        } else {
-                            showPersonalizedAds();
-                        }
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            @Override
-            public void onFailedToUpdateConsentInfo(String errorDescription) {
-                // User's consent status failed to update.
-            }
-        });
-    }
-
-    //======================================
-
-    private void requestConsent() {
-        URL privacyUrl = null;
-        try {
-            // TODO: Replace with your app's privacy policy URL.
-            privacyUrl = new URL("http://alphapk6733.blogspot.com/2018/05/privacy-policy-for-audio-book.html");
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-            // Handle error.
-        }
-        form = new ConsentForm.Builder(getActivity(), privacyUrl)
-                .withListener(new ConsentFormListener() {
-                    @Override
-                    public void onConsentFormLoaded() {
-                        // Consent form loaded successfully.
-                        Log.d(TAG, "Requesting Consent: onConsentFormLoaded");
-                        showForm();
-                    }
-
-                    @Override
-                    public void onConsentFormOpened() {
-                        // Consent form was displayed.
-                        Log.d(TAG, "Requesting Consent: onConsentFormOpened");
-                    }
-
-                    @Override
-                    public void onConsentFormClosed(
-                            ConsentStatus consentStatus, Boolean userPrefersAdFree) {
-                        Log.d(TAG, "Requesting Consent: onConsentFormClosed");
-                        if (userPrefersAdFree) {
-                            // Buy or Subscribe
-                            Log.d(TAG, "Requesting Consent: User prefers AdFree");
-                        } else {
-                            Log.d(TAG, "Requesting Consent: Requesting consent again");
-                            switch (consentStatus) {
-                                case PERSONALIZED:
-                                    showPersonalizedAds();
-                                    break;
-                                case NON_PERSONALIZED:
-                                    showNonPersonalizedAds();
-                                    break;
-                                case UNKNOWN:
-                                    showNonPersonalizedAds();
-                                    break;
-                            }
-
-                        }
-                        // Consent form was closed.
-                    }
-
-                    @Override
-                    public void onConsentFormError(String errorDescription) {
-                        Log.d(TAG, "Requesting Consent: onConsentFormError. Error - " + errorDescription);
-                        // Consent form error.
-                    }
-                })
-                .withPersonalizedAdsOption()
-                .withNonPersonalizedAdsOption()
-                .withAdFreeOption()
-                .build();
-        form.load();
-    }
-
     private void showPersonalizedAds() {
         ConsentInformation.getInstance(getActivity()).setConsentStatus(ConsentStatus.PERSONALIZED);
         mAdView = rootView.findViewById(R.id.adViewPlayer);
@@ -357,48 +253,19 @@ public class PlayerFragment extends Fragment {
                 Log.d(TAG, "onAdFailedToLoad() CALLBACK code: " + errorCode);
             }
         });
-        if(getActivity()!=null){
 
-            mInterstitialAd = new InterstitialAd(getActivity());
-            mInterstitialAd.setAdUnitId("ca-app-pub-5168564707064012/3352880988");
-            mInterstitialAd.loadAd(new AdRequest.Builder().addTestDevice("B94C1B8999D3B59117198A259685D4F8").build());
-            mInterstitialAd.setAdListener(new AdListener() {
-                @Override
-                public void onAdClosed() {
-                    mInterstitialAd.loadAd(new AdRequest.Builder().addTestDevice("B94C1B8999D3B59117198A259685D4F8").build());
-                }
-            });
-
-            mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(getActivity());
-            mRewardedVideoAd.loadAd("ca-app-pub-5168564707064012/7558135093", new AdRequest.Builder().addTestDevice("B94C1B8999D3B59117198A259685D4F8").build());
-
-        }
 
     }
 
     private void showNonPersonalizedAds() {
         ConsentInformation.getInstance(getActivity()).setConsentStatus(ConsentStatus.NON_PERSONALIZED);
-        mAdView = rootView.findViewById(R.id.playerView);
+        mAdView = rootView.findViewById(R.id.adViewPlayer);
         AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice("B94C1B8999D3B59117198A259685D4F8")
+                .addTestDevice("B94C1B8999D3B59117198A259685D4F8").
+                        addNetworkExtrasBundle(AdMobAdapter.class, getNonPersonalizedAdsBundle())
                 .build();
         mAdView.loadAd(adRequest);
 
-        if (getActivity()!=null){
-            mInterstitialAd = new InterstitialAd(getActivity());
-            mInterstitialAd.setAdUnitId("ca-app-pub-5168564707064012/3352880988");
-            mInterstitialAd.loadAd(new AdRequest.Builder().addTestDevice("B94C1B8999D3B59117198A259685D4F8").addNetworkExtrasBundle(AdMobAdapter.class, getNonPersonalizedAdsBundle()).build());
-            mInterstitialAd.setAdListener(new AdListener() {
-                @Override
-                public void onAdClosed() {
-                    mInterstitialAd.loadAd(new AdRequest.Builder().addTestDevice("B94C1B8999D3B59117198A259685D4F8").addNetworkExtrasBundle(AdMobAdapter.class, getNonPersonalizedAdsBundle()).build());
-                }
-            });
-
-            mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(getActivity());
-            mRewardedVideoAd.loadAd("ca-app-pub-5168564707064012/7558135093", new AdRequest.Builder().addTestDevice("B94C1B8999D3B59117198A259685D4F8").addNetworkExtrasBundle(AdMobAdapter.class, getNonPersonalizedAdsBundle()).build());
-
-        }
 
     }
 
@@ -407,18 +274,6 @@ public class PlayerFragment extends Fragment {
         extras.putString("npa", "1");
 
         return extras;
-    }
-
-    private void showForm() {
-        if (form == null) {
-            Log.d(TAG, "Consent form is null");
-        }
-        if (form != null) {
-            Log.d(TAG, "Showing consent form");
-            form.show();
-        } else {
-            Log.d(TAG, "Not Showing consent form");
-        }
     }
 
     private class ChapterAudpter extends RecyclerView.Adapter<ChapterAudpter.ViewHolder> {

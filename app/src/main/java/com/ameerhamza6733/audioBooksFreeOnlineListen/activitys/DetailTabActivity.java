@@ -3,9 +3,13 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.MyPagerAdupter;
+import com.google.ads.consent.ConsentForm;
+import com.google.ads.consent.ConsentFormListener;
+import com.google.ads.consent.ConsentInfoUpdateListener;
 import com.google.ads.consent.ConsentInformation;
 import com.google.ads.consent.ConsentStatus;
 import com.google.ads.mediation.admob.AdMobAdapter;
@@ -15,6 +19,9 @@ import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.reward.RewardedVideoAd;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 
 public class DetailTabActivity extends AppCompatActivity {
 
@@ -22,6 +29,8 @@ public class DetailTabActivity extends AppCompatActivity {
     public static final String KEY_SHARD_PREF_AUDIO_BOOK = "KEY_SHARD_PREF_AUDIO_BOOK";
     private InterstitialAd mInterstitialAd;
     private RewardedVideoAd mRewardedVideoAd;
+    private ConsentForm form;
+    private String TAG="DetailTabActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,8 +97,13 @@ public class DetailTabActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        if (mInterstitialAd!=null && mInterstitialAd.isLoaded())
-            mInterstitialAd.show();
+        if (mRewardedVideoAd!=null && mRewardedVideoAd.isLoaded()){
+            mRewardedVideoAd.show();
+        }else {
+            if (mInterstitialAd!=null && mInterstitialAd.isLoaded())
+                mInterstitialAd.show();
+        }
         finish();
     }
+
 }

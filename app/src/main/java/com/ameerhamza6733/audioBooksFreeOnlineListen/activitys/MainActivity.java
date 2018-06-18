@@ -25,8 +25,20 @@ import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.BookMarkFragemnt;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.BookSearchDialogFragment;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.HistoryFragment;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.OfflineBookFragment;
+import com.google.ads.consent.ConsentForm;
+import com.google.ads.consent.ConsentFormListener;
+import com.google.ads.consent.ConsentInfoUpdateListener;
+import com.google.ads.consent.ConsentInformation;
+import com.google.ads.consent.ConsentStatus;
+import com.google.ads.mediation.admob.AdMobAdapter;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.analytics.FirebaseAnalytics;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 
 
 public class MainActivity extends AppCompatActivity
@@ -37,6 +49,7 @@ public class MainActivity extends AppCompatActivity
     private BottomNavigationView mBottomBar;
     private FragmentManager fm;
     private FirebaseAnalytics mFirebaseAnalytics;
+    private ConsentForm form;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +121,7 @@ public class MainActivity extends AppCompatActivity
 
         MobileAds.initialize(this, "ca-app-pub-5168564707064012~4212395459");
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        checkForConsent();
     }
 
     private void startFragmentTransction(Fragment fragment) {
@@ -191,5 +205,134 @@ public class MainActivity extends AppCompatActivity
 
     public interface ReciveQuery {
         public void OnRecivedQuery(String query);
+    }
+
+    //
+    private void checkForConsent() {
+        ConsentInformation consentInformation = ConsentInformation.getInstance(this);
+        // ConsentInformation.getInstance(getActivity()).addTestDevice("B94C1B8999D3B59117198A259685D4F8");
+
+        String[] publisherIds = {"pub-5168564707064012"};
+        consentInformation.requestConsentInfoUpdate(publisherIds, new ConsentInfoUpdateListener() {
+            @Override
+            public void onConsentInfoUpdated(ConsentStatus consentStatus) {
+                // User's consent status successfully updated.
+                switch (consentStatus) {
+                    case PERSONALIZED:
+
+                        showPersonalizedAds();
+                        break;
+                    case NON_PERSONALIZED:
+
+                        showNonPersonalizedAds();
+                        break;
+                    case UNKNOWN:
+
+                        if (ConsentInformation.getInstance(MainActivity.this)
+                                .isRequestLocationInEeaOrUnknown()) {
+                            requestConsent();
+                        } else {
+                            showPersonalizedAds();
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            @Override
+            public void onFailedToUpdateConsentInfo(String errorDescription) {
+                // User's consent status failed to update.
+            }
+        });
+    }
+
+    //======================================
+
+    private void requestConsent() {
+        URL privacyUrl = null;
+        try {
+            // TODO: Replace with your app's privacy policy URL.
+            privacyUrl = new URL("http://alphapk6733.blogspot.com/2018/05/privacy-policy-for-audio-book.html");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            // Handle error.
+        }
+        form = new ConsentForm.Builder(this, privacyUrl)
+                .withListener(new ConsentFormListener() {
+                    @Override
+                    public void onConsentFormLoaded() {
+                        // Consent form loaded successfully.
+
+                        showForm();
+                    }
+
+                    @Override
+                    public void onConsentFormOpened() {
+                        // Consent form was displayed.
+                        Log.d(TAG, "Requesting Consent: onConsentFormOpened");
+                    }
+
+                    @Override
+                    public void onConsentFormClosed(
+                            ConsentStatus consentStatus, Boolean userPrefersAdFree) {
+                        Log.d(TAG, "Requesting Consent: onConsentFormClosed");
+                        if (userPrefersAdFree) {
+                            // Buy or Subscribe
+                            Log.d(TAG, "Requesting Consent: User prefers AdFree");
+                        } else {
+                            Log.d(TAG, "Requesting Consent: Requesting consent again");
+                            switch (consentStatus) {
+                                case PERSONALIZED:
+                                    showPersonalizedAds();
+                                    break;
+                                case NON_PERSONALIZED:
+                                    showNonPersonalizedAds();
+                                    break;
+                                case UNKNOWN:
+                                    showNonPersonalizedAds();
+                                    break;
+                            }
+
+                        }
+                        // Consent form was closed.
+                    }
+
+                    @Override
+                    public void onConsentFormError(String errorDescription) {
+                        Log.d(TAG, "Requesting Consent: onConsentFormError. Error - " + errorDescription);
+                        // Consent form error.
+                    }
+                })
+                .withPersonalizedAdsOption()
+                .withNonPersonalizedAdsOption()
+                .withAdFreeOption()
+                .build();
+        form.load();
+    }
+
+    private void showPersonalizedAds() {
+        ConsentInformation.getInstance(this).setConsentStatus(ConsentStatus.PERSONALIZED);
+
+    }
+
+
+
+    private void showNonPersonalizedAds() {
+        ConsentInformation.getInstance(this).setConsentStatus(ConsentStatus.NON_PERSONALIZED);
+
+    }
+
+
+    private void showForm() {
+        if (form == null) {
+            Log.d(TAG, "Consent form is null");
+        }
+        if (form != null) {
+            Log.d(TAG, "Showing consent form");
+            form.show();
+        } else {
+            Log.d(TAG, "Not Showing consent form");
+        }
     }
 }
