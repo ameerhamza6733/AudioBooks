@@ -1,7 +1,6 @@
 package com.ameerhamza6733.audioBooksFreeOnlineListen.adupters;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Handler;
@@ -21,12 +20,10 @@ import com.ameerhamza6733.audioBooksFreeOnlineListen.Util;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.DownloaderActivty;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.AudioBook;
-import com.ameerhamza6733.audioBooksFreeOnlineListen.models.MataData;
 import com.daimajia.numberprogressbar.NumberProgressBar;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.List;
 
 import cn.woblog.android.downloader.callback.DownloadListener;
 import cn.woblog.android.downloader.domain.DownloadInfo;
@@ -42,20 +39,23 @@ import static com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.DetailTabA
 public class DownloadingAdupter extends RecyclerView.Adapter<DownloadingAdupter.ViewHolder> {
     private static final String TAG = "DownloadingAdupter";
     protected Activity activity;
-    private AudioBook downloadedAudioBook=null;
-    private AudioBook CurrentAudioBook=null;
-    private List<MataData> mataDataList;
+    Handler handler = new Handler();
+    private AudioBook downloadedAudioBook = null;
+    private AudioBook currentAudioBook = null;
     private HashMap<Integer, DownloadInfo> downloadInfoHashMap = new HashMap<>();
-    Handler handler=new Handler();
     private File f;
 
-    public DownloadingAdupter(List<MataData> mataDataList, Activity context) {
-        this.mataDataList = mataDataList;
-        CurrentAudioBook = MySharedPref.getSavedObjectFromPreference(context.getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, KEY_SHARD_PREF_AUDIO_BOOK, AudioBook.class);
+    public DownloadingAdupter(Activity context) {
 
-        if (CurrentAudioBook !=null) {
-            CurrentAudioBook.setMataData(mataDataList);
-            downloadedAudioBook = MySharedPref.getSavedObjectFromPreference(context.getApplicationContext(), MySharedPref.SHARD_PREF_DOWNLOADED_AUDIO_BOOK, CurrentAudioBook.getIdentifier(), AudioBook.class);
+        currentAudioBook = MySharedPref.getSavedObjectFromPreference(context.getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, KEY_SHARD_PREF_AUDIO_BOOK, AudioBook.class);
+
+        if (currentAudioBook != null) {
+
+            downloadedAudioBook = MySharedPref.getSavedObjectFromPreference(context.getApplicationContext(), MySharedPref.SHARD_PREF_DOWNLOADED_AUDIO_BOOK, currentAudioBook.getIdentifier(), AudioBook.class);
+
+           if (downloadedAudioBook != null) {
+                currentAudioBook = downloadedAudioBook;
+            }
 
         }
 
@@ -73,31 +73,34 @@ public class DownloadingAdupter extends RecyclerView.Adapter<DownloadingAdupter.
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Log.d(TAG, "onBind");
-        if (isAlreadyDonlaod(position)){
+        if (currentAudioBook.getMataData().get(position).hasDownloaded()) {
             holder.getmRootDownloadButton().setVisibility(View.GONE);
             holder.getBtViewDownload().setVisibility(View.VISIBLE);
-           try{
-               Log.d(TAG,"sd card path"+downloadedAudioBook.getMataData().get(position).getSdPath());
-           }catch (Exception e){
-               e.printStackTrace();
-           }
+            try {
+                Log.d(TAG, "sd card path" + currentAudioBook.getMataData().get(position).getSdPath());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }else {
+            holder.getmRootDownloadButton().setVisibility(View.VISIBLE);
+            holder.getBtViewDownload().setVisibility(View.GONE);
         }
-        holder.getTitle().setText(mataDataList.get(position).getName() + " (" + Util.INSTANCE.bytesToMb(mataDataList.get(position).getSize()) + ")");
+        holder.getTitle().setText(currentAudioBook.getMataData().get(position).getName() + " (" + Util.INSTANCE.bytesToMb(currentAudioBook.getMataData().get(position).getSize()) + ")");
         holder.getBtDownload().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (CurrentAudioBook!=null){
+                if (currentAudioBook != null) {
                     final DownloadInfo downloadInfo = new DownloadInfo
                             .Builder()
-                            .setUrl(mataDataList.get(position).getURL())
-                            .setPath(Util.INSTANCE.getDir("/sdcard/CurrentAudioBook/") + mataDataList.get(position).getName())
+                            .setUrl(currentAudioBook.getMataData().get(position).getURL())
+                            .setPath(Util.INSTANCE.getDir("/sdcard/currentAudioBook/") + currentAudioBook.getMataData().get(position).getName())
                             .build();
 
                     downloadInfo.setDownloadListener(holder.getDownloadListener());
                     DownloaderActivty.downloadManager.download(downloadInfo);
                     downloadInfoHashMap.put(position, downloadInfo);
-                }else {
-                    Toast.makeText(v.getContext(),"Some thing wrong please restart app and try again",Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(v.getContext(), "Some thing wrong please restart app and try again", Toast.LENGTH_LONG).show();
                 }
 
             }
@@ -117,37 +120,53 @@ public class DownloadingAdupter extends RecyclerView.Adapter<DownloadingAdupter.
         holder.getBtViewDownload().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(v.getContext(),"starting media player ",Toast.LENGTH_SHORT).show();
-                MySharedPref.saveObjectToSharedPreference(v.getContext(),MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME,PlayerForegroundService.KEY_PREFF_CURRENT_TRACK_INDEX,String.valueOf(position));
-                if (PlayerForegroundService.player!=null){
-                    startPlayerService(v.getContext(),PlayerForegroundService.ACTION_UPDATE_MEDIA_SOURCE,0);
-                }else {
-                    startPlayerService(v.getContext(),null,0);
+                Toast.makeText(v.getContext(), "starting media player ", Toast.LENGTH_SHORT).show();
+
+                if (PlayerForegroundService.player != null) {
+                    startPlayerService( PlayerForegroundService.ACTION_UPDATE_MEDIA_SOURCE, position);
+                } else {
+                    startPlayerService( null, position);
                 }
 
             }
         });
     }
 
-    private boolean isAlreadyDonlaod(int position) {
-
-       try{
-            f = new File( downloadedAudioBook.getMataData().get(position).getSdPath());
-           if(f.exists()) {
-               return   downloadedAudioBook!=null && downloadedAudioBook.getMataData()!=null && downloadedAudioBook.getMataData().size()>0 && downloadedAudioBook.getMataData().get(position).hasDownloaded();
-           }else {
-               return false;
-           }
-       }catch (NullPointerException e) {
-           e.printStackTrace();
-           return false;
-       }
-
-    }
+//    private boolean isAlreadyDonlaod(int position) {
+//
+//        try {
+//            f = new File(downloadedAudioBook.getMataData().get(position).getSdPath());
+//            if (f.exists()) {
+//                return downloadedAudioBook != null && downloadedAudioBook.getMataData() != null && downloadedAudioBook.getMataData().size() > 0 && downloadedAudioBook.getMataData().get(position).hasDownloaded();
+//            } else {
+//                return false;
+//            }
+//        } catch (NullPointerException e) {
+//            e.printStackTrace();
+//            return false;
+//        }
+//
+//    }
 
     @Override
     public int getItemCount() {
-        return mataDataList.size();
+        return currentAudioBook.getMataData().size();
+    }
+
+    private void startPlayerService( String Action, int position) {
+        MySharedPref.saveObjectToSharedPreference(DownloadingAdupter.this.activity, MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, PlayerForegroundService.KEY_SHARD_PREF_AUDIO_BOOK, currentAudioBook);
+        MySharedPref.saveObjectToSharedPreference(DownloadingAdupter.this.activity,MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME,PlayerForegroundService.KEY_PREFF_CURRENT_TRACK_INDEX,String.valueOf(position));
+        MySharedPref.saveObjectToSharedPreference(DownloadingAdupter.this.activity,MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME,PlayerForegroundService.IS_SOUCE_LOCAL_DISK,"1");
+
+        Intent startIntent = new Intent(activity, PlayerForegroundService.class);
+        if (Action != null)
+            startIntent.setAction(Action);
+
+        if (Build.VERSION.SDK_INT > 25) {
+            activity.startForegroundService(startIntent);
+        } else
+            activity.startService(startIntent);
+
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -171,8 +190,8 @@ public class DownloadingAdupter extends RecyclerView.Adapter<DownloadingAdupter.
             endlessPrograssBar = v.findViewById(R.id.progressBarEndless);
             btDownload = v.findViewById(R.id.btDownload);
             btDownloadingCancel = v.findViewById(R.id.btDownloadingCancel);
-            btViewDownload=v.findViewById(R.id.btViewDownloadFile);
-            mRootDownloadButton=v.findViewById(R.id.rootLayoutDownloadingButton);
+            btViewDownload = v.findViewById(R.id.btViewDownloadFile);
+            mRootDownloadButton = v.findViewById(R.id.rootLayoutDownloadingButton);
 
             downloadListener = new cn.woblog.android.downloader.callback.DownloadListener() {
                 @Override
@@ -211,15 +230,12 @@ public class DownloadingAdupter extends RecyclerView.Adapter<DownloadingAdupter.
                 public void onDownloadSuccess() {
                     Log.d(TAG, "onDownloadSuccess");
 
-                        if (downloadedAudioBook == null)
-                            downloadedAudioBook = CurrentAudioBook;
-                        getNumberProgressBar().setProgress(100);
-                        List<MataData> DownloadedMataDataList = downloadedAudioBook.getMataData();
-                        DownloadedMataDataList.get(getAdapterPosition()).setHasDownloaded(true);
-                        DownloadedMataDataList.get(getAdapterPosition()).setSdPath(downloadInfoHashMap.get(getAdapterPosition()).getPath());
-                        MySharedPref.saveObjectToSharedPreference(DownloadingAdupter.this.activity.getApplicationContext(), MySharedPref.SHARD_PREF_DOWNLOADED_AUDIO_BOOK, downloadedAudioBook.getIdentifier(), downloadedAudioBook);
-                        MySharedPref.saveObjectToSharedPreference(DownloadingAdupter.this.activity, MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, PlayerForegroundService.KEY_SHARD_PREF_AUDIO_BOOK, downloadedAudioBook);
 
+                    getNumberProgressBar().setProgress(100);
+                    currentAudioBook.getMataData();
+                    currentAudioBook.getMataData().get(getAdapterPosition()).setHasDownloaded(true);
+                    currentAudioBook.getMataData().get(getAdapterPosition()).setSdPath(downloadInfoHashMap.get(getAdapterPosition()).getPath());
+                    MySharedPref.saveObjectToSharedPreference(DownloadingAdupter.this.activity.getApplicationContext(), MySharedPref.SHARD_PREF_DOWNLOADED_AUDIO_BOOK, currentAudioBook.getIdentifier(), currentAudioBook);
                     notifyDataSetChanged();
 
                 }
@@ -273,20 +289,6 @@ public class DownloadingAdupter extends RecyclerView.Adapter<DownloadingAdupter.
         public TextView getBtViewDownload() {
             return btViewDownload;
         }
-    }
-
-    private void startPlayerService(Context context, String Action, long miliSecond) {
-        Intent startIntent = new Intent(context, PlayerForegroundService.class);
-        startIntent.putExtra(PlayerForegroundService.KEY_PREFF_CURRENT_TRACK_INDEX, miliSecond);
-
-        if (Action!=null)
-            startIntent.setAction(Action);
-
-        if (Build.VERSION.SDK_INT > 25) {
-            context.startForegroundService(startIntent);
-        } else
-            context.startService(startIntent);
-
     }
 
 }

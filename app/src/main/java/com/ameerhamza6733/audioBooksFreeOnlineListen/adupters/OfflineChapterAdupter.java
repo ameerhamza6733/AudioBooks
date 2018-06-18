@@ -56,7 +56,7 @@ public class OfflineChapterAdupter extends OfflineBookAdupter {
             public void onClick(View v) {
                 MySharedPref.saveObjectToSharedPreference(v.getContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, PlayerForegroundService.KEY_SHARD_PREF_AUDIO_BOOK, audioBook);
                 MySharedPref.saveObjectToSharedPreference(v.getContext(),MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME,PlayerForegroundService.KEY_PREFF_CURRENT_TRACK_INDEX,String.valueOf(position));
-
+                MySharedPref.saveObjectToSharedPreference(v.getContext(),MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME,PlayerForegroundService.IS_SOUCE_LOCAL_DISK,"1");
                 if (player != null)
                     startPlayerService(PlayerForegroundService.ACTION_UPDATE_MEDIA_SOURCE, 0);
                 else {

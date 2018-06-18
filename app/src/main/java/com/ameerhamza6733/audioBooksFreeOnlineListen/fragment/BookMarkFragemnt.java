@@ -40,6 +40,7 @@ public class BookMarkFragemnt extends BookFragment {
         View view = super.onCreateView(inflater, container, savedInstanceState);
         mySpinner.setVisibility(View.GONE);
         mySpinnerFilter.setVisibility(View.GONE);
+       setHasOptionsMenu(false);
         floatingActionButton.setVisibility(View.GONE);
         mAdView = view.findViewById(R.id.adViewBookMark);
         mAdView.setVisibility(View.VISIBLE);

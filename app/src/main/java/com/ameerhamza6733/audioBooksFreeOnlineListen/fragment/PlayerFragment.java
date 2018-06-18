@@ -50,7 +50,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.DetailTabActivity.KEY_SHARD_PREF_AUDIO_BOOK;
-import static com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService.STOP_ACTION;
 import static com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService.player;
 
 
@@ -73,14 +72,14 @@ public class PlayerFragment extends Fragment {
     private RecyclerView recyclerView;
     private View rootView;
     private AdView mAdView;
-    private PlayerControlView mPlayerView;
+    private PlayerControlView playerView;
     private InterstitialAd mInterstitialAd;
-    private FloatingActionButton fabDownload;
     private BroadcastReceiver receiver;
     private IntentFilter filter;
     private ArrayList<MataData> mataDataList;
     private RewardedVideoAd mRewardedVideoAd;
     private ChapterAudpter adupter;
+    private FloatingActionButton fabStop;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -101,11 +100,12 @@ public class PlayerFragment extends Fragment {
                         playerStatePB.setVisibility(View.VISIBLE);
 
                 } else if (intent.getAction().equals(BROADCAST_ACTION_PLAYER_START)) {
-
-                    if (playerStatePB != null)
-                        playerStatePB.setVisibility(View.GONE);
-                    if (player != null)
-                        mPlayerView.setPlayer(PlayerForegroundService.player);
+                    fabStop.setVisibility(View.VISIBLE);
+                    playerStatePB.setVisibility(View.GONE);
+                    if (player != null) {
+                        playerView.setVisibility(View.VISIBLE);
+                        playerView.setPlayer(PlayerForegroundService.player);
+                    }
 
                 } else if (intent.getAction().equals(BROADCAST_ACTION_SHOW_AD)) {
                     if (mRewardedVideoAd != null && mRewardedVideoAd.isLoaded()) {
@@ -115,11 +115,6 @@ public class PlayerFragment extends Fragment {
                             mInterstitialAd.show();
                     }
 
-                } else if (intent.getAction().equals(STOP_ACTION)) {
-
-                    if (mPlayerView != null) {
-                        mPlayerView.setPlayer(null);
-                    }
                 }
             }
         };
@@ -145,8 +140,6 @@ public class PlayerFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.player_fragment, container, false);
-        audioBook = MySharedPref.getSavedObjectFromPreference(getActivity().getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, KEY_SHARD_PREF_AUDIO_BOOK, AudioBook.class);
-
         bindViews(rootView);
         intiDataSet();
         checkForConsent();
@@ -156,6 +149,7 @@ public class PlayerFragment extends Fragment {
 
     private void intiDataSet() {
         progressBar.setVisibility(View.VISIBLE);
+        audioBook = MySharedPref.getSavedObjectFromPreference(getActivity().getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, KEY_SHARD_PREF_AUDIO_BOOK, AudioBook.class);
 
         BookChapterViewModel model = ViewModelProviders.of(this).get(BookChapterViewModel.class);
         if (audioBook.getIdentifier() != null)
@@ -165,6 +159,8 @@ public class PlayerFragment extends Fragment {
                     this.mataDataList = (ArrayList<MataData>) mataDataList;
                     audioBook.setMataData(mataDataList);
                     MySharedPref.saveObjectToSharedPreference(getActivity(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, PlayerForegroundService.KEY_SHARD_PREF_AUDIO_BOOK, audioBook);
+                    MySharedPref.saveObjectToSharedPreference(getActivity(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, KEY_SHARD_PREF_AUDIO_BOOK, audioBook);
+
                     recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
                     if (adupter == null) {
                         adupter = new PlayerFragment.ChapterAudpter();
@@ -200,14 +196,19 @@ public class PlayerFragment extends Fragment {
     private void bindViews(View view) {
         progressBar = view.findViewById(R.id.progressBarPlayer);
         playerStatePB = view.findViewById(R.id.playerProgrssbar);
-        mPlayerView = rootView.findViewById(R.id.playerView);
+        playerView = rootView.findViewById(R.id.playerView);
         recyclerView = view.findViewById(R.id.listViewPlayer);
-        if (player != null)
-        {
-            mPlayerView.setVisibility(View.VISIBLE);
-            mPlayerView.setPlayer(PlayerForegroundService.player);
+        fabStop = view.findViewById(R.id.fabStop);
+        if (player != null) {
+            fabStop.setVisibility(View.VISIBLE);
+            playerView.setVisibility(View.VISIBLE);
+            playerView.setPlayer(PlayerForegroundService.player);
         }
-
+        fabStop.setOnClickListener((view1) -> {
+            startPlayerService(PlayerForegroundService.STOP_ACTION, 0);
+            playerView.setVisibility(View.INVISIBLE);
+            fabStop.setVisibility(View.INVISIBLE);
+        });
 
     }
 
@@ -217,8 +218,8 @@ public class PlayerFragment extends Fragment {
         Intent startIntent = new Intent(getActivity(), PlayerForegroundService.class);
 
         startIntent.putExtra(PlayerForegroundService.KEY_PREFF_CURRENT_TRACK_INDEX, miliSecond);
-        if (Action!=null)
-        startIntent.setAction(Action);
+        if (Action != null)
+            startIntent.setAction(Action);
 
         if (Build.VERSION.SDK_INT > 25) {
             PlayerFragment.this.getActivity().startForegroundService(startIntent);
@@ -356,19 +357,22 @@ public class PlayerFragment extends Fragment {
                 Log.d(TAG, "onAdFailedToLoad() CALLBACK code: " + errorCode);
             }
         });
-        mInterstitialAd = new InterstitialAd(getActivity());
-        mInterstitialAd.setAdUnitId("ca-app-pub-5168564707064012/3352880988");
-        mInterstitialAd.loadAd(new AdRequest.Builder().addTestDevice("B94C1B8999D3B59117198A259685D4F8").build());
-        mInterstitialAd.setAdListener(new AdListener() {
-            @Override
-            public void onAdClosed() {
-                mInterstitialAd.loadAd(new AdRequest.Builder().addTestDevice("B94C1B8999D3B59117198A259685D4F8").build());
-            }
-        });
+        if(getActivity()!=null){
 
-        mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(getActivity());
-        mRewardedVideoAd.loadAd("ca-app-pub-5168564707064012/7558135093", new AdRequest.Builder().addTestDevice("B94C1B8999D3B59117198A259685D4F8").build());
+            mInterstitialAd = new InterstitialAd(getActivity());
+            mInterstitialAd.setAdUnitId("ca-app-pub-5168564707064012/3352880988");
+            mInterstitialAd.loadAd(new AdRequest.Builder().addTestDevice("B94C1B8999D3B59117198A259685D4F8").build());
+            mInterstitialAd.setAdListener(new AdListener() {
+                @Override
+                public void onAdClosed() {
+                    mInterstitialAd.loadAd(new AdRequest.Builder().addTestDevice("B94C1B8999D3B59117198A259685D4F8").build());
+                }
+            });
 
+            mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(getActivity());
+            mRewardedVideoAd.loadAd("ca-app-pub-5168564707064012/7558135093", new AdRequest.Builder().addTestDevice("B94C1B8999D3B59117198A259685D4F8").build());
+
+        }
 
     }
 
@@ -380,19 +384,21 @@ public class PlayerFragment extends Fragment {
                 .build();
         mAdView.loadAd(adRequest);
 
-        mInterstitialAd = new InterstitialAd(getActivity());
-        mInterstitialAd.setAdUnitId("ca-app-pub-5168564707064012/3352880988");
-        mInterstitialAd.loadAd(new AdRequest.Builder().addTestDevice("B94C1B8999D3B59117198A259685D4F8").addNetworkExtrasBundle(AdMobAdapter.class, getNonPersonalizedAdsBundle()).build());
-        mInterstitialAd.setAdListener(new AdListener() {
-            @Override
-            public void onAdClosed() {
-                mInterstitialAd.loadAd(new AdRequest.Builder().addTestDevice("B94C1B8999D3B59117198A259685D4F8").addNetworkExtrasBundle(AdMobAdapter.class, getNonPersonalizedAdsBundle()).build());
-            }
-        });
+        if (getActivity()!=null){
+            mInterstitialAd = new InterstitialAd(getActivity());
+            mInterstitialAd.setAdUnitId("ca-app-pub-5168564707064012/3352880988");
+            mInterstitialAd.loadAd(new AdRequest.Builder().addTestDevice("B94C1B8999D3B59117198A259685D4F8").addNetworkExtrasBundle(AdMobAdapter.class, getNonPersonalizedAdsBundle()).build());
+            mInterstitialAd.setAdListener(new AdListener() {
+                @Override
+                public void onAdClosed() {
+                    mInterstitialAd.loadAd(new AdRequest.Builder().addTestDevice("B94C1B8999D3B59117198A259685D4F8").addNetworkExtrasBundle(AdMobAdapter.class, getNonPersonalizedAdsBundle()).build());
+                }
+            });
 
-        mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(getActivity());
-        mRewardedVideoAd.loadAd("ca-app-pub-5168564707064012/7558135093", new AdRequest.Builder().addTestDevice("B94C1B8999D3B59117198A259685D4F8").addNetworkExtrasBundle(AdMobAdapter.class, getNonPersonalizedAdsBundle()).build());
+            mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(getActivity());
+            mRewardedVideoAd.loadAd("ca-app-pub-5168564707064012/7558135093", new AdRequest.Builder().addTestDevice("B94C1B8999D3B59117198A259685D4F8").addNetworkExtrasBundle(AdMobAdapter.class, getNonPersonalizedAdsBundle()).build());
 
+        }
 
     }
 
@@ -444,13 +450,15 @@ public class PlayerFragment extends Fragment {
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        MySharedPref.saveObjectToSharedPreference(v.getContext(),MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME,PlayerForegroundService.KEY_PREFF_CURRENT_TRACK_INDEX,String.valueOf(getAdapterPosition()));
-                        if (player!=null)
+                        MySharedPref.saveObjectToSharedPreference(v.getContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, PlayerForegroundService.KEY_PREFF_CURRENT_TRACK_INDEX, String.valueOf(getAdapterPosition()));
+                        MySharedPref.saveObjectToSharedPreference(v.getContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, PlayerForegroundService.IS_SOUCE_LOCAL_DISK, "0");
+                        playerStatePB.setVisibility(View.VISIBLE);
+                        if (player != null)
                             startPlayerService(PlayerForegroundService.ACTION_UPDATE_MEDIA_SOURCE, 0);
                         else {
-                            startPlayerService(null,0);
+                            startPlayerService(null, 0);
                         }
-                        mPlayerView.setVisibility(View.VISIBLE);
+                        playerView.setVisibility(View.VISIBLE);
                     }
                 });
             }

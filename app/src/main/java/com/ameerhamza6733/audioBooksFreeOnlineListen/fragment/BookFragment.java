@@ -1,12 +1,17 @@
 package com.ameerhamza6733.audioBooksFreeOnlineListen.fragment;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -30,6 +35,7 @@ import com.ameerhamza6733.audioBooksFreeOnlineListen.Util;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.MainActivity;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.BookCatalogueAdupter;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.CustomAdapter;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.viewModels.BookViewModel;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
@@ -85,7 +91,7 @@ public class BookFragment extends Fragment implements MainActivity.ReciveQuery {
 
 
 
-        floatingActionButton = rootView.findViewById(R.id.fab);
+        floatingActionButton = rootView.findViewById(R.id.fabStop);
         progressBar = rootView.findViewById(R.id.progressBar);
 
         // LinearLayoutManager is used here, this will layout the elements in a similar fashion
@@ -101,9 +107,12 @@ public class BookFragment extends Fragment implements MainActivity.ReciveQuery {
                     .getSerializable(KEY_LAYOUT_MANAGER);
         }
         setRecyclerViewLayoutManager(mCurrentLayoutManagerType);
+
         floatingActionButton.setOnClickListener(v -> {
-            DialogFragment bookSearchDialogFragment = BookSearchDialogFragment.newInstance();
-            bookSearchDialogFragment.show(getFragmentManager(), "bookSearchDialogFragment");
+           if (PlayerForegroundService.player!=null){
+             startPlayerService(PlayerForegroundService.STOP_ACTION,0);
+               floatingActionButton.setVisibility(View.INVISIBLE);
+           }
         });
 
         requsestQueue = Volley.newRequestQueue(getActivity());
@@ -132,6 +141,12 @@ public class BookFragment extends Fragment implements MainActivity.ReciveQuery {
         return rootView;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (PlayerForegroundService.player!=null && floatingActionButton!=null)
+            floatingActionButton.setVisibility(View.VISIBLE);
+    }
 
     /**
      * Set RecyclerView's LayoutManager to the one given.
@@ -177,7 +192,8 @@ public class BookFragment extends Fragment implements MainActivity.ReciveQuery {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.meun_filter, menu);
+        inflater.inflate(R.menu.meun_search, menu);
+        super.onCreateOptionsMenu(menu, inflater);
 
     }
 
@@ -185,10 +201,10 @@ public class BookFragment extends Fragment implements MainActivity.ReciveQuery {
     public boolean onOptionsItemSelected(MenuItem item) {
         // handle item selection
         switch (item.getItemId()) {
-            case R.id.action_filter:
+            case R.id.action_search:
                 Log.d(TAG, "search iteam clicked");
-                DialogFragment bookSearchDialogFragment = new FilterDialogFragment();
-                bookSearchDialogFragment.show(getFragmentManager(), "filterDialog");
+                DialogFragment bookSearchDialogFragment = BookSearchDialogFragment.newInstance();
+                bookSearchDialogFragment.show(getFragmentManager(), "bookSearchDialogFragment");
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -285,77 +301,68 @@ public class BookFragment extends Fragment implements MainActivity.ReciveQuery {
 
             } else {
                 progressBar.setVisibility(View.GONE);
-                Snackbar
+                NetWorkErrorFragment(url);
 
-                        .make(recyclerView, "Connection Error", Snackbar.LENGTH_LONG)
-                        .setAction("Try again", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                makeApiCall(url);
-                            }
-                        }).setDuration(Snackbar.LENGTH_INDEFINITE).show();
 
 
             }
         });
     }
-//    private void intiVolley(String s) {
-//        progressBar.setVisibility(View.VISIBLE);
-//        Log.d(TAG, "intiVolley");
-//        StringRequest stringRequest = new StringRequest(Request.Method.GET, s, response -> {
-//
-//            Observable.fromCallable(() -> {
-//                List<AudioBook> audioBookList = new ArrayList<>();
-//                try {
-//                    JSONObject jsonObject = Util.INSTANCE.toJson(response.substring(response.indexOf("{"), response.lastIndexOf("}") + 1));
-//                    JSONArray jsonArray = jsonObject.getJSONObject("response").getJSONArray("docs");
-//                    for (int i = 0; i < jsonArray.length(); i++) {
-//                        JSONObject docs = jsonArray.getJSONObject(i);
-//                        if (docs.getString("identifier").toLowerCase().contains("librivox")) {
-//                            audioBookList.add(new AudioBook(Util.INSTANCE.ExtractRating(docs), Util.INSTANCE.ExtractDescription(docs), Util.INSTANCE.ExtractNoOfDownloads(docs), docs.getString("identifier"), Util.INSTANCE.ExtractNoReviews(docs), docs.getString("title"), Util.INSTANCE.ExtractPublisher(docs), Util.INSTANCE.ExtractMediaType(docs), Util.INSTANCE.EtracCreator(docs), Util.INSTANCE.ExtractData(docs)));
-//
-//                        }
-//                    }
-//
-//                    // Collections.shuffle(audioBookList);
-//
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                    return null;
-//                }
-//                return audioBookList;
-//            }).subscribeOn(Schedulers.computation())
-//                    .observeOn(AndroidSchedulers.mainThread())
-//                    .subscribe((result) -> {
-//                        if (result != null) {
-//
-//                            progressBar.setVisibility(View.GONE);
-//                            if (result.size() == 0) {
-//                                Toast.makeText(getActivity(), "No results matched your criteria.", Toast.LENGTH_LONG).show();
-//                            } else {
-//                                CustomAdapter mAdapter = new CustomAdapter(result);
-//                                recyclerView.setAdapter(mAdapter);
-//                            }
-//                        } else {
-//                            Log.d("BookFragment", "no open source book find");
-//                        }
-//                    });
-//
-//            Log.d(MainActivity.TAG, "volley response");
-//        }, (error) -> {
-//            error.printStackTrace();
-//            progressBar.setVisibility(View.GONE);
-//            Toast.makeText(getActivity(), "Error:", Toast.LENGTH_LONG).show();
-//            Log.d(MainActivity.TAG, "volley error" + error.getMessage());
-//        });
-//        requsestQueue.add(stringRequest);
-//
-//    }
+    private void startPlayerService(String Action, long miliSecond) {
+
+
+        Intent startIntent = new Intent(getActivity(), PlayerForegroundService.class);
+
+        startIntent.putExtra(PlayerForegroundService.KEY_PREFF_CURRENT_TRACK_INDEX, miliSecond);
+        if (Action != null)
+            startIntent.setAction(Action);
+
+        if (Build.VERSION.SDK_INT > 25) {
+            BookFragment.this.getActivity().startForegroundService(startIntent);
+        } else
+            getActivity().startService(startIntent);
+
+    }
 
     private enum LayoutManagerType {
         GRID_LAYOUT_MANAGER,
         LINEAR_LAYOUT_MANAGER
     }
 
+    public void NetWorkErrorFragment(String url) {
+        Log.d(TAG, "trying to ruesume the track ");
+        try {
+            final AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                    .setTitle("Network Error")
+                    .setPositiveButton("Go offline", (dialog, which) -> {
+                        OfflineBookFragment offlineBookFragment = new OfflineBookFragment();
+                     startFragmentTransction(offlineBookFragment);
+                     dialog.dismiss();
+                    })
+                    .setNegativeButton("Try Again", (dialog, which) -> {
+                        makeApiCall(url);
+                        dialog.dismiss();
+
+                    })
+                    .create();
+            alertDialog.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private void startFragmentTransction(Fragment fragment) {
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fm.beginTransaction();
+        if (fm.findFragmentByTag(fragment.getClass().getSimpleName()) != null) {
+            fragmentTransaction.show(fm.findFragmentByTag(fragment.getClass().getSimpleName())).commit();
+            Log.d(TAG,"fragment already in backstack");
+        } else {
+            fragmentTransaction.replace(R.id.fragment_contaner, fragment);
+            fragmentTransaction.addToBackStack(fragment.getClass().getSimpleName());
+
+            fragmentTransaction.commit();
+        }
+
+    }
 
 }

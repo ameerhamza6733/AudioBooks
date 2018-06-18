@@ -59,6 +59,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
     private static final String TAG = "PlayerForegroundService";
     private static final String NOTIFICATION_CHANNEL_ID = "audio_book_playback_channel";
     private static final java.lang.String MEDIA_SESSION_TAG = "MEDIA_SESSION_TAG";
+    public static final java.lang.String IS_SOUCE_LOCAL_DISK = "IS_SOUCE_LOCAL_DISK";
     public static Boolean isPlaying = false;
     public static SimpleExoPlayer player;
     private static String title;
@@ -72,23 +73,17 @@ public class PlayerForegroundService extends Service implements Player.EventList
     private MediaSessionConnector mediaSessionConntor;
     private ConcatenatingMediaSource concatenatingMediaSource;
     private ExtractorMediaSource mediaSource;
+    private String isMediaSouceLocalDisk = "0";
 
 
     @Override
     public void onCreate() {
         super.onCreate();
         isPlaying = true;
-        audioBook = MySharedPref.getSavedObjectFromPreference(this, MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, KEY_SHARD_PREF_AUDIO_BOOK, AudioBook.class);
-        currentTrackIndex = MySharedPref.getSavedObjectFromPreference(this, MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, KEY_PREFF_CURRENT_TRACK_INDEX);
-        if (currentTrackIndex.isEmpty())
-            currentTrackIndex = "0";
-        if (audioBook != null && audioBook.getMataData() != null) {
-            mataDataList = audioBook.getMataData();
-            title = audioBook.getTitle();
-            initMediaPlayer();
-        } else {
-            stopSelf();
-        }
+
+
+        initMediaPlayer();
+
 
     }
 
@@ -98,42 +93,8 @@ public class PlayerForegroundService extends Service implements Player.EventList
 
         if (intent != null && intent.getAction() != null) {
             if (intent.getAction().equals(PlayerForegroundService.ACTION_UPDATE_MEDIA_SOURCE)) {
-                audioBook = MySharedPref.getSavedObjectFromPreference(this, MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, KEY_SHARD_PREF_AUDIO_BOOK, AudioBook.class);
-                currentTrackIndex = MySharedPref.getSavedObjectFromPreference(this, MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, KEY_PREFF_CURRENT_TRACK_INDEX);
-                if (currentTrackIndex.isEmpty())
-                    currentTrackIndex = "0";
-                if (audioBook != null && audioBook.getMataData() != null) {
-                    mataDataList = audioBook.getMataData();
-                    title = audioBook.getTitle();
-                    DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(getApplicationContext(), "ExoplayerDemo");
-                    concatenatingMediaSource = new ConcatenatingMediaSource();
-                    for (MataData mataData : mataDataList) {
-
-
-                        if (mataData.hasDownloaded()) {
-                            File file = new File(mataData.getSdPath());
-                            if (file.exists()) {
-                                Log.d(TAG, "" + mataData.getSdPath());
-                                mediaSource = new ExtractorMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(mataData.getSdPath()));
-                            } else {
-                                mediaSource = new ExtractorMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(mataData.getURL()));
-
-                            }
-
-                        } else {
-                            mediaSource = new ExtractorMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(mataData.getURL()));
-
-                        }
-
-                        concatenatingMediaSource.addMediaSource(mediaSource);
-                    }
-
-                    player.prepare(concatenatingMediaSource);
-                    player.seekTo(Integer.parseInt(currentTrackIndex), seekto);
-                    player.setPlayWhenReady(true);
-                }
+                addMediaSourceToPlayer();
             } else if (intent.getAction().equals(PlayerForegroundService.STOP_ACTION)) {
-
                 SendMediaStateBroadCast(PlayerFragment.BROADCAST_ACTION_PLAYER_Closed);
                 stopForeground(true);
                 stopSelf();
@@ -244,22 +205,9 @@ public class PlayerForegroundService extends Service implements Player.EventList
         player = ExoPlayerFactory.newSimpleInstance(renderersFactory, trackSelector, loadControl);
 
 
-        DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(getApplicationContext(), "ExoplayerDemo");
-        concatenatingMediaSource = new ConcatenatingMediaSource();
-        for (MataData mataData : mataDataList) {
-            mediaSource = new ExtractorMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(mataData.getURL()));
-
-            concatenatingMediaSource.addMediaSource(mediaSource);
-
-
-        }
-
-        player.prepare(concatenatingMediaSource);
-        player.seekTo(Integer.parseInt(currentTrackIndex), seekto);
-        player.addListener(this);
-        player.setPlayWhenReady(true);
+        addMediaSourceToPlayer();
         getPlayerNotification();
-
+        player.addListener(this);
         mediaSessionCompat = new MediaSessionCompat(this, MEDIA_SESSION_TAG);
         mediaSessionCompat.setActive(true);
         playerNotificationManager.setMediaSessionToken(mediaSessionCompat.getSessionToken());
@@ -278,6 +226,47 @@ public class PlayerForegroundService extends Service implements Player.EventList
         Intent broadcastIntent = new Intent();
         broadcastIntent.setAction(action);
         sendBroadcast(broadcastIntent);
+    }
+
+    private void addMediaSourceToPlayer() {
+        audioBook = MySharedPref.getSavedObjectFromPreference(this, MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, KEY_SHARD_PREF_AUDIO_BOOK, AudioBook.class);
+        currentTrackIndex = MySharedPref.getSavedObjectFromPreference(this, MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, KEY_PREFF_CURRENT_TRACK_INDEX);
+        isMediaSouceLocalDisk = MySharedPref.getSavedObjectFromPreference(this, MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, IS_SOUCE_LOCAL_DISK);
+        if (currentTrackIndex.isEmpty())
+            currentTrackIndex = "0";
+        if (isMediaSouceLocalDisk.isEmpty())
+            isMediaSouceLocalDisk = "0";
+        if (audioBook != null && audioBook.getMataData() != null) {
+            mataDataList = audioBook.getMataData();
+            title = audioBook.getTitle();
+            DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(getApplicationContext(), "ExoplayerDemo");
+            concatenatingMediaSource = new ConcatenatingMediaSource();
+            for (MataData mataData : mataDataList) {
+                if (mataData.hasDownloaded()) {
+                    File file = new File(mataData.getSdPath());
+                    if (file.exists()) {
+                        Log.d(TAG, "" + mataData.getSdPath());
+                        mediaSource = new ExtractorMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(mataData.getSdPath()));
+                    } else {
+                        if (isMediaSouceLocalDisk.equals("0"))
+                            mediaSource = new ExtractorMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(mataData.getURL()));
+
+                    }
+
+                } else {
+                    if (isMediaSouceLocalDisk.equals("0"))
+                        mediaSource = new ExtractorMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(mataData.getURL()));
+
+                }
+
+                concatenatingMediaSource.addMediaSource(mediaSource);
+            }
+
+            player.prepare(concatenatingMediaSource);
+            player.seekTo(Integer.parseInt(currentTrackIndex), seekto);
+            player.setPlayWhenReady(true);
+
+        }
     }
 
     public PlayerNotificationManager getPlayerNotification() {

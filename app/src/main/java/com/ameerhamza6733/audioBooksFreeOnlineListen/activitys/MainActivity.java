@@ -17,7 +17,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 
 import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
@@ -25,7 +24,7 @@ import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.BookFragment;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.BookMarkFragemnt;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.BookSearchDialogFragment;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.HistoryFragment;
-import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.OfflineSavedBookFragment;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.OfflineBookFragment;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
@@ -77,8 +76,8 @@ public class MainActivity extends AppCompatActivity
                         switch (item.getItemId()) {
                             case R.id.bn_watch_latter:
                            //     startActivity(new Intent(MainActivity.this, OfflineSavedBooksActivity.class));
-                                OfflineSavedBookFragment offlineSavedBookFragment = new OfflineSavedBookFragment();
-                                startFragmentTransction(offlineSavedBookFragment);
+                                OfflineBookFragment offlineBookFragment = new OfflineBookFragment();
+                                startFragmentTransction(offlineBookFragment);
 
                                 break;
                             case R.id.bn_my_history:
@@ -137,12 +136,12 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.main, menu);
+//        return true;
+//    }
 
 
 

@@ -48,7 +48,6 @@
         </activity>
         <activity android:name=".activitys.feedbackActivity" />
         <activity android:name=".activitys.DownloaderActivty" />
-        <activity android:name=".activitys.OnNotifactionClickActivity" />
     </application>
 
 </manifest>

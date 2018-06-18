@@ -33,11 +33,11 @@
                 <ImageView
 
                     android:id="@+id/iamge"
-                    android:layout_width="match_parent"
+                    android:layout_width="200dp"
                     android:layout_height="200dp"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    />
+                    android:layout_above="@+id/fabDownlaod"
+                    android:layout_marginEnd="17dp"
+                    android:layout_toStartOf="@+id/fabDownlaod" />
 
                 <android.support.design.widget.FloatingActionButton
                     android:id="@+id/fabDownlaod"
@@ -48,7 +48,7 @@
                     android:layout_marginBottom="12dp"
                     android:layout_marginEnd="13dp"
                     android:clickable="true"
-                   app:srcCompat="@drawable/ic_arrow_downward_black_24dp" />
+                   app:srcCompat="@drawable/ic_arrow_downward_white_24dp" />
             </RelativeLayout>
 
             <TextView
@@ -92,7 +92,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:drawableTop="@drawable/ic_arrow_downward_black_24dp"
+                    android:drawableTop="@drawable/ic_arrow_downward_white_24dp"
                     android:gravity="center"
                     android:text="N/A"
                     android:textColor="@color/colorSecondaryText" />

@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -84,28 +85,24 @@ public class DetailFragment extends Fragment {
         mTVDownloads.setText(audioBook.getDownloads());
         mTVCreator.setText(audioBook.getCreator());
         mTVTitle.setText(audioBook.getTitle());
-        Glide.with(this).asBitmap()
-                .load(Util.INSTANCE.toImageURI(audioBook.getIdentifier()))
-                .apply(new RequestOptions().override(8, 8))
-                .into(new SimpleTarget<Bitmap>(RVimageView.getWidth(), RVimageView.getHeight()) {
-                    @Override
-                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                        imageView.setImageBitmap(resource);
-                        Drawable drawable = new BitmapDrawable(getActivity().getResources(), resource);
-                        RVimageView.setBackground(drawable);
-                    }
-                });
-        Glide.with(this)
-                .asBitmap()
-                .load(Util.INSTANCE.toImageURI(audioBook.getIdentifier()))
-                .into(imageView);
+
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Glide.with(DetailFragment.this)
+                        .asBitmap()
+                        .load(Util.INSTANCE.toImageURI(audioBook.getIdentifier()))
+                        .into(imageView);
+            }
+        }, 2000);
         fabDownlaod.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(TAG,"onClick");
                 if (mataDataList != null && mataDataList.size() > 0) {
                     Intent downloadingIntent = new Intent(v.getContext(), DownloaderActivty.class);
-                    downloadingIntent.putParcelableArrayListExtra(DownloaderActivty.EXTRA_MATA_DATA_LIST, mataDataList);
 
                     v.getContext().startActivity(downloadingIntent);
                 } else {

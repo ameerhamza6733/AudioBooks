@@ -14,14 +14,14 @@ import android.widget.TextView;
 
 import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.MainActivity;
-import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.OfflineBookChapterFragment;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.OfflineChapterFragment;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.AudioBook;
 import com.bumptech.glide.Glide;
 
 import java.util.List;
 
 
-import static com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.OfflineBookChapterFragment.BUNDEL_KEY_BOOK_NO;
+import static com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.OfflineChapterFragment.BUNDEL_KEY_BOOK_NO;
 
 /**
  * Created by apple on 5/10/18.
@@ -30,7 +30,7 @@ import static com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.OfflineBook
 public class OfflineBookAdupter extends RecyclerView.Adapter<OfflineBookAdupter.ViewHolder>  {
     private List<AudioBook> audioBookList;
     private MainActivity activity;
-    private static String TAG="OfflineSavedBookFragment";
+    private static String TAG="OfflineBookFragment";
 
     public OfflineBookAdupter(List<AudioBook> audioBookList,Activity activity) {
         Log.d(TAG,"OfflineBookAdupter");
@@ -57,7 +57,7 @@ public class OfflineBookAdupter extends RecyclerView.Adapter<OfflineBookAdupter.
         holder.getRootView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                OfflineBookChapterFragment offlineSavedMataDataFragment = new OfflineBookChapterFragment();
+                OfflineChapterFragment offlineSavedMataDataFragment = new OfflineChapterFragment();
                 Bundle bundle = new Bundle();
                 bundle.putInt(BUNDEL_KEY_BOOK_NO, position);
                 offlineSavedMataDataFragment.setArguments(bundle);

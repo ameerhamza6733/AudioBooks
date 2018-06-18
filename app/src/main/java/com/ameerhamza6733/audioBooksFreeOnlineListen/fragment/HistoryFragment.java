@@ -45,6 +45,7 @@ public class HistoryFragment extends BookFragment {
         mySpinner.setVisibility(View.GONE);
         mySpinnerFilter.setVisibility(View.GONE);
         floatingActionButton.setVisibility(View.GONE);
+       setHasOptionsMenu(false);
         AdView mAdView = view.findViewById(R.id.adViewBookMark);
         mAdView.setVisibility(View.VISIBLE);
         if (ConsentInformation.getInstance(getActivity()).getConsentStatus() == ConsentStatus.PERSONALIZED)
