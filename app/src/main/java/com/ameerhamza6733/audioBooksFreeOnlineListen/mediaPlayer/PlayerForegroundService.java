@@ -18,6 +18,7 @@ import android.util.Log;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.MySharedPref;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.MainActivity;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.RateMe;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.PlayerFragment;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.AudioBook;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.MataData;
@@ -96,6 +97,9 @@ public class PlayerForegroundService extends Service implements Player.EventList
             if (intent.getAction().equals(PlayerForegroundService.ACTION_UPDATE_MEDIA_SOURCE)) {
                 addMediaSourceToPlayer();
             } else if (intent.getAction().equals(PlayerForegroundService.STOP_ACTION)) {
+                Intent intent1 = new Intent(this, RateMe.class);
+                intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent1);
                 SendMediaStateBroadCast(PlayerFragment.BROADCAST_ACTION_PLAYER_Closed);
                 stopForeground(true);
                 stopSelf();
@@ -121,6 +125,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
         }
 
         PlayerForegroundService.isPlaying = false;
+
         super.onDestroy();
 
     }

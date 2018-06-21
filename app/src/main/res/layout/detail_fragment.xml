@@ -19,11 +19,7 @@
 
             tools:context="com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.DetailTabActivity">
 
-            <!--<FrameLayout-->
-            <!--android:id="@+id/audio_player_contaner"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="0dp"-->
-            <!--android:layout_weight="1" />-->
+
 
             <RelativeLayout
                 android:id="@+id/RVimageView"
@@ -78,6 +74,7 @@
                 android:weightSum="3">
 
                 <TextView
+
                     android:id="@+id/type"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
