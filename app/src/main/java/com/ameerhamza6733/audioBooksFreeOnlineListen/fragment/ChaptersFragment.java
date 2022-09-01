@@ -1,6 +1,9 @@
 package com.ameerhamza6733.audioBooksFreeOnlineListen.fragment;
 
-import android.arch.lifecycle.ViewModelProviders;
+import static com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.DetailTabActivity.KEY_SHARD_PREF_AUDIO_BOOK;
+import static com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService.KEY_PREFF_CURRENT_TRACK_INDEX;
+import static com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService.player;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -8,19 +11,20 @@ import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.ameerhamza6733.audioBooksFreeOnlineListen.MySharedPref;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
@@ -39,21 +43,19 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
-import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.reward.RewardedVideoAd;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.DetailTabActivity.KEY_SHARD_PREF_AUDIO_BOOK;
-import static com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService.player;
 
 
 /**
  * Created by AmeerHamza on 4/23/18.
  */
 
-public class PlayerFragment extends Fragment {
+public class ChaptersFragment extends Fragment {
     public static final String BROADCAST_ACTION_BUFFRING = "ACTION_BUFFRING";
     public static final String BROADCAST_ACTION_PLAYER_START = "BROADCAST_ACTION_PLAYER_START";
     public static final String BROADCAST_ACTION_PLAYER_Closed = "BROADCAST_ACTION_PLAYER_Closed";
@@ -63,6 +65,7 @@ public class PlayerFragment extends Fragment {
     Handler handler = new Handler();
     ConsentForm form;
     private AudioBook audioBook;
+    private int previousItemPlaying =-1;
     private ProgressBar progressBar;
     private ProgressBar playerStatePB;
     private RecyclerView recyclerView;
@@ -149,7 +152,6 @@ public class PlayerFragment extends Fragment {
     private void intiDataSet() {
         progressBar.setVisibility(View.VISIBLE);
         audioBook = MySharedPref.getSavedObjectFromPreference(getActivity().getApplicationContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, KEY_SHARD_PREF_AUDIO_BOOK, AudioBook.class);
-
         BookChapterViewModel model = ViewModelProviders.of(this).get(BookChapterViewModel.class);
         if (audioBook.getIdentifier() != null)
             model.loadData(Volley.newRequestQueue(getActivity()), Util.INSTANCE.toMetaDataURI(audioBook.getIdentifier()), audioBook.getIdentifier()).observe(this, mataDataList -> {
@@ -161,12 +163,22 @@ public class PlayerFragment extends Fragment {
                     MySharedPref.saveObjectToSharedPreference(getActivity(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, KEY_SHARD_PREF_AUDIO_BOOK, audioBook);
 
                     recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-                    if (adupter == null) {
-                        adupter = new PlayerFragment.ChapterAudpter();
-                        recyclerView.setAdapter(adupter);
-                    }
                     progressBar.setVisibility(View.GONE);
+                    if (adupter == null) {
+                        adupter = new ChaptersFragment.ChapterAudpter();
+                        recyclerView.setAdapter(adupter);
 
+                        for (int i = 0;  i < this.mataDataList.size();i++) {
+                            if (this.mataDataList.get(player.getCurrentWindowIndex()).getURL() == this.mataDataList.get(i).getURL()) {
+                                this.mataDataList.get(i).setPlaying(true);
+                                adupter.notifyItemChanged(i);
+                                recyclerView.scrollToPosition(i);
+                                previousItemPlaying=i;
+                            }
+
+                        }
+
+                    }
 
                 } else {
                     this.progressBar.setVisibility(View.GONE);
@@ -216,12 +228,12 @@ public class PlayerFragment extends Fragment {
 
         Intent startIntent = new Intent(getActivity(), PlayerForegroundService.class);
 
-        startIntent.putExtra(PlayerForegroundService.KEY_PREFF_CURRENT_TRACK_INDEX, miliSecond);
+        startIntent.putExtra(KEY_PREFF_CURRENT_TRACK_INDEX, miliSecond);
         if (Action != null)
             startIntent.setAction(Action);
 
         if (Build.VERSION.SDK_INT > 25) {
-            PlayerFragment.this.getActivity().startForegroundService(startIntent);
+            ChaptersFragment.this.getActivity().startForegroundService(startIntent);
         } else
             getActivity().startService(startIntent);
 
@@ -262,7 +274,7 @@ public class PlayerFragment extends Fragment {
         mAdView = rootView.findViewById(R.id.adViewPlayer);
         AdRequest adRequest = new AdRequest.Builder()
                 .addTestDevice("B94C1B8999D3B59117198A259685D4F8").
-                        addNetworkExtrasBundle(AdMobAdapter.class, getNonPersonalizedAdsBundle())
+                addNetworkExtrasBundle(AdMobAdapter.class, getNonPersonalizedAdsBundle())
                 .build();
         mAdView.loadAd(adRequest);
 
@@ -277,6 +289,7 @@ public class PlayerFragment extends Fragment {
     }
 
     private class ChapterAudpter extends RecyclerView.Adapter<ChapterAudpter.ViewHolder> {
+
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View v = LayoutInflater.from(parent.getContext())
@@ -287,7 +300,16 @@ public class PlayerFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            holder.textView.setText(mataDataList.get(position).getName());
+            if (mataDataList.get(holder.getAdapterPosition()).isPlaying()) {
+                holder.textView.setBackgroundColor(ContextCompat.getColor(holder.textView.getContext(),R.color.colorAccent));
+                holder.textView.setTextColor(ContextCompat.getColor(holder.textView.getContext(),R.color.white));
+                holder.textView.setText(mataDataList.get(position).getName());
+            } else {
+                holder.textView.setBackgroundColor(ContextCompat.getColor(holder.textView.getContext(),R.color.white));
+                holder.textView.setTextColor(ContextCompat.getColor(holder.textView.getContext(),R.color.black));
+                holder.textView.setText(mataDataList.get(position).getName());
+
+            }
 
         }
 
@@ -305,7 +327,7 @@ public class PlayerFragment extends Fragment {
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        MySharedPref.saveObjectToSharedPreference(v.getContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, PlayerForegroundService.KEY_PREFF_CURRENT_TRACK_INDEX, String.valueOf(getAdapterPosition()));
+                        MySharedPref.saveObjectToSharedPreference(v.getContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, KEY_PREFF_CURRENT_TRACK_INDEX, String.valueOf(getAdapterPosition()));
                         MySharedPref.saveObjectToSharedPreference(v.getContext(), MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, PlayerForegroundService.IS_SOUCE_LOCAL_DISK, "0");
                         playerStatePB.setVisibility(View.VISIBLE);
                         if (player != null)
@@ -313,6 +335,13 @@ public class PlayerFragment extends Fragment {
                         else {
                             startPlayerService(null, 0);
                         }
+                        if (previousItemPlaying !=-1){
+                            mataDataList.get(previousItemPlaying).setPlaying(false);
+                            adupter.notifyItemChanged(previousItemPlaying);
+                        }
+                        previousItemPlaying =getAdapterPosition();
+                        mataDataList.get(getAdapterPosition()).setPlaying(true);
+                        adupter.notifyItemChanged(getAdapterPosition());
                         playerView.setVisibility(View.VISIBLE);
                     }
                 });

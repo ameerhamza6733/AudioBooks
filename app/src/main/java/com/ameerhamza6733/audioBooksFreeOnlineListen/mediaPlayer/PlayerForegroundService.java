@@ -3,23 +3,25 @@ package com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.app.TaskStackBuilder;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
 
 import com.ameerhamza6733.audioBooksFreeOnlineListen.MySharedPref;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.DetailTabActivity;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.MainActivity;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.RateMe;
-import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.PlayerFragment;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.ChaptersFragment;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.AudioBook;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.MataData;
 import com.google.android.exoplayer2.DefaultLoadControl;
@@ -63,6 +65,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
     private static final java.lang.String MEDIA_SESSION_TAG = "MEDIA_SESSION_TAG";
     public static final java.lang.String IS_SOUCE_LOCAL_DISK = "IS_SOUCE_LOCAL_DISK";
     public static Boolean isPlaying = false;
+    public static String currentPlayingChapter=null;
     public static SimpleExoPlayer player;
     private static String title;
     protected List<MataData> mataDataList;
@@ -82,8 +85,6 @@ public class PlayerForegroundService extends Service implements Player.EventList
     public void onCreate() {
         super.onCreate();
         isPlaying = true;
-
-
         initMediaPlayer();
 
 
@@ -100,7 +101,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
                 Intent intent1 = new Intent(this, RateMe.class);
                 intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent1);
-                SendMediaStateBroadCast(PlayerFragment.BROADCAST_ACTION_PLAYER_Closed);
+                SendMediaStateBroadCast(ChaptersFragment.BROADCAST_ACTION_PLAYER_Closed);
                 stopForeground(true);
                 stopSelf();
             }
@@ -160,11 +161,11 @@ public class PlayerForegroundService extends Service implements Player.EventList
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
         Log.d(TAG, "" + playbackState);
         if (playbackState == Player.STATE_READY) {
-            SendMediaStateBroadCast(PlayerFragment.BROADCAST_ACTION_PLAYER_START);
+            SendMediaStateBroadCast(ChaptersFragment.BROADCAST_ACTION_PLAYER_START);
 
         }
         if (playbackState == Player.STATE_BUFFERING) {
-            SendMediaStateBroadCast(PlayerFragment.BROADCAST_ACTION_BUFFRING);
+            SendMediaStateBroadCast(ChaptersFragment.BROADCAST_ACTION_BUFFRING);
 
         }
 
@@ -286,9 +287,12 @@ public class PlayerForegroundService extends Service implements Player.EventList
             @Nullable
             @Override
             public PendingIntent createCurrentContentIntent(Player player) {
-                Intent intent = new Intent(PlayerForegroundService.this, MainActivity.class);
-                PendingIntent pendIntent = PendingIntent.getActivity(PlayerForegroundService.this, 0, intent, 0);
-                return pendIntent;
+                TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
+                Intent detailIntent = new Intent (getApplicationContext(), DetailTabActivity.class);
+                stackBuilder.addNextIntentWithParentStack(detailIntent);
+                PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
+                return resultPendingIntent;
             }
 
             @Nullable

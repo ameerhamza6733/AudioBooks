@@ -1,8 +1,6 @@
 package com.ameerhamza6733.audioBooksFreeOnlineListen.activitys;
 
 import android.Manifest;
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -10,23 +8,19 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.View;
 import android.widget.Toast;
 
 import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.DownloadingAdupter;
-import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.OfflineChapterFragment;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService;
-import com.ameerhamza6733.audioBooksFreeOnlineListen.models.AudioBook;
-import com.ameerhamza6733.audioBooksFreeOnlineListen.models.MataData;
-import com.ameerhamza6733.audioBooksFreeOnlineListen.viewModels.OfflineBooksViewModle;
 import com.google.ads.consent.ConsentInformation;
 import com.google.ads.consent.ConsentStatus;
 import com.google.ads.mediation.admob.AdMobAdapter;
@@ -38,16 +32,12 @@ import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.reward.RewardedVideoAd;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import cn.woblog.android.downloader.DownloadService;
 import cn.woblog.android.downloader.callback.DownloadManager;
 import lolodev.permissionswrapper.callback.OnRequestPermissionsCallBack;
 import lolodev.permissionswrapper.wrapper.PermissionWrapper;
 
-import static com.ameerhamza6733.audioBooksFreeOnlineListen.MySharedPref.SHARD_PREF_DOWNLOADED_AUDIO_BOOK;
-import static com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.PlayerFragment.BROADCAST_ACTION_PLAYER_START;
+import static com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.ChaptersFragment.BROADCAST_ACTION_PLAYER_START;
 import static com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService.player;
 
 

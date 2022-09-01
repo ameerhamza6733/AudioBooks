@@ -1,7 +1,7 @@
 package com.ameerhamza6733.audioBooksFreeOnlineListen.viewModels;
 
 
-import android.arch.lifecycle.LiveData;
+import androidx.lifecycle.LiveData;
 import android.content.SharedPreferences;
 
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.AudioBook;

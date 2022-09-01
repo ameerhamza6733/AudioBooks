@@ -48,7 +48,7 @@
                android:layout_height="wrap_content"
                android:layout_gravity="center|top" />
 
-           <android.support.v7.widget.RecyclerView
+           <androidx.recyclerview.widget.RecyclerView
 
                android:id="@+id/recyclerView_poetry"
                android:layout_width="match_parent"
@@ -58,15 +58,15 @@
        </LinearLayout>
 
 
-    <android.support.design.widget.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabStop"
-        android:visibility="invisible"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
         android:layout_gravity="bottom|end"
-        android:layout_marginBottom="27dp"
         android:layout_marginEnd="27dp"
+        android:layout_marginBottom="27dp"
+        android:visibility="invisible"
         app:srcCompat="@drawable/ic_stop_black_24dp" />
 </RelativeLayout>

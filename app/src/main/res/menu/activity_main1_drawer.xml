@@ -61,6 +61,7 @@
         <item android:title="Extra">
             <menu>
                 <item
+                    android:visible="false"
                     android:id="@+id/nav_send_feedback"
                     android:title="Send Us Feedback" />
 

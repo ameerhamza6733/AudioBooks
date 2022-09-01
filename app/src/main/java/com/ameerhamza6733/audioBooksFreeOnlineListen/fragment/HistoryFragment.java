@@ -1,10 +1,10 @@
 package com.ameerhamza6733.audioBooksFreeOnlineListen.fragment;
 
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
-import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.CustomAdapter;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.BookAdupter;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.AudioBook;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.viewModels.HistoryViewModel;
 import com.google.ads.consent.ConsentInformation;
@@ -77,7 +77,7 @@ public class HistoryFragment extends BookFragment {
             public void onChanged(@Nullable List<AudioBook> audioBooks) {
                 if (audioBooks != null && audioBooks.size() > 0) {
                     progressBar.setVisibility(View.GONE);
-                    CustomAdapter mAdapter = new CustomAdapter(audioBooks);
+                    BookAdupter mAdapter = new BookAdupter(audioBooks);
                     recyclerView.setAdapter(mAdapter);
                 } else {
                     progressBar.setVisibility(View.GONE);

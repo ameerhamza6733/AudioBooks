@@ -2,15 +2,10 @@ package com.ameerhamza6733.audioBooksFreeOnlineListen;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import com.ameerhamza6733.audioBooksFreeOnlineListen.models.AudioBook;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.reflect.TypeToken;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -18,22 +13,23 @@ import java.util.Map;
  */
 
 public class MySharedPref {
-    public static final String SHARD_PREF_AUDIO_BOOK_FILE_NAME ="SHARD_PREF_AUDIO_BOOK_FILE_NAME";
-    public static final String SHARD_PREF_DOWNLOADED_AUDIO_BOOK ="SHARD_PREF_DOWNLOADED_AUDIO_BOOK";
-    public static final String  SHARD_PREF_HISTORY_AUDIO_BOOK_FILE_NAME="SHARD_PREF_HISTORY_AUDIO_BOOK_FILE_NAME";
-   public static final String SHARD_PREF_BOOK_MARK_FILE_NAME="SHARD_PREF_BOOK_MARK_FILE_NAME";
+    public static final String SHARD_PREF_AUDIO_BOOK_FILE_NAME = "SHARD_PREF_AUDIO_BOOK_FILE_NAME";
+    public static final String SHARD_PREF_DOWNLOADED_AUDIO_BOOK = "SHARD_PREF_DOWNLOADED_AUDIO_BOOK";
+    public static final String SHARD_PREF_HISTORY_AUDIO_BOOK_FILE_NAME = "SHARD_PREF_HISTORY_AUDIO_BOOK_FILE_NAME";
+    public static final String SHARD_PREF_BOOK_MARK_FILE_NAME = "SHARD_PREF_BOOK_MARK_FILE_NAME";
+
     public static synchronized boolean saveObjectToSharedPreference(Context context, String preferenceFileName, String serializedObjectKey, Object object) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(preferenceFileName, 0);
         SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
         final Gson gson = new Gson();
         String serializedObject = gson.toJson(object);
         sharedPreferencesEditor.putString(serializedObjectKey, serializedObject);
-      return  sharedPreferencesEditor.commit();
+        return sharedPreferencesEditor.commit();
     }
 
-    public static Map<String,?> getAllKeys(SharedPreferences sharedPreferences){
+    public static Map<String, ?> getAllKeys(SharedPreferences sharedPreferences) {
 
-      return sharedPreferences.getAll();
+        return sharedPreferences.getAll();
 
     }
 
@@ -56,7 +52,7 @@ public class MySharedPref {
     }
 
 
-    public static synchronized Long getSavedLongFromPreference(Context context, String preferenceFileName, String preferenceKey) throws Exception{
+    public static synchronized Long getSavedLongFromPreference(Context context, String preferenceFileName, String preferenceKey) throws Exception {
         SharedPreferences sharedPreferences = context.getSharedPreferences(preferenceFileName, 0);
         if (sharedPreferences.contains(preferenceKey)) {
             final Gson gson = new Gson();

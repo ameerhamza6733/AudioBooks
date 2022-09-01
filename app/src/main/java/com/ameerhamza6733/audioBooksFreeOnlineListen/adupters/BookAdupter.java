@@ -6,8 +6,8 @@ package com.ameerhamza6733.audioBooksFreeOnlineListen.adupters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.widget.AppCompatImageButton;
-import android.support.v7.widget.RecyclerView;
+import androidx.appcompat.widget.AppCompatImageButton;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -28,7 +28,7 @@ import com.bumptech.glide.Glide;
 
 import java.util.List;
 
-public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
+public class BookAdupter extends RecyclerView.Adapter<BookAdupter.ViewHolder> {
     private static final String TAG = "CustomAdapter";
 
     protected List<AudioBook> mDataSet;
@@ -38,11 +38,11 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
      *
      * @param dataSet containing the data to populate views to be used by RecyclerView.
      */
-    public CustomAdapter(List<AudioBook> dataSet) {
+    public BookAdupter(List<AudioBook> dataSet) {
         mDataSet = dataSet;
     }
 
-    public CustomAdapter() {
+    public BookAdupter() {
     }
 
     // Create new views (invoked by the layout manager)

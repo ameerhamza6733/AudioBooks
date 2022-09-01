@@ -1,21 +1,21 @@
 package com.ameerhamza6733.audioBooksFreeOnlineListen.fragment;
 
-import android.arch.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -34,7 +34,7 @@ import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.Util;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.MainActivity;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.BookCatalogueAdupter;
-import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.CustomAdapter;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.adupters.BookAdupter;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.mediaPlayer.PlayerForegroundService;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.viewModels.BookViewModel;
 import com.android.volley.RequestQueue;
@@ -295,7 +295,7 @@ public class BookFragment extends Fragment implements MainActivity.ReciveQuery {
                 if (updatedAudioBookList.size() == 0) {
                     Toast.makeText(getActivity(), "No results matched your criteria.", Toast.LENGTH_LONG).show();
                 } else {
-                    CustomAdapter mAdapter = new CustomAdapter(updatedAudioBookList);
+                    BookAdupter mAdapter = new BookAdupter(updatedAudioBookList);
                     recyclerView.setAdapter(mAdapter);
                 }
 

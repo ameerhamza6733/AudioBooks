@@ -13,6 +13,7 @@ public class MataData implements Parcelable {
     private long size;
     private String URL;
     private boolean hasDownloaded;
+    private boolean isPlaying;
     private String sdPath="";
 
     public MataData(String name, long size, String URL, boolean hasDownloaded) {
@@ -28,6 +29,7 @@ public class MataData implements Parcelable {
         size = in.readLong();
         URL = in.readString();
         hasDownloaded = in.readByte() != 0;
+        isPlaying = in.readByte() != 0;
         sdPath=in.readString();
     }
 
@@ -38,6 +40,7 @@ public class MataData implements Parcelable {
         dest.writeString(URL);
         dest.writeString(sdPath);
         dest.writeByte((byte) (hasDownloaded ? 1 : 0));
+        dest.writeByte((byte) (isPlaying ? 1 : 0));
     }
 
     @Override
@@ -91,5 +94,12 @@ public class MataData implements Parcelable {
 
     public static Creator<MataData> getCREATOR() {
         return CREATOR;
+    }
+
+    public void setPlaying(boolean playing) {
+        isPlaying = playing;
+    }
+
+    public boolean isPlaying(){return isPlaying;
     }
 }

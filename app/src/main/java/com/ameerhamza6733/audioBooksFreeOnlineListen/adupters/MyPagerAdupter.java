@@ -1,10 +1,10 @@
 package com.ameerhamza6733.audioBooksFreeOnlineListen.adupters;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 
-import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.PlayerFragment;
+import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.ChaptersFragment;
 import com.ameerhamza6733.audioBooksFreeOnlineListen.fragment.DetailFragment;
 
 /**
@@ -26,7 +26,7 @@ public class MyPagerAdupter extends FragmentStatePagerAdapter {
                 DetailFragment detailFragment = new DetailFragment();
                 return detailFragment;
             case 0:
-                PlayerFragment playerFragment = new PlayerFragment();
+                ChaptersFragment playerFragment = new ChaptersFragment();
                 return playerFragment;
             default:
                 return null;

@@ -7,11 +7,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.ameerhamza6733.audioBooksFreeOnlineListen.activitys.DownloaderActivty">
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    </android.support.v7.widget.RecyclerView>
+    </androidx.recyclerview.widget.RecyclerView>
 
     <com.google.android.gms.ads.AdView
         android:id="@+id/adView"
@@ -29,7 +29,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginTop="50dp"
         android:visibility="gone" />
-    <android.support.design.widget.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabStop"
         android:visibility="invisible"
         android:layout_width="wrap_content"

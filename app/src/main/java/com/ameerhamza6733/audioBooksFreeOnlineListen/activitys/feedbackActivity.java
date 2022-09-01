@@ -1,11 +1,11 @@
 package com.ameerhamza6733.audioBooksFreeOnlineListen.activitys;
 
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.ameerhamza6733.audioBooksFreeOnlineListen.R;
 
-import com.webianks.easy_feedback.EasyFeedback;
+
 
 public class feedbackActivity extends AppCompatActivity {
 
@@ -13,11 +13,9 @@ public class feedbackActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feedback);
-        new EasyFeedback.Builder(this)
-                .withEmail("develpore2017@gmail.com")
-                .withSystemInfo()
-                .build()
-                .start();
+
+
+
     }
 
     @Override
