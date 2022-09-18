@@ -2,11 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/AudioBooks.iml" filepath="$PROJECT_DIR$/.idea/modules/AudioBooks.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/AudioBooks.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/AudioBooks.app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/AudioBooks.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/AudioBooks.app.androidTest.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/AudioBooks.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/AudioBooks.app.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/AudioBooks.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/AudioBooks.app.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/AndroidStudioProjects.AudioBooks.iml" filepath="$PROJECT_DIR$/.idea/modules/AndroidStudioProjects.AudioBooks.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/AndroidStudioProjects.AudioBooks.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/AndroidStudioProjects.AudioBooks.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/AndroidStudioProjects.AudioBooks.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/AndroidStudioProjects.AudioBooks.app.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/AndroidStudioProjects.AudioBooks.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/AndroidStudioProjects.AudioBooks.app.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/AndroidStudioProjects.AudioBooks.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/AndroidStudioProjects.AudioBooks.app.unitTest.iml" />
     </modules>
   </component>
 </project>

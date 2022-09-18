@@ -1,14 +1,16 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin:  'com.google.firebase.crashlytics'
+
 
 android {
-    compileSdk 32
+    compileSdk 30
     defaultConfig {
         applicationId "com.ameerhamza6733.audioBooksFreeOnlineListen"
         minSdkVersion 21
-        targetSdkVersion 32
-        versionCode 26
-        versionName "1.24"
+        targetSdkVersion 30
+        versionCode 28
+        versionName "1.26"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
@@ -51,8 +53,9 @@ dependencies {
 
 
     implementation 'com.google.firebase:firebase-ads:15.0.1'
-    implementation 'com.google.firebase:firebase-core:15.0.2'
-    implementation 'com.google.firebase:firebase-crash:15.0.2'
+    implementation platform('com.google.firebase:firebase-bom:30.4.1')
+    implementation 'com.google.firebase:firebase-crashlytics-ktx'
+
     implementation 'com.daimajia.numberprogressbar:library:1.4@aar'
     implementation 'cn.woblog.android:downloader:1.0.1'
     implementation 'com.github.lolucosmin:PermissionsWrapper:version_1.2'

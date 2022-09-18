@@ -290,8 +290,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
                 TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
                 Intent detailIntent = new Intent (getApplicationContext(), DetailTabActivity.class);
                 stackBuilder.addNextIntentWithParentStack(detailIntent);
-                PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,
-                        PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
                 return resultPendingIntent;
             }
 
