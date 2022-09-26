@@ -275,7 +275,7 @@ public class BookFragment extends Fragment implements MainActivity.ReciveQuery {
     protected void makeApiCall(String url) {
 
         progressBar.setVisibility(View.VISIBLE);
-        Log.d(TAG, "url: " + url);
+
         BookViewModel model = ViewModelProviders.of(getActivity()).get(BookViewModel.class);
         model.loadData(Volley.newRequestQueue(getActivity()), url).observe(this, updatedAudioBookList -> {
             // update UI

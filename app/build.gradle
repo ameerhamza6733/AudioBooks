@@ -9,8 +9,8 @@ android {
         applicationId "com.ameerhamza6733.audioBooksFreeOnlineListen"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 28
-        versionName "1.26"
+        versionCode 29
+        versionName "1.27"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
