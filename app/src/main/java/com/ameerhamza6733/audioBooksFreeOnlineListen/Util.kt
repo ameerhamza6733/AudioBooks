@@ -1,25 +1,17 @@
 package com.ameerhamza6733.audioBooksFreeOnlineListen
 
 import android.content.Context
-import android.os.Environment
-import org.json.JSONException
-import org.json.JSONObject
-import java.io.File
-import java.text.DecimalFormat
-import kotlin.collections.ArrayList
-import android.opengl.ETC1.getHeight
-import android.opengl.ETC1.getWidth
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.os.Environment
+import org.json.JSONException
+import org.json.JSONObject
+import java.text.DecimalFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.time.Instant
 import java.util.*
-
-
-
 
 
 /**
@@ -222,12 +214,12 @@ object Util {
 
         return formattedTime
     }
-    fun getDir (sdCardFolderAddress : String) :String{
-        val saveFolder = File(Environment.getExternalStorageDirectory(), sdCardFolderAddress)
-        if (!saveFolder.exists())
-            saveFolder.mkdirs()
+    fun getDir () :String{
+        val saveFolder = Environment.getExternalStoragePublicDirectory(
+            Environment.DIRECTORY_DOWNLOADS
+        ).absolutePath
 
-        return saveFolder.path.toString()
+        return saveFolder
     }
 
     fun bytesToMb(size: Long): String {

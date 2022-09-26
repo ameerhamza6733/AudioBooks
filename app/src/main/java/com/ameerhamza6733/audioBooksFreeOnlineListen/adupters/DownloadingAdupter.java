@@ -93,7 +93,7 @@ public class DownloadingAdupter extends RecyclerView.Adapter<DownloadingAdupter.
                     final DownloadInfo downloadInfo = new DownloadInfo
                             .Builder()
                             .setUrl(currentAudioBook.getMataData().get(position).getURL())
-                            .setPath(Util.INSTANCE.getDir("/sdcard/currentAudioBook/") + currentAudioBook.getMataData().get(position).getName())
+                            .setPath(Util.INSTANCE.getDir()+"/"+currentAudioBook.getMataData().get(position).getName()+".mp3")
                             .build();
 
                     downloadInfo.setDownloadListener(holder.getDownloadListener());
