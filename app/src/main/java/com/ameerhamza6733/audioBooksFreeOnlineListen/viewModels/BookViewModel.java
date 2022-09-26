@@ -16,6 +16,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -59,12 +61,15 @@ private static final String TAG = "BookViewModel";
                         JSONArray jsonArray = jsonObject.getJSONObject("response").getJSONArray("docs");
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject docs = jsonArray.getJSONObject(i);
-                            if (docs.getString("identifier").toLowerCase().contains("librivox")) {
-                                audioBookList.add(new AudioBook(Util.INSTANCE.ExtractRating(docs), Util.INSTANCE.ExtractDescription(docs), Util.INSTANCE.ExtractNoOfDownloads(docs), docs.getString("identifier"), Util.INSTANCE.ExtractNoReviews(docs), docs.getString("title"), Util.INSTANCE.ExtractPublisher(docs), Util.INSTANCE.ExtractMediaType(docs),Util.INSTANCE.EtracCreator(docs),Util.INSTANCE.ExtractData(docs)));
+                            audioBookList.add(new AudioBook(Util.INSTANCE.ExtractRating(docs), Util.INSTANCE.ExtractDescription(docs), Util.INSTANCE.ExtractNoOfDownloads(docs), docs.getString("identifier"), Util.INSTANCE.ExtractNoReviews(docs), docs.getString("title"), Util.INSTANCE.ExtractPublisher(docs), Util.INSTANCE.ExtractMediaType(docs),Util.INSTANCE.EtracCreator(docs),Util.INSTANCE.ExtractData(docs)));
 
-                            }
                         }
-                       // Collections.shuffle(audioBookList);
+                        Collections.sort(audioBookList, new Comparator<AudioBook>() {
+                            @Override
+                            public int compare(AudioBook audioBook, AudioBook t1) {
+                                return audioBook.getAvg_rating().compareTo(t1.getAvg_rating());
+                            }
+                        });
 
                     } catch (Exception e) {
                         e.printStackTrace();

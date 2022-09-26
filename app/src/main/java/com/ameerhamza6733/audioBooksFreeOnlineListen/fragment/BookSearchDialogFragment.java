@@ -77,7 +77,7 @@ public class BookSearchDialogFragment extends DialogFragment {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
                 if (actionId == EditorInfo.IME_ACTION_DONE || keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
-                    searchQueary();
+                    searchQuery();
                 }
                 return true;
             }
@@ -87,7 +87,7 @@ public class BookSearchDialogFragment extends DialogFragment {
         /* Pass null as the parent view because its going in the dialog layout*/
         builder.setView(rootView)
                 /* Add action buttons */
-                .setPositiveButton(R.string.positive_button_create, (dialog, id) -> searchQueary());
+                .setPositiveButton(R.string.positive_button_create, (dialog, id) -> searchQuery());
 
         return builder.create();
     }
@@ -95,7 +95,7 @@ public class BookSearchDialogFragment extends DialogFragment {
     /**
      * search query
      */
-    public void searchQueary() {
+    public void searchQuery() {
         String userEnteredQuery = mEditTextSearchQueary.getText().toString();
 
         /**
