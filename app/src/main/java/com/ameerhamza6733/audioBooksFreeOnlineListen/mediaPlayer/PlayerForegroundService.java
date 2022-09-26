@@ -69,7 +69,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
     public static SimpleExoPlayer player;
     private static String title;
     protected List<MataData> mataDataList;
-    private AudioBook audioBook;
+    public static AudioBook audioBook;
     private long seekto = 0;
     private String currentTrackIndex = "0";
 
@@ -239,6 +239,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
         audioBook = MySharedPref.getSavedObjectFromPreference(this, MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, KEY_SHARD_PREF_AUDIO_BOOK, AudioBook.class);
         currentTrackIndex = MySharedPref.getSavedObjectFromPreference(this, MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, KEY_PREFF_CURRENT_TRACK_INDEX);
         isMediaSouceLocalDisk = MySharedPref.getSavedObjectFromPreference(this, MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, IS_SOUCE_LOCAL_DISK);
+        Log.d(TAG,"current audio book"+audioBook.getIdentifier());
         if (currentTrackIndex.isEmpty())
             currentTrackIndex = "0";
         if (isMediaSouceLocalDisk.isEmpty())

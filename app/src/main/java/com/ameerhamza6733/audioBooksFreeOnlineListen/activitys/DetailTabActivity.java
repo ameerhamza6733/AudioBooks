@@ -22,7 +22,7 @@ public class DetailTabActivity extends AppCompatActivity {
 
     public static final String KEY_SHARD_PREF_AUDIO_BOOK = "KEY_SHARD_PREF_AUDIO_BOOK";
     private InterstitialAd mInterstitialAd;
-    private RewardedVideoAd mRewardedVideoAd;
+
     private ConsentForm form;
     private String TAG="DetailTabActivity";
 
@@ -40,7 +40,7 @@ public class DetailTabActivity extends AppCompatActivity {
             getSupportActionBar().hide();
         }catch (Exception e){}
         mInterstitialAd = new InterstitialAd(this);
-        mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
+
        if (ConsentInformation.getInstance(this).getConsentStatus() == ConsentStatus.PERSONALIZED){
            showPersonlalizedAds();
        }else if (ConsentInformation.getInstance(this).getConsentStatus() == ConsentStatus.NON_PERSONALIZED){
@@ -61,7 +61,6 @@ public class DetailTabActivity extends AppCompatActivity {
 
         });
 
-        mRewardedVideoAd.loadAd("ca-app-pub-5168564707064012/7558135093", new AdRequest.Builder().addTestDevice("B94C1B8999D3B59117198A259685D4F8") .addNetworkExtrasBundle(AdMobAdapter.class, getNonPersonalizedAdsBundle()).build());
 
     }
 
@@ -78,7 +77,6 @@ public class DetailTabActivity extends AppCompatActivity {
         });
 
 
-        mRewardedVideoAd.loadAd("ca-app-pub-5168564707064012/7558135093", new AdRequest.Builder().addTestDevice("B94C1B8999D3B59117198A259685D4F8") .build());
 
     }
 
@@ -91,12 +89,10 @@ public class DetailTabActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        if (mRewardedVideoAd!=null && mRewardedVideoAd.isLoaded()){
-            mRewardedVideoAd.show();
-        }else {
+
             if (mInterstitialAd!=null && mInterstitialAd.isLoaded())
                 mInterstitialAd.show();
-        }
+
         finish();
     }
 

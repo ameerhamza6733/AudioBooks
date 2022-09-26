@@ -33,20 +33,17 @@ private static final String TAG = "BookViewModel";
     JSONObject jsonObject;
     private MutableLiveData<List<AudioBook>> mutableLiveData;
     private List<AudioBook> audioBookList;
-    private String url;
+  private String url;
 
     public BookViewModel() {
     }
 
     public LiveData<List<AudioBook>> loadData(RequestQueue requestQueue, String url) {
         Log.d(TAG,"load data");
-        if (mutableLiveData == null ||  !this.url.equalsIgnoreCase(url) ) {
-            mutableLiveData = new MutableLiveData<List<AudioBook>>();
-            audioBookList = new ArrayList<>();
-            this.url = url;
-            intiVolley(requestQueue);
-
-        }
+        mutableLiveData = new MutableLiveData<List<AudioBook>>();
+        audioBookList = new ArrayList<>();
+        this.url = url;
+        intiVolley(requestQueue);
         return mutableLiveData;
     }
 
@@ -64,12 +61,7 @@ private static final String TAG = "BookViewModel";
                             audioBookList.add(new AudioBook(Util.INSTANCE.ExtractRating(docs), Util.INSTANCE.ExtractDescription(docs), Util.INSTANCE.ExtractNoOfDownloads(docs), docs.getString("identifier"), Util.INSTANCE.ExtractNoReviews(docs), docs.getString("title"), Util.INSTANCE.ExtractPublisher(docs), Util.INSTANCE.ExtractMediaType(docs),Util.INSTANCE.EtracCreator(docs),Util.INSTANCE.ExtractData(docs)));
 
                         }
-                        Collections.sort(audioBookList, new Comparator<AudioBook>() {
-                            @Override
-                            public int compare(AudioBook audioBook, AudioBook t1) {
-                                return audioBook.getAvg_rating().compareTo(t1.getAvg_rating());
-                            }
-                        });
+
 
                     } catch (Exception e) {
                         e.printStackTrace();

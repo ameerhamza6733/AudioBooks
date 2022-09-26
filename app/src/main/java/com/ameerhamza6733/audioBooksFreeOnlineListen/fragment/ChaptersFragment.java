@@ -168,15 +168,17 @@ public class ChaptersFragment extends Fragment {
                         adupter = new ChaptersFragment.ChapterAudpter();
                         recyclerView.setAdapter(adupter);
 
-                        for (int i = 0;  i < this.mataDataList.size();i++) {
-                            if (this.mataDataList.get(player.getCurrentWindowIndex()).getURL() == this.mataDataList.get(i).getURL()) {
-                                this.mataDataList.get(i).setPlaying(true);
-                                adupter.notifyItemChanged(i);
-                                recyclerView.scrollToPosition(i);
-                                previousItemPlaying=i;
-                            }
+                      if (PlayerForegroundService.audioBook.getIdentifier().equals(audioBook.getIdentifier())){
+                          for (int i = 0;  i < this.mataDataList.size();i++) {
+                              if (this.mataDataList.get(player.getCurrentWindowIndex()).getURL().equals(this.mataDataList.get(i).getURL())) {
+                                  this.mataDataList.get(i).setPlaying(true);
+                                  adupter.notifyItemChanged(i);
+                                  recyclerView.scrollToPosition(i);
+                                  previousItemPlaying=i;
+                              }
 
-                        }
+                          }
+                      }
 
                     }
 

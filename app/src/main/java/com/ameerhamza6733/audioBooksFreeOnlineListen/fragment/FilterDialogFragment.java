@@ -43,7 +43,7 @@ public class FilterDialogFragment extends DialogFragment {
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
 
                 if (position > 0) {
-                    queryUpdate.OnQueryUpdate(Util.INSTANCE.SubjectSortBuilder(MySharedPref.getSavedObjectFromPreference(getActivity().getApplicationContext(),MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, BookFragment.KEY_SHARED_PREF_CURRENT_CATALOG), filter.get(position) + "+" + "asc"));
+                    queryUpdate.OnQueryUpdate(Util.INSTANCE.SubjectSortBuilder(MySharedPref.getSavedObjectFromPreference(getActivity().getApplicationContext(),MySharedPref.SHARD_PREF_AUDIO_BOOK_FILE_NAME, BookFragment.KEY_SHARED_PREF_CURRENT_CATALOG), filter.get(position) + "+"+"desc"));
 
                     dismiss();
                 }
