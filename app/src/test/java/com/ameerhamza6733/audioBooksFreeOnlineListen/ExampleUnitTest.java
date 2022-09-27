@@ -2,8 +2,6 @@ package com.ameerhamza6733.audioBooksFreeOnlineListen;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 /**
  * Example local unit test, which will execute on the development machine (host).
  *
@@ -11,7 +9,27 @@ import static org.junit.Assert.*;
  */
 public class ExampleUnitTest {
     @Test
-    public void addition_isCorrect() throws Exception {
-        assertEquals(4, 2 + 2);
+    public void main() throws Exception {
+        new Hamza();
+    }
+}
+
+class Name {
+
+    Name() {
+        System.out.println("What is my name?");
+    }
+}
+
+class Hamza extends Name {
+
+    {
+        System.out.println("My Name is Hamza rafique");
+    }
+    static {
+        System.out.println("I am looking for job");
+    }
+    public Hamza() {
+        System.out.println("My Name is Hamza");
     }
 }

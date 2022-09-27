@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
+
+import com.google.android.gms.ads.RequestConfiguration;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import androidx.fragment.app.Fragment;
@@ -35,6 +37,8 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity
@@ -115,7 +119,13 @@ public class MainActivity extends AppCompatActivity
                     ;
                 });
 
-        MobileAds.initialize(this, "ca-app-pub-5168564707064012~4212395459");
+        List<String> testDeviceIds = Arrays.asList("246E5D30FD3684C5C7E7B8BE020B95A3");
+        RequestConfiguration configuration = new RequestConfiguration.Builder().setTestDeviceIds(testDeviceIds).build();
+       // MobileAds.initialize(this, "ca-app-pub-5168564707064012~4212395459");
+        MobileAds.initialize(this);
+        MobileAds.setRequestConfiguration(configuration);
+        MobileAds.setAppMuted(true);
+
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         checkForConsent();
     }
@@ -206,6 +216,7 @@ public class MainActivity extends AppCompatActivity
     //
     private void checkForConsent() {
         ConsentInformation consentInformation = ConsentInformation.getInstance(this);
+        consentInformation.addTestDevice("246E5D30FD3684C5C7E7B8BE020B95A3");
         // ConsentInformation.getInstance(getActivity()).addTestDevice("B94C1B8999D3B59117198A259685D4F8");
 
         String[] publisherIds = {"pub-5168564707064012"};

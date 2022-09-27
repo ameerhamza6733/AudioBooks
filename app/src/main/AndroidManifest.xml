@@ -58,6 +58,10 @@
         <activity
             android:exported="false"
             android:name=".adupters.RateMe"></activity>
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-5168564707064012~4212395459"/>
+
     </application>
 
 </manifest>
