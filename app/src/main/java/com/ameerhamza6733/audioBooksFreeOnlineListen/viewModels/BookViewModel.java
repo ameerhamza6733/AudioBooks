@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -39,7 +40,7 @@ private static final String TAG = "BookViewModel";
     }
 
     public LiveData<List<AudioBook>> loadData(RequestQueue requestQueue, String url) {
-        Log.d(TAG,"load data");
+        Log.d(TAG,"load data" +url);
         mutableLiveData = new MutableLiveData<List<AudioBook>>();
         audioBookList = new ArrayList<>();
         this.url = url;
@@ -58,8 +59,12 @@ private static final String TAG = "BookViewModel";
                         JSONArray jsonArray = jsonObject.getJSONObject("response").getJSONArray("docs");
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject docs = jsonArray.getJSONObject(i);
-                            audioBookList.add(new AudioBook(Util.INSTANCE.ExtractRating(docs), Util.INSTANCE.ExtractDescription(docs), Util.INSTANCE.ExtractNoOfDownloads(docs), docs.getString("identifier"), Util.INSTANCE.ExtractNoReviews(docs), docs.getString("title"), Util.INSTANCE.ExtractPublisher(docs), Util.INSTANCE.ExtractMediaType(docs),Util.INSTANCE.EtracCreator(docs),Util.INSTANCE.ExtractData(docs)));
+                         //   Log.d(TAG,Util.INSTANCE.extractPublis(docs));
+                            Log.d(TAG,Util.INSTANCE.extractCollection(docs));
+                            if (Util.INSTANCE.isWorkFromCollectionDomain(docs) ){
+                                audioBookList.add(new AudioBook(Util.INSTANCE.ExtractRating(docs), Util.INSTANCE.ExtractDescription(docs), Util.INSTANCE.ExtractNoOfDownloads(docs), docs.getString("identifier"), Util.INSTANCE.ExtractNoReviews(docs), docs.getString("title"), Util.INSTANCE.ExtractPublisher(docs), Util.INSTANCE.ExtractMediaType(docs),Util.INSTANCE.EtracCreator(docs),Util.INSTANCE.ExtractData(docs)));
 
+                            }
                         }
 
 

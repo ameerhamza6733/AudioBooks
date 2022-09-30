@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Environment
+import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.text.DecimalFormat
@@ -51,7 +52,7 @@ object Util {
 
     fun quraryBuilder( queary : String) : String {
 
-        return "https://archive.org/advancedsearch.php?q=title%3A%22$queary~%22+AND+mediatype%3Aaudio&f&rows=100&page=1&output=json&callback=callback&save=yes"
+        return "https://archive.org/advancedsearch.php?q=title%3A%22$queary%22+AND+mediatype%3Aaudio&fl%5B%5D=avg_rating&fl%5B%5D=backup_location&fl%5B%5D=btih&fl%5B%5D=call_number&fl%5B%5D=collection&fl%5B%5D=contributor&fl%5B%5D=coverage&fl%5B%5D=creator&fl%5B%5D=date&fl%5B%5D=description&fl%5B%5D=downloads&fl%5B%5D=external-identifier&fl%5B%5D=foldoutcount&fl%5B%5D=format&fl%5B%5D=genre&fl%5B%5D=headerImage&fl%5B%5D=identifier&fl%5B%5D=imagecount&fl%5B%5D=indexflag&fl%5B%5D=item_size&fl%5B%5D=language&fl%5B%5D=licenseurl&fl%5B%5D=mediatype&fl%5B%5D=members&fl%5B%5D=month&fl%5B%5D=name&fl%5B%5D=noindex&fl%5B%5D=num_reviews&fl%5B%5D=oai_updatedate&fl%5B%5D=publicdate&fl%5B%5D=publisher&fl%5B%5D=related-external-id&fl%5B%5D=reviewdate&fl%5B%5D=rights&fl%5B%5D=scanningcentre&fl%5B%5D=source&fl%5B%5D=stripped_tags&fl%5B%5D=subject&fl%5B%5D=title&fl%5B%5D=type&fl%5B%5D=volume&fl%5B%5D=week&fl%5B%5D=year&sort%5B%5D=&sort%5B%5D=&sort%5B%5D=&rows=500&page=1&output=json&callback=callback&save=yes"
     }
 
 
@@ -85,6 +86,31 @@ object Util {
            "rating " +( jsonObj.getString("avg_rating"))
         } catch (e: Exception) {
             "rating " + "N/A"
+        }
+    }
+
+
+    fun extractCollection(jsonObject: JSONObject):String{
+        return try {
+            var jsonArray = jsonObject.getJSONArray("collection")
+            var sb = StringBuilder();
+            for ( i  in 0 until jsonArray.length()){
+                sb.append(jsonArray.get(i))
+                sb.append(",")
+
+            }
+            return sb.toString()
+        }catch (e :Exception){
+            e.printStackTrace()
+            return "collection N/A"
+        }
+    }
+    fun extractPublis(jsonObject: JSONObject):String {
+        return try {
+            "licenseurl ${jsonObject.getString("licenseurl")}"
+
+        }catch (e:Exception){
+            "licenseurl N/A"
         }
     }
 
@@ -298,6 +324,18 @@ object Util {
             "N/A"
         }
 
+    }
+
+    fun isWorkFromCollectionDomain(jsonObject: JSONObject):Boolean{
+        return try {
+            val jsonArray =  jsonObject.getJSONArray("collection")
+            for ( i  in 0 until jsonArray.length()){
+                return jsonArray.get(i).toString().lowercase().contains("librivox") || jsonArray.get(i).toString().lowercase().contains("opensource")
+            }
+            return false
+        }catch (e:Exception){
+            return false
+        }
     }
 
 }
