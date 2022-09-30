@@ -40,7 +40,7 @@ private static final String TAG = "BookViewModel";
     }
 
     public LiveData<List<AudioBook>> loadData(RequestQueue requestQueue, String url) {
-        Log.d(TAG,"load data" +url);
+        Log.d(TAG,"load data");
         mutableLiveData = new MutableLiveData<List<AudioBook>>();
         audioBookList = new ArrayList<>();
         this.url = url;

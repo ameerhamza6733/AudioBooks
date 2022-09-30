@@ -105,6 +105,7 @@ public class BookSearchDialogFragment extends DialogFragment {
 
             if (queryUpdate !=null){
                 userEnteredQuery=  userEnteredQuery.replaceAll(" ","%20");
+                userEnteredQuery=userEnteredQuery.trim();
                 userEnteredQuery = userEnteredQuery.concat("~");
                 queryUpdate.OnQueryUpdate(Util.INSTANCE.quraryBuilder(userEnteredQuery.toString()));
             }
