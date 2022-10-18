@@ -66,7 +66,7 @@ public class PlayerForegroundService extends Service implements Player.EventList
     public static final java.lang.String IS_SOUCE_LOCAL_DISK = "IS_SOUCE_LOCAL_DISK";
     public static Boolean isPlaying = false;
     public static String currentPlayingChapter=null;
-    public static SimpleExoPlayer player;
+    public static SimpleExoPlayer player; // this can lead to memory leaks, since i this project is not my top priority and its working without any problem, this why i am not refectory this  SimpleExoPlayer for now
     private static String title;
     protected List<MataData> mataDataList;
     public static AudioBook audioBook;
